@@ -1,46 +1,46 @@
-# parcel-typescript-example
+# Custom Fe Library example
 
-A minimum TypeScript app with [Parcel Bundler](https://parceljs.org/).
-
-## Source code
-
-- [index.html](./src/index.html)
-- [index.ts](./src/index.ts)
-- [style.css](./src/style.css)
-
-For more details, see [src/](./src/).
+Esempio di shooter 2D realizzato per studiare il canvas e lo sviluppo di giochi con tecnologie web. 
 
 ## Usage
 
 ### Installation
+Installare tramite
 
-    yarn install
+    npm install
 
 ### Development
 
-Launch development server.
+Lanciare il server di sviluppo con:
 
-    yarn start
+    npm start
     
-### Build
 
 Compile TypeScript app and copy index.html to the `dist` folder.
 
-    yarn run build
+    npm run build
 
-### Deploy
 
-Deploy `dist` folder to GitHub Pages.
 
-    yarn run deploy
 
-You can see the result in <https://azu.github.io/parcel-typescript-example/>.
+## Built With
+
+HTML5, CSS, Typescript, canvas, parcel
+
+## Versioning
+
+Versione 1
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details
+
 
 ## Contributing
 
 Pull requests and stars are always welcome.
 
-For bugs and feature requests, [please create an issue](https://github.com/azu/parcel-typescript-example/issues).
+For bugs and feature requests, [please create an issue](https://github.com/LorenzoCorbella74/testCanvasGame/issues).
 
 1. Fork it!
 2. Create your feature branch: `git checkout -b my-new-feature`
@@ -50,9 +50,5 @@ For bugs and feature requests, [please create an issue](https://github.com/azu/p
 
 ## Author
 
-- [github/azu](https://github.com/azu)
-- [twitter/azu_re](https://twitter.com/azu_re)
+- [github/LorenzoCorbella74](https://github.com/LorenzoCorbella74)
 
-## License
-
-MIT © azu

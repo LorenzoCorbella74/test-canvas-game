@@ -4,6 +4,9 @@ export const conf ={
     CANVAS_WIDTH:800,
     CANVAS_HEIGHT:600,
 
+    // MAP
+    TILE_SIZE: 25,
+
     // PLAYER
     PLAYER_SPEED: 2,
     PLAYER_RADIUS: 10,

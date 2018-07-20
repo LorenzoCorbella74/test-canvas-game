@@ -1,4 +1,4 @@
-# Custom Fe Library example
+# 2D shooter javascript engine
 
 Esempio di shooter 2D realizzato per studiare il canvas e lo sviluppo di giochi con tecnologie web. 
 

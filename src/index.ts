@@ -1,7 +1,7 @@
 import Game from './game';
 
 window.onload = function () {
-    let app = new Engine(new Game);
+    let app = new Engine(new Game());
     app.bootstrap()
 };
 

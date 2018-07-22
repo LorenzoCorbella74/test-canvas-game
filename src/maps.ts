@@ -64,6 +64,11 @@ export class Map {
         }
     }
 
+    drawBorder(xPos:number, yPos:number, width:number, height:number, thickness = 1) {
+        this.c.fillStyle = '#000';
+        this.c.fillRect(xPos - (thickness), yPos - (thickness), width + (thickness * 2), height + (thickness * 2));
+    }
+
     render() {
         var onXTile = Math.floor((this.camera.x + (this.camera.w / 2)) / this.tileSize);
         var onYTile = Math.floor((this.camera.y + (this.camera.h / 2)) / this.tileSize);
@@ -76,6 +81,7 @@ export class Map {
                         if (map[j][l] == key.id) {
                             this.currentVisibleMap[j][l] = key;
                         }
+                        this.drawBorder(l * this.tileSize - this.camera.x, j * this.tileSize - this.camera.y, this.tileSize, this.tileSize)
                         this.c.fillStyle = this.currentVisibleMap[j][l].colour;
                         this.c.fillRect(l * this.tileSize - this.camera.x, j * this.tileSize - this.camera.y, this.tileSize, this.tileSize);
                     } // check tile is in bounds

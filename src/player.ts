@@ -1,5 +1,5 @@
 import { conf as c } from './config';
-
+import { Map} from './maps';
 
 export class Player {
 
@@ -27,7 +27,7 @@ export class Player {
 		this.x = 400;
 		this.y = 300;
 		this.r = c.PLAYER_RADIUS
-		this.speed = c.PLAYER_SPEED;
+		this.speed = c.PLAYER_SPEED;	// è uguale in tutte le direzioni
 		this.angle = 0;
 
 		this.canvas = main.canvas;
@@ -63,7 +63,7 @@ export class Player {
 		var dx = ex - cx;
 		var theta = Math.atan2(dy, dx); // range (-PI, PI]
 		// theta *= 180 / Math.PI; // rads to degs, range (-180, 180]
-		// if (theta < 0) theta = 360 + theta; // range [0, 360)
+		// if (theta < 0) theta = 360 + theta; // range [0, 360)ssss
 		return theta;
 	  }
 
@@ -81,7 +81,7 @@ export class Player {
 		// beccuccio arma
 		this.ctx.strokeStyle=c.PLAYER_COLOUR_OUTSIDE;
 		this.ctx.beginPath();
-		this.ctx.moveTo(this.x,this.y);
+		this.ctx.moveTo(this.x - this.camera.x,this.y - this.camera.y);
 		var pointerLength = 25;
 		this.ctx.lineTo(
 			this.x - this.camera.x + pointerLength * Math.cos(this.angle),
@@ -94,6 +94,10 @@ export class Player {
 		this.camera = camera;
 		this.map = map
 	}
+
+	getTile = function (x:number, y:number) {
+		return (this.map.currentVisibleMap[y] && this.map.currentVisibleMap[y][x]) ? this.map.currentVisibleMap[y][x] : 0;
+	};
 
 	update() {
 		if (this.keys['87'] || this.keys['38']) { // W o top arrow
@@ -109,12 +113,24 @@ export class Player {
 			}
 		}
 		if (this.keys['65'] || this.keys['37']) {	// a
-			this.x -= this.speed;
-			if (this.x - this.r < this.camera.x) {
-				this.x = this.camera.x + this.r;
-			}
+			// if((this.x-this.r -this.speed) % c.TILE_SIZE<=0.4){
+				let currentPlayerTile = this.getTile(Math.round((this.x-this.speed)/c.TILE_SIZE), Math.round(this.y/c.TILE_SIZE);
+				let currentPlayerTilePlus = this.getTile(Math.round((this.x-this.speed)/c.TILE_SIZE), Math.round(this.y/c.TILE_SIZE);
+				let currentPlayerTileMinor= this.getTile(Math.round((this.x-this.speed)/c.TILE_SIZE), Math.round(this.y/c.TILE_SIZE);
+				console.log('Collision Detection!',currentPlayerTile,currentPlayerTilePlus,currentPlayerTileMinor);
+			// }else{
+				this.x -= this.speed;
+				if (this.x - this.r < this.camera.x) {
+					this.x = this.camera.x + this.r;
+				}
+			// }
 		}
 		if (this.keys['68'] || this.keys['39']) {	// d
+
+			let currentPlayerTile = this.getTile(Math.round((this.x-this.speed)/c.TILE_SIZE), Math.round(this.y/c.TILE_SIZE);
+				let currentPlayerTilePlus = this.getTile(Math.round((this.x-this.speed)/c.TILE_SIZE), Math.round(this.y/c.TILE_SIZE);
+				let currentPlayerTileMinor= this.getTile(Math.round((this.x-this.speed)/c.TILE_SIZE), Math.round(this.y/c.TILE_SIZE);
+				console.log('Collision Detection!',currentPlayerTile,currentPlayerTilePlus,currentPlayerTileMinor);
 			this.x += this.speed;
 			if (this.x + this.r >= this.map.mapSize.w) {
 				this.x = this.camera.x + this.camera.w - this.r;

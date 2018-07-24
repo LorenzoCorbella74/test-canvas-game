@@ -1,16 +1,16 @@
 import { Player } from './player';
 import { conf as c } from './config';
 import { Camera } from './camera';
-import { Map} from './maps';
+import { Map } from './maps';
 
 export default class Game {
 
-    canvas:     HTMLCanvasElement;
-    ctx:        CanvasRenderingContext2D;
-    width:      number = c.CANVAS_WIDTH; // window.innerWidth;
-    height:     number = c.CANVAS_HEIGHT; // window.innerHeight;
-    player:     any;
-    camera:     Camera;
+    canvas: HTMLCanvasElement;
+    ctx: CanvasRenderingContext2D;
+    width: number = c.CANVAS_WIDTH; // window.innerWidth;
+    height: number = c.CANVAS_HEIGHT; // window.innerHeight;
+    player: any;
+    camera: Camera;
     currentMap: Map;
 
     constructor() {
@@ -25,9 +25,9 @@ export default class Game {
         this.player.isFollowedBY(this.camera, this.currentMap);
     }
 
-    updateAll(){
+    updateAll() {
         this.player.update();
-         this.camera.update();
+        this.camera.update();
         // enemies
         // bullets
         // particles:sangue
@@ -39,7 +39,21 @@ export default class Game {
         this.ctx.clearRect(0, 0, this.width, this.height);
         this.currentMap.render();
         this.player.render();
+
         // HUD
+        this.ctx.fillStyle = c.HUD_BACKGROUND;
+        this.ctx.fillRect(0, 0, c.CANVAS_WIDTH, c.TILE_SIZE);
+        this.ctx.textAlign = 'LEFT';
+        this.ctx.font = 'bold 14px/1 Arial';
+        this.ctx.fillStyle = '#565454';
+        this.ctx.fillText('HP ', 5, c.TILE_SIZE/2);
+        this.ctx.fillText('AP ', 85, c.TILE_SIZE/2);
+        this.ctx.fillText('Kills ', 165, c.TILE_SIZE/2);
+        this.ctx.font = 'bold 14px/1 Arial';
+        this.ctx.fillStyle = 'yellow';
+        this.ctx.fillText(Math.round(this.player.hp).toString(), 30, c.TILE_SIZE/2);
+        this.ctx.fillText(Math.round(this.player.ap).toString(), 110, c.TILE_SIZE/2);
+        this.ctx.fillText(Math.round(this.player.kills).toString(), 200, c.TILE_SIZE/2)
     }
 
 }

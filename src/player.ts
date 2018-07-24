@@ -1,5 +1,5 @@
 import { conf as c } from './config';
-import { Map} from './maps';
+import { Map } from './maps';
 
 export class Player {
 
@@ -8,7 +8,12 @@ export class Player {
 	y: number;
 	r: number
 	speed: number;
-	angle:number;
+	angle: number;
+
+	hp:number;
+	ap:number;
+	kills:number
+	currentWeapon: string;
 
 	// CANVAS
 	canvas: any;
@@ -30,6 +35,11 @@ export class Player {
 		this.speed = c.PLAYER_SPEED;	// è uguale in tutte le direzioni
 		this.angle = 0;
 
+		this.hp = 100;
+		this.ap = 10;
+		this.kills = 0;
+		this.currentWeapon= 'None';
+
 		this.canvas = main.canvas;
 		this.ctx = main.ctx;
 
@@ -49,23 +59,24 @@ export class Player {
 		});
 		this.canvas.addEventListener('mousemove', (e: any) => {
 			var rect = this.canvas.getBoundingClientRect();
-			this.mouseX = e.clientX - rect.left;
-			this.mouseY = e.clientY - rect.top
-			this.angle = this.calculateAngle(this.x,this.y, this.mouseX, this.mouseY);
+			this.mouseX = e.clientX - rect.left - this.camera.x;
+			this.mouseY = e.clientY - rect.top - this.camera.y;
+			this.angle = this.calculateAngle(this.x, this.y, this.mouseX, this.mouseY);
+			// aconsole.log(this.mouseX, this.mouseY, this.angle);
 		});
 		this.canvas.addEventListener('contextmenu', (e: any) => {
 			e.preventDefault()
 		});
 	}
 
-	private calculateAngle(cx:number, cy:number, ex:number, ey:number) {
+	private calculateAngle(cx: number, cy: number, ex: number, ey: number) {
 		var dy = ey - cy;
 		var dx = ex - cx;
 		var theta = Math.atan2(dy, dx); // range (-PI, PI]
 		// theta *= 180 / Math.PI; // rads to degs, range (-180, 180]
 		// if (theta < 0) theta = 360 + theta; // range [0, 360)ssss
 		return theta;
-	  }
+	}
 
 	render() {
 		// draw the colored region
@@ -79,14 +90,14 @@ export class Player {
 		this.ctx.stroke();
 
 		// beccuccio arma
-		this.ctx.strokeStyle=c.PLAYER_COLOUR_OUTSIDE;
+		this.ctx.strokeStyle = c.PLAYER_COLOUR_OUTSIDE;
 		this.ctx.beginPath();
-		this.ctx.moveTo(this.x - this.camera.x,this.y - this.camera.y);
+		this.ctx.moveTo(this.x - this.camera.x, this.y - this.camera.y);
 		var pointerLength = 25;
 		this.ctx.lineTo(
 			this.x - this.camera.x + pointerLength * Math.cos(this.angle),
 			this.y - this.camera.y + pointerLength * Math.sin(this.angle)
-			);
+		);
 		this.ctx.stroke();
 	}
 
@@ -95,45 +106,49 @@ export class Player {
 		this.map = map
 	}
 
-	getTile = function (x:number, y:number) {
-		return (this.map.currentVisibleMap[y] && this.map.currentVisibleMap[y][x]) ? this.map.currentVisibleMap[y][x] : 0;
-	};
+	// SOURCE: https://codereview.stackexchange.com/questions/60439/2d-tilemap-collision-method
+	checkmove(x:number, y:number):boolean {
+		if (this.map.map[Math.floor(y / c.TILE_SIZE)][Math.floor(x / c.TILE_SIZE)].solid == 1
+			|| this.map.map[Math.floor(y / c.TILE_SIZE)][Math.ceil(x / c.TILE_SIZE)].solid == 1
+			|| this.map.map[Math.ceil(y / c.TILE_SIZE)][Math.floor(x / c.TILE_SIZE)].solid == 1
+			|| this.map.map[Math.ceil(y / c.TILE_SIZE)][Math.ceil(x / c.TILE_SIZE)].solid == 1) {
+			return false;
+		} else {
+			return true;
+		}
+	}
 
 	update() {
 		if (this.keys['87'] || this.keys['38']) { // W o top arrow
-			this.y -= this.speed;
-			if (this.y - this.r < this.camera.y) {
-				this.y = this.camera.y + this.r;
+			if (this.checkmove(this.x - this.r, this.y - this.r - this.speed)) {
+				this.y -= this.speed;
+				if (this.y - this.r < this.camera.y) {
+					this.y = this.camera.y + this.r;
+				}
 			}
 		}
 		if (this.keys['83'] || this.keys['40']) {	// S
-			this.y += this.speed;
-			if (this.y + this.r >= this.camera.y + this.camera.h) {
-				this.y = this.camera.y + this.camera.h - this.r;
+			if (this.checkmove(this.x - this.r, this.y - this.r + this.speed)) {
+				this.y += this.speed;
+				if (this.y + this.r >= this.camera.y + this.camera.h) {
+					this.y = this.camera.y + this.camera.h - this.r;
+				}
 			}
 		}
 		if (this.keys['65'] || this.keys['37']) {	// a
-			// if((this.x-this.r -this.speed) % c.TILE_SIZE<=0.4){
-				let currentPlayerTile = this.getTile(Math.round((this.x-this.speed)/c.TILE_SIZE), Math.round(this.y/c.TILE_SIZE);
-				let currentPlayerTilePlus = this.getTile(Math.round((this.x-this.speed)/c.TILE_SIZE), Math.round(this.y/c.TILE_SIZE);
-				let currentPlayerTileMinor= this.getTile(Math.round((this.x-this.speed)/c.TILE_SIZE), Math.round(this.y/c.TILE_SIZE);
-				console.log('Collision Detection!',currentPlayerTile,currentPlayerTilePlus,currentPlayerTileMinor);
-			// }else{
+			if (this.checkmove(this.x - this.r - this.speed, this.y - this.r)) {
 				this.x -= this.speed;
 				if (this.x - this.r < this.camera.x) {
 					this.x = this.camera.x + this.r;
 				}
-			// }
+			}
 		}
 		if (this.keys['68'] || this.keys['39']) {	// d
-
-			let currentPlayerTile = this.getTile(Math.round((this.x-this.speed)/c.TILE_SIZE), Math.round(this.y/c.TILE_SIZE);
-				let currentPlayerTilePlus = this.getTile(Math.round((this.x-this.speed)/c.TILE_SIZE), Math.round(this.y/c.TILE_SIZE);
-				let currentPlayerTileMinor= this.getTile(Math.round((this.x-this.speed)/c.TILE_SIZE), Math.round(this.y/c.TILE_SIZE);
-				console.log('Collision Detection!',currentPlayerTile,currentPlayerTilePlus,currentPlayerTileMinor);
-			this.x += this.speed;
-			if (this.x + this.r >= this.map.mapSize.w) {
-				this.x = this.camera.x + this.camera.w - this.r;
+			if (this.checkmove(this.x - this.r + this.speed, this.y - this.r)) {
+				this.x += this.speed;
+				if (this.x + this.r >= this.map.mapSize.w) {
+					this.x = this.camera.x + this.camera.w - this.r;
+				}
 			}
 		}
 		return false;

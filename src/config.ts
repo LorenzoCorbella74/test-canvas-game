@@ -8,10 +8,13 @@ export const conf ={
     TILE_SIZE: 25,
 
     // PLAYER
-    PLAYER_SPEED: 2,
-    PLAYER_RADIUS: 10,
-    PLAYER_COLOUR_INSIDE: '#c97e5c',
-    PLAYER_COLOUR_OUTSIDE: '#904c2dS',
+    PLAYER_SPEED: 3.5,
+    PLAYER_RADIUS: 12.5,
+    PLAYER_COLOUR_INSIDE: '#6688cc',
+    PLAYER_COLOUR_OUTSIDE: '#4b58a0',
+
+    // HUD
+    HUD_BACKGROUND:"rgba(102, 136, 204, 0.5)"
 }
 
 /*
@@ -19,3 +22,5 @@ export const conf ={
     For colors: http://gka.github.io/chroma.js/#cubehelix-hue
 
 */
+
+

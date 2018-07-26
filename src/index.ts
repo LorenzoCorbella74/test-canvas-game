@@ -16,7 +16,7 @@ class Engine {
     bootstrap(){
         // configurazione di setup
     
-        // si fa partire il gameloop
+        // fa partire il gameloop
         this.gameLoop();
     }
 

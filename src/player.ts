@@ -48,6 +48,14 @@ export class Player {
 		this.map = map
 	}
 
+	wheel(delta:number) {
+		if (delta > 0) {
+			console.log(delta);
+		} else {
+			console.log(delta);
+		}
+	};
+
 
 	render() {
 		// draw the colored region
@@ -55,6 +63,7 @@ export class Player {
 		this.ctx.arc(this.x - this.camera.x, this.y - this.camera.y, this.r, 0, 2 * Math.PI, true);
 		this.ctx.fillStyle = c.PLAYER_COLOUR_INSIDE;
 		this.ctx.fill();
+		
 		// draw the stroke
 		this.ctx.lineWidth = 2;
 		this.ctx.strokeStyle = c.PLAYER_COLOUR_OUTSIDE;

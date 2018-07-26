@@ -2,17 +2,18 @@ import {Helper} from'./helper';
 
 export class ControlHandler {
 
-    a: boolean;
-    d: boolean;
-    w: boolean;
-    s: boolean;
+    a:         boolean;
+    d:         boolean;
+    w:         boolean;
+    s:         boolean;
     mouseLeft: boolean;
-    mouseX: number;
-    mouseY: number;
-    main: any;
+    mouseX:    number;
+    mouseY:    number;
+
+    main:   any;
     canvas: any;
-    camera:any;
-    player:any;
+    camera: any;
+    player: any;
 
     constructor(main: any){
         this.a = false;
@@ -32,6 +33,8 @@ export class ControlHandler {
         this.canvas.addEventListener('mouseup', this.mouseUpEvent.bind(this));
         this.canvas.addEventListener('mousemove', this.mouseMoveEvent.bind(this));
         this.canvas.addEventListener('contextmenu', this.contextMenuEvent.bind(this))
+        window.addEventListener('mousewheel', this.mouseWheelEvent.bind(this));
+        window.addEventListener('DOMMouseScroll', this.mouseWheelEvent.bind(this));
     }
 
     keyDownEvent(e) {
@@ -77,17 +80,29 @@ export class ControlHandler {
         if (e.button == 0) {
             this.mouseLeft = false
         }
-    };
+    }
+
     mouseMoveEvent(e) {
         var rect = this.canvas.getBoundingClientRect();
         this.mouseX = e.clientX - rect.left;
         this.mouseY = e.clientY - rect.top
         this.player.angle = Helper.calculateAngle(this.player.x- this.camera.x, this.player.y - this.camera.y, this.mouseX - this.camera.x, this.mouseY- this.camera.y); // FIXME: devono essere relative alla camera?
-    };
+    }
+
+    mouseWheelEvent(e) {
+        // if (this.main.state == 'game') {
+            this.player.wheel(e.wheelDelta ? e.wheelDelta : -e.detail);
+           /*  return true;
+        } */
+        /* if (this.mouseX > 0 && this.mouseX < this.canvas.width && this.mouseY > 0 && this.mouseY < this.canvas.height) {
+            e.preventDefault();
+            return false
+        } */
+    }
     
     contextMenuEvent(e) {
         e.preventDefault()
-    };
+    }
 
 }
 

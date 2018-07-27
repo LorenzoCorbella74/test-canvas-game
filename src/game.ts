@@ -20,6 +20,7 @@ export default class Game {
     control:    ControlHandler;
     currentMap: Map;
     state:      string;
+    fontFamily: string = c.FONT_FAMILY;;
 
     constructor() {
         this.canvas        = <HTMLCanvasElement>document.getElementById('canvas');
@@ -46,6 +47,14 @@ export default class Game {
     }
 
     private gameLoop(): void {
+        if (this.state != 'game') {
+            return
+        }
+        if (this.player.hp <= 0) {
+            this.state = 'gameOverScreen';
+            this.loadGameOverScreen(this);
+            return
+        }
         // need to bind the current this reference to the callback
         requestAnimationFrame(this.gameLoop.bind(this));
         this.updateAll();
@@ -117,15 +126,15 @@ export default class Game {
         this.textONCanvas(main.ctx, 'L.Corbella © 2018', 9, main.canvas.height - 14, 'normal 13px/1 ' + main.fontFamily, light, 'left')
     }
 
-    gameOverScreen(main: any) {
+    loadGameOverScreen(main: any) {
         main.state = 'gameOverScreen';
         main.control.mouseLeft = false;
         main.ctx.clearRect(0, 0, main.canvas.width, main.canvas.height);
         var hW = main.canvas.width * 0.5;
         var hH = main.canvas.height * 0.5;
-        var dark = 'rgba(0,0,0,0.9)';
-        var medium = 'rgba(0,0,0,0.5)';
-        var light = 'rgba(0,0,0,0.3)';
+        var dark = 'rgba(0,0,0)';
+        var medium = 'rgba(0,0,0)';
+        var light = 'rgba(0,0,0)';
         this.textONCanvas(main.ctx, '2D Shooter', 9, 18, 'normal 21px/1 ' + main.fontFamily, light, 'left');
         this.textONCanvas(main.ctx, 'Game Over!', hW, hH - 70, 'normal 22px/1 ' + main.fontFamily, dark);
         this.textONCanvas(main.ctx, 'Kills:' + main.player.kills, hW, hH - 30, 'normal 16px/1 ' + main.fontFamily, medium);

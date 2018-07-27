@@ -3,6 +3,7 @@ export const conf ={
     // CANVAS
     CANVAS_WIDTH:800,
     CANVAS_HEIGHT:600,
+    FONT_FAMILY : '"Segoe UI",Arial,sans-serif';
 
     // MAP
     TILE_SIZE: 25,

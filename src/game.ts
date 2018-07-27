@@ -6,7 +6,7 @@ import { Map } from './maps';
 
 window.onload = function () {
     let app = new Game();
-    app.loadMenuScreen()
+    app.loadMenuScreen(app);
 };
 
 export default class Game {
@@ -37,11 +37,6 @@ export default class Game {
         // Camera is set to the player and on the default map
         this.camera.setCurrentMap(this.currentMap);
         this.camera.setCurrentPlayer(this.player);
-    }
-
-    loadMenuScreen() {
-        // configurazione di setup
-        this.menuScreen(this);
     }
 
     // fa partire il gameloop
@@ -78,7 +73,6 @@ export default class Game {
         // particles:detriti
         // particles:esplosioni
 
-        
         this.renderHUD();   // HUD
     }
 
@@ -106,7 +100,7 @@ export default class Game {
         context.fillText(text, x, y)
     }
 
-    menuScreen(main: any) {
+    loadMenuScreen(main: any) {
         main.state = 'menuScreen';
         main.control.mouseLeft = false;
         main.ctx.clearRect(0, 0, main.canvas.width, main.canvas.height);

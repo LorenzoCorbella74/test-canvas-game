@@ -3,6 +3,9 @@ import { conf as c } from './config';
 import { Camera } from './camera';
 import { Map } from './maps';
 
+
+
+
 export default class Game {
 
     canvas: HTMLCanvasElement;

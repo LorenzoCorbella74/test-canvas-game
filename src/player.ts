@@ -22,6 +22,7 @@ export class Player {
 	// COMANDI
 	keys: any = {};
 	mouseDown = false;
+	mouseOver = false;
 	mouseX = 0;
 	mouseY = 0;
 
@@ -51,11 +52,19 @@ export class Player {
 			this.keys[`${e.keyCode}`] = false;
 		});
 
-		this.canvas.addEventListener('mousedown', (e: any) => {
-			this.mouseDown = true
-		});
+		/* this.canvas.addEventListener('mousedown', (e: any) => {
+			this.mouseDown = true */
+			document.getElementById("canvas").style.cursor = "crosshair";
+		/* });
 		this.canvas.addEventListener('mouseup', (e: any) => {
 			this.mouseDown = false
+			document.getElementById("canvas").style.cursor = "autowa";
+		}); */
+		this.canvas.addEventListener('mouseover', (e: any) => {
+			this.mouseOver = true
+		});
+		this.canvas.addEventListener('mouseout', (e: any) => {
+			this.mouseOver = false
 		});
 		this.canvas.addEventListener('mousemove', (e: any) => {
 			var rect = this.canvas.getBoundingClientRect();

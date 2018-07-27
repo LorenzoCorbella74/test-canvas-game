@@ -7,6 +7,7 @@ export class ControlHandler {
     w:         boolean;
     s:         boolean;
     mouseLeft: boolean;
+    mouseRight: boolean;
     mouseX:    number;
     mouseY:    number;
 
@@ -21,6 +22,7 @@ export class ControlHandler {
         this.w = false;
         this.s = false;
         this.mouseLeft = false;
+        this.mouseRight = false;
         this.mouseX = 0;
         this.mouseY = 0;
         this.main = main;
@@ -37,7 +39,7 @@ export class ControlHandler {
         window.addEventListener('DOMMouseScroll', this.mouseWheelEvent.bind(this));
     }
 
-    keyDownEvent(e) {
+    keyDownEvent(e:any) {
         if (e.keyCode == 87) {
             this.w = true
         } else if (e.keyCode == 83) {
@@ -46,12 +48,16 @@ export class ControlHandler {
             this.a = true
         } else if (e.keyCode == 68) {
             this.d = true
-        } else {
+        } else if ((e.keyCode >= 48 || e.keyCode <= 57) && this.main.state == 'game') {
+            this.player.hotKey(e.keyCode)
+        }
+        if (this.mouseX > 0 && this.mouseX < this.canvas.width && this.mouseY > 0 && this.mouseY < this.canvas.height) {
             e.preventDefault();
+            return false
         }
     }
     
-    keyUpEvent(e) {
+    keyUpEvent(e:any) {
         if (e.keyCode == 87 || e.keyCode == 38) {
             this.w = false
         } else if (e.keyCode == 83) {
@@ -60,25 +66,30 @@ export class ControlHandler {
             this.a = false
         } else if (e.keyCode == 68) {
             this.d = false
-        } else {
+        } else if (this.mouseX > 0 && this.mouseX < this.canvas.width && this.mouseY > 0 && this.mouseY < this.canvas.height) {
             e.preventDefault();
+            return false
         }
     }
     
-    mouseDownEvent(e) {
+    mouseDownEvent(e:any) {
         if (e.button == 0) {
             this.mouseLeft = true
+        } else if (e.button == 2) {
+            this.mouseRight = true
         }
     }
     
-    mouseUpEvent(e) {
+    mouseUpEvent(e:any) {
         if (this.mouseLeft) {
-            /* if (this.main.state == 'menuScreen' || this.main.state == 'gameOverScreen') {
+            if (this.main.state == 'menuScreen' || this.main.state == 'gameOverScreen') {
                 this.main.startGame()
-            } */
+            }
         }
         if (e.button == 0) {
             this.mouseLeft = false
+        } else if (e.button == 2) {
+            this.mouseRight = false
         }
     }
 

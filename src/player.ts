@@ -26,12 +26,12 @@ export class Player {
 		this.y = 300;
 		this.r = c.PLAYER_RADIUS
 		this.speed = c.PLAYER_SPEED;	// è uguale in tutte le direzioni
-		this.angle = 0;
+		this.angle = 0;					// angolo tra asse x e puntatore del mouse
 
-		this.hp = 100;
-		this.ap = 10;
-		this.kills = 0;
-		this.currentWeapon= 'None';
+		this.hp = 100;					// punti vita
+		this.ap = 10;					// punti armatura
+		this.kills = 0;					// uccisioni
+		this.currentWeapon= 'None';		// arma corrente
 
 		this.canvas  = main.canvas;
 		this.ctx     = main.ctx;
@@ -39,7 +39,7 @@ export class Player {
 		this.map 	 = main.map;
 	}
 
-	setControlHandler(control){
+	setControlHandler(control:any){
 		this.control = control;
 	}
 
@@ -81,6 +81,7 @@ export class Player {
 		this.ctx.stroke();
 	}
 
+	// collisione tra elementi della stessa imensione (tile e player)
 	// SOURCE: https://codereview.stackexchange.com/questions/60439/2d-tilemap-collision-method
 	checkmove(x:number, y:number):boolean {
 		if (this.map.map[Math.floor(y / c.TILE_SIZE)][Math.floor(x / c.TILE_SIZE)].solid == 1

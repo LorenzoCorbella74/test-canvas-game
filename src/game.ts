@@ -4,8 +4,10 @@ import { conf as c } from './config';
 import { Camera } from './camera';
 import { Map } from './maps';
 
-
-
+window.onload = function () {
+    let app = new Game();
+    app.loadMenuScreen()
+};
 
 export default class Game {
 
@@ -28,13 +30,31 @@ export default class Game {
         this.camera        = new Camera(0, 0, 800, 600, this);
         this.control       = new ControlHandler(this);
         this.currentMap    = new Map(this);
-        this.state         = 'loading data';
+        this.state         = 'loading';
         // si lega gli handler dei controlli al player
         this.player.setControlHandler(this.control);
         this.player.isFollowedBY(this.camera, this.currentMap);
         // Camera is set to the player and on the default map
         this.camera.setCurrentMap(this.currentMap);
         this.camera.setCurrentPlayer(this.player);
+    }
+
+    loadMenuScreen() {
+        // configurazione di setup
+        this.menuScreen(this);
+    }
+
+    // fa partire il gameloop
+    startGame() {
+        this.state = 'game';
+        this.gameLoop();
+    }
+
+    private gameLoop(): void {
+        // need to bind the current this reference to the callback
+        requestAnimationFrame(this.gameLoop.bind(this));
+        this.updateAll();
+        this.renderAll();
     }
 
     updateAll() {
@@ -48,18 +68,18 @@ export default class Game {
     }
 
     renderAll(): void {
-
+        // svuota il canvas
         this.ctx.clearRect(0, 0, this.width, this.height);
         this.currentMap.render();
         this.player.render();
-           // enemies
+        // enemies
         // bullets
         // particles:sangue
         // particles:detriti
         // particles:esplosioni
 
-        // HUD
-        this.renderHUD();
+        
+        this.renderHUD();   // HUD
     }
 
     private renderHUD() {
@@ -86,37 +106,36 @@ export default class Game {
         context.fillText(text, x, y)
     }
 
-    MenuScreen(main) {
+    menuScreen(main: any) {
         main.state = 'menuScreen';
-        main.controlHandler.mouseLeft = false;
-        main.context.clearRect(0, 0, main.canvas.width, main.canvas.height);
+        main.control.mouseLeft = false;
+        main.ctx.clearRect(0, 0, main.canvas.width, main.canvas.height);
         var hW = main.canvas.width * 0.5;
         var hH = main.canvas.height * 0.5;
-        var dark = 'rgba(0,0,0,0.9)';
-        var medium = 'rgba(0,0,0,0.5)';
-        var light = 'rgba(0,0,0,0.3)';
-        this.textONCanvas(main.context, 'Platformer 2', 9, 18, 'normal 21px/1 ' + main.fontFamily, light, 'left');
-        this.textONCanvas(main.context, 'Click to Start', hW, hH - 70, 'normal 17px/1 ' + main.fontFamily, dark);
-        this.textONCanvas(main.context, 'Use "A" and "D" to move and "Space" to jump.', hW, hH - 30, 'normal 15px/1 ' + main.fontFamily, medium);
-        this.textONCanvas(main.context, 'Use mouse wheel to change action and left click to perform action.', hW, hH - 10, 'normal 15px/1 ' + main.fontFamily, medium);
-        this.textONCanvas(main.context, 'You can build and destroy terrain.', hW, hH + 10, 'normal 15px/1 ' + main.fontFamily, medium);
-        this.textONCanvas(main.context, 'Enemies come out at night.', hW, hH + 30, 'normal 15px/1 ' + main.fontFamily, medium);
-        this.textONCanvas(main.context, 'www.H3XED.com', 9, main.canvas.height - 14, 'normal 13px/1 ' + main.fontFamily, light, 'left')
+        var dark = 'rgba(0,0,0)';
+        var medium = 'rgba(0,0,0)';
+        var light = 'rgba(0,0,0)';
+        this.textONCanvas(main.ctx, 'TEST 2D Shooter', hW, hH - 100, 'normal 32px/1 ' + main.fontFamily, light, );
+        this.textONCanvas(main.ctx, 'Use "A" and "D" to move and mouse to target and fire enemies.', hW, hH - 30, 'normal 15px/1 ' + main.fontFamily, medium);
+        this.textONCanvas(main.ctx, 'Use mouse wheel to change weapons.', hW, hH - 10, 'normal 15px/1 ' + main.fontFamily, medium);
+        this.textONCanvas(main.ctx, 'Click to Start', hW, hH + 50, 'normal 17px/1 ' + main.fontFamily, dark);
+
+        this.textONCanvas(main.ctx, 'L.Corbella © 2018', 9, main.canvas.height - 14, 'normal 13px/1 ' + main.fontFamily, light, 'left')
     }
 
-    gameOverScreen(main) {
+    gameOverScreen(main: any) {
         main.state = 'gameOverScreen';
-        main.controlHandler.mouseLeft = false;
-        main.context.clearRect(0, 0, main.canvas.width, main.canvas.height);
+        main.control.mouseLeft = false;
+        main.ctx.clearRect(0, 0, main.canvas.width, main.canvas.height);
         var hW = main.canvas.width * 0.5;
         var hH = main.canvas.height * 0.5;
         var dark = 'rgba(0,0,0,0.9)';
         var medium = 'rgba(0,0,0,0.5)';
         var light = 'rgba(0,0,0,0.3)';
-        this.textONCanvas(main.context, 'Platformer 2', 9, 18, 'normal 21px/1 ' + main.fontFamily, light, 'left');
-        this.textONCanvas(main.context, 'Game Over!', hW, hH - 70, 'normal 22px/1 ' + main.fontFamily, dark);
-        this.textONCanvas(main.context, 'Kills:' + main.playerHandler.kills, hW, hH - 30, 'normal 16px/1 ' + main.fontFamily, medium);
-        this.textONCanvas(main.context, 'Click to Restart', hW, hH + 10, 'normal 17px/1 ' + main.fontFamily, dark);
-        this.textONCanvas(main.context, 'www.H3XED.com', 9, main.canvas.height - 14, 'normal 13px/1 ' + main.fontFamily, light, 'left')
+        this.textONCanvas(main.ctx, '2D Shooter', 9, 18, 'normal 21px/1 ' + main.fontFamily, light, 'left');
+        this.textONCanvas(main.ctx, 'Game Over!', hW, hH - 70, 'normal 22px/1 ' + main.fontFamily, dark);
+        this.textONCanvas(main.ctx, 'Kills:' + main.player.kills, hW, hH - 30, 'normal 16px/1 ' + main.fontFamily, medium);
+        this.textONCanvas(main.ctx, 'Click to Restart', hW, hH + 10, 'normal 17px/1 ' + main.fontFamily, dark);
+        this.textONCanvas(main.ctx, 'L.Corbella © 2018', 9, main.canvas.height - 14, 'normal 13px/1 ' + main.fontFamily, light, 'left')
     }
 }

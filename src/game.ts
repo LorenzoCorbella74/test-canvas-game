@@ -4,6 +4,8 @@ import { conf as c } from './config';
 import { Camera } from './camera';
 import { Map } from './maps';
 
+import {PlayerShotHandler} from './playerBullets';
+
 window.onload = function () {
     let app = new Game();
     app.loadMenuScreen(app);
@@ -11,27 +13,30 @@ window.onload = function () {
 
 export default class Game {
 
-    canvas:     HTMLCanvasElement;
-    ctx:        CanvasRenderingContext2D;
-    width:      number = c.CANVAS_WIDTH; // window.innerWidth;
-    height:     number = c.CANVAS_HEIGHT; // window.innerHeight;
-    player:     Player;
-    camera:     Camera;
-    control:    ControlHandler;
-    currentMap: Map;
-    state:      string;
-    fontFamily: string = c.FONT_FAMILY;;
+    canvas:            HTMLCanvasElement;
+    ctx:               CanvasRenderingContext2D;
+    width:             number = c.CANVAS_WIDTH; // window.innerWidth;
+    height:            number = c.CANVAS_HEIGHT; // window.innerHeight;
+    player:            Player;
+    playerShotHandler: PlayerShotHandler;
+    camera:            Camera;
+    control:           ControlHandler;
+    currentMap:        Map;
+    state:             string;
+    fontFamily:        string = c.FONT_FAMILY;;
 
     constructor() {
-        this.canvas        = <HTMLCanvasElement>document.getElementById('canvas');
-        this.canvas.width  = this.width;
-        this.canvas.height = this.height;
-        this.ctx           = this.canvas.getContext("2d");
-        this.player        = new Player(this);
-        this.camera        = new Camera(0, 0, 800, 600, this);
-        this.control       = new ControlHandler(this);
-        this.currentMap    = new Map(this);
-        this.state         = 'loading';
+        this.canvas            = <HTMLCanvasElement>document.getElementById('canvas');
+        this.canvas.width      = this.width;
+        this.canvas.height     = this.height;
+        this.ctx               = this.canvas.getContext("2d");
+        this.player            = new Player(this);
+        this.playerShotHandler = new PlayerShotHandler(this);
+        this.player.setShotHandler(this.playerShotHandler);
+        this.camera            = new Camera(0, 0, 800, 600, this);
+        this.control           = new ControlHandler(this);
+        this.currentMap        = new Map(this);
+        this.state             = 'loading';
         // si lega gli handler dei controlli al player
         this.player.setControlHandler(this.control);
         this.player.isFollowedBY(this.camera, this.currentMap);
@@ -43,6 +48,7 @@ export default class Game {
     // fa partire il gameloop
     startGame() {
         this.state = 'game';
+        this.canvas.style.cursor='crosshair';
         this.gameLoop();
     }
 
@@ -65,7 +71,7 @@ export default class Game {
         this.player.update();
         this.camera.update();
         // enemies
-        // bullets
+        this.playerShotHandler.update(); // bullets del player
         // particles:sangue
         // particles:detriti
         // particles:esplosioni
@@ -77,7 +83,7 @@ export default class Game {
         this.currentMap.render();
         this.player.render();
         // enemies
-        // bullets
+        this.playerShotHandler.render(); // player bullets
         // particles:sangue
         // particles:detriti
         // particles:esplosioni
@@ -110,6 +116,7 @@ export default class Game {
     }
 
     loadMenuScreen(main: any) {
+        main.canvas.style.cursor='pointer';
         main.state = 'menuScreen';
         main.control.mouseLeft = false;
         main.ctx.clearRect(0, 0, main.canvas.width, main.canvas.height);
@@ -119,7 +126,7 @@ export default class Game {
         var medium = 'rgba(0,0,0)';
         var light = 'rgba(0,0,0)';
         this.textONCanvas(main.ctx, 'TEST 2D Shooter', hW, hH - 100, 'normal 32px/1 ' + main.fontFamily, light, );
-        this.textONCanvas(main.ctx, 'Use "A" and "D" to move and mouse to target and fire enemies.', hW, hH - 30, 'normal 15px/1 ' + main.fontFamily, medium);
+        this.textONCanvas(main.ctx, 'Use "WASD" to move and "Left Click" to shoot.', hW, hH - 30, 'normal 15px/1 ' + main.fontFamily, medium);
         this.textONCanvas(main.ctx, 'Use mouse wheel to change weapons.', hW, hH - 10, 'normal 15px/1 ' + main.fontFamily, medium);
         this.textONCanvas(main.ctx, 'Click to Start', hW, hH + 50, 'normal 17px/1 ' + main.fontFamily, dark);
 
@@ -127,6 +134,7 @@ export default class Game {
     }
 
     loadGameOverScreen(main: any) {
+        main.canvas.style.cursor='pointer';
         main.state = 'gameOverScreen';
         main.control.mouseLeft = false;
         main.ctx.clearRect(0, 0, main.canvas.width, main.canvas.height);

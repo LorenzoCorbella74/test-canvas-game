@@ -43,8 +43,13 @@ export const map = [
 ];
 
 export const types = [
-    { id: 0, colour: '#ddd5d5', solid: 0 },              // grigio scuro
-    { id: 1, colour: '#868679', solid: 1 }               // grigio chiaro
+    { id: 0, colour: '#ddd5d5', solid: 0 },                                 // tile navigabile
+    { id: 1, colour: '#868679', solid: 1 } ,                                // tile solida
+    { id: 2, colour: '#ddd5d5', solid: 0 , ifPlayer:'todo'} ,               // spawn points
+    { id: 3, colour: '#ddd5d5', solid: 0, desc:'lava', damage:1} ,          // lava
+    { id: 4, colour: '#ddd5d5', solid: 0,  desc:'toxic water',damage:1} ,   // toxic water
+    { id: 5, colour: '#ddd5d5', solid: 0,  desc:'portals',destination:'todo'},                  // portals
+    { id: 6, colour: '#ddd5d5', solid: 0,  desc:'jumper',destination:'todo', force:'todo'}     // piattaforme di jump
 ];
 
 export class Map {
@@ -83,6 +88,7 @@ export class Map {
                         if (map[j][l] == key.id) {
                             this.currentVisibleMap[j][l] = key;
                         }
+                        // si renderizza relativamente alla camera
                         this.drawBorder(l * this.tileSize - this.camera.x, j * this.tileSize - this.camera.y, this.tileSize, this.tileSize)
                         this.c.fillStyle = this.currentVisibleMap[j][l].colour;
                         this.c.fillRect(l * this.tileSize - this.camera.x, j * this.tileSize - this.camera.y, this.tileSize, this.tileSize);

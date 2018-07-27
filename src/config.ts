@@ -17,6 +17,13 @@ export const conf ={
     HUD_BACKGROUND:"rgba(102, 136, 204, 0.5)"
 }
 
+
+/*
+
+Poteva essere usato anche una classe con proprietà statiche:
+https://medium.com/@haidermalik504/classes-in-typescript-ec5e75196201
+*/
+
 /*
 
     For colors: http://gka.github.io/chroma.js/#cubehelix-hue

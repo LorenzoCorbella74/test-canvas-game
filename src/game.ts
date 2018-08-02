@@ -1,10 +1,15 @@
+import { Enemy } from './enemies';
+import { PowerUp } from './powerup';
 import { ControlHandler } from './controller';
 import { Player } from './player';
 import { conf as c } from './config';
 import { Camera } from './camera';
 import { Map } from './maps';
+import {Helper} from'./helper';
 
-import {PlayerShotHandler} from './playerBullets';
+import {BulletHandler} from './bullet';
+import { Detriti } from './detriti';
+import { Blood } from './blood';
 
 window.onload = function () {
     let app = new Game();
@@ -13,33 +18,59 @@ window.onload = function () {
 
 export default class Game {
 
+    // CANVAS
     canvas:            HTMLCanvasElement;
     ctx:               CanvasRenderingContext2D;
     width:             number = c.CANVAS_WIDTH; // window.innerWidth;
     height:            number = c.CANVAS_HEIGHT; // window.innerHeight;
+
+    // GAME ENTITIES
     player:            Player;
-    playerShotHandler: PlayerShotHandler;
+    enemy:             Enemy;
+    bullet:            BulletHandler;
     camera:            Camera;
     control:           ControlHandler;
+    powerup:           PowerUp;
+    detriti:           Detriti;
+    blood:             Blood;
     currentMap:        Map;
     state:             string;
+
+    // GAME PARAMETERS
+    killsToWin:    number = c.GAME_KILLS_TO_WIN;
+    matchDuration: number = c.GAME_MATCH_DURATION;
+    numberOfBots:  number = c.GAME_BOTS_PER_MATCH;
+    randomSpawnPoints:any;
+
+    // UI
     fontFamily:        string = c.FONT_FAMILY;;
 
     constructor() {
-        this.canvas            = <HTMLCanvasElement>document.getElementById('canvas');
-        this.canvas.width      = this.width;
-        this.canvas.height     = this.height;
-        this.ctx               = this.canvas.getContext("2d");
-        this.player            = new Player(this);
-        this.playerShotHandler = new PlayerShotHandler(this);
-        this.player.setShotHandler(this.playerShotHandler);
-        this.camera            = new Camera(0, 0, 800, 600, this);
-        this.control           = new ControlHandler(this);
-        this.currentMap        = new Map(this);
-        this.state             = 'loading';
+        this.canvas        = <HTMLCanvasElement>document.getElementById('canvas');
+        this.canvas.width  = this.width;
+        this.canvas.height = this.height;
+        this.ctx           = this.canvas.getContext("2d");
+        
+        this.player        = new Player(this);  // PLAYER
+        this.enemy         = new Enemy(this);    // ENEMY
+        this.bullet        = new BulletHandler(this);
+        this.player.setShotHandler(this.bullet);
+        this.enemy.setShotHandler(this.bullet);
+
+        this.camera        = new Camera(0, 0, c.CANVAS_WIDTH, c.CANVAS_HEIGHT, this);
+        this.control       = new ControlHandler(this);
+        this.powerup       = new PowerUp(this);
+        this.currentMap    = new Map(this);
+        this.detriti       = new Detriti(this);
+        this.blood         = new Blood(this);
+        this.state         = 'loading';
         // si lega gli handler dei controlli al player
         this.player.setControlHandler(this.control);
         this.player.isFollowedBY(this.camera, this.currentMap);
+        this.enemy.isFollowedBY(this.camera, this.currentMap);
+        
+        this.bullet.useIstance(this.currentMap, this.blood);
+        
         // Camera is set to the player and on the default map
         this.camera.setCurrentMap(this.currentMap);
         this.camera.setCurrentPlayer(this.player);
@@ -49,6 +80,16 @@ export default class Game {
     startGame() {
         this.state = 'game';
         this.canvas.style.cursor='crosshair';
+        
+        let botsArray = Array(this.numberOfBots).fill(null).map((e,i)=> i);
+        this.randomSpawnPoints = this.currentMap.loadSpawnPointsAndPowerUps();
+         botsArray.forEach((elem:any, index:number) => {
+             let e = this.randomSpawnPoints.spawn[index];
+             this.enemy.create(e.x,e.y); // si crea un nemico
+         });
+
+        // this.enemy.create(75,50); // si crea un nemico
+
         this.gameLoop();
     }
 
@@ -56,11 +97,21 @@ export default class Game {
         if (this.state != 'game') {
             return
         }
-        if (this.player.hp <= 0) {
+        if (this.player.kills == this.killsToWin) {
             this.state = 'gameOverScreen';
-            this.loadGameOverScreen(this);
+            this.loadStatsScreen(this);
             return
         }
+
+        // se il numero dei nemici vivi è minore del numero dei bots
+       /*  if (this.enemy.list.length < this.numberOfBots) {
+            setTimeout(() => {
+                // take a random spawn points
+                let r = Helper.randomElementInArray(this.randomSpawnPoints.spawn)
+                this.enemy.create(r.x, r.y); // si crea un nemico
+            }, 3000);
+        } */
+
         // need to bind the current this reference to the callback
         requestAnimationFrame(this.gameLoop.bind(this));
         this.updateAll();
@@ -70,22 +121,23 @@ export default class Game {
     updateAll() {
         this.player.update();
         this.camera.update();
-        // enemies
-        this.playerShotHandler.update(); // bullets del player
-        // particles:sangue
-        // particles:detriti
+        this.enemy.update();
+        this.bullet.update(); // bullets del player
+        this.powerup.update();
+        this.detriti.update();
+        this.blood.update();
         // particles:esplosioni
     }
 
     renderAll(): void {
-        // svuota il canvas
-        this.ctx.clearRect(0, 0, this.width, this.height);
+        this.ctx.clearRect(0, 0, this.width, this.height);  // svuota il canvas
         this.currentMap.render();
         this.player.render();
-        // enemies
-        this.playerShotHandler.render(); // player bullets
-        // particles:sangue
-        // particles:detriti
+        this.enemy.render();
+        this.bullet.render(); // player bullets
+        this.powerup.render();
+        this.detriti.render();
+        this.blood.render();
         // particles:esplosioni
 
         this.renderHUD();   // HUD
@@ -133,7 +185,7 @@ export default class Game {
         this.textONCanvas(main.ctx, 'L.Corbella © 2018', 9, main.canvas.height - 14, 'normal 13px/1 ' + main.fontFamily, light, 'left')
     }
 
-    loadGameOverScreen(main: any) {
+    loadStatsScreen(main: any) {
         main.canvas.style.cursor='pointer';
         main.state = 'gameOverScreen';
         main.control.mouseLeft = false;
@@ -144,7 +196,7 @@ export default class Game {
         var medium = 'rgba(0,0,0)';
         var light = 'rgba(0,0,0)';
         this.textONCanvas(main.ctx, '2D Shooter', 9, 18, 'normal 21px/1 ' + main.fontFamily, light, 'left');
-        this.textONCanvas(main.ctx, 'Game Over!', hW, hH - 70, 'normal 22px/1 ' + main.fontFamily, dark);
+        this.textONCanvas(main.ctx, 'Partita completata!', hW, hH - 70, 'normal 22px/1 ' + main.fontFamily, dark);
         this.textONCanvas(main.ctx, 'Kills:' + main.player.kills, hW, hH - 30, 'normal 16px/1 ' + main.fontFamily, medium);
         this.textONCanvas(main.ctx, 'Click to Restart', hW, hH + 10, 'normal 17px/1 ' + main.fontFamily, dark);
         this.textONCanvas(main.ctx, 'L.Corbella © 2018', 9, main.canvas.height - 14, 'normal 13px/1 ' + main.fontFamily, light, 'left')

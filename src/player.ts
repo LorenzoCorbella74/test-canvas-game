@@ -7,54 +7,53 @@ export class Player {
 	y: number;
 	r: number
 	speed: number;
-	angle: number;
+	angle: number;		
 
-	hp: number;
-	ap: number;
-	kills: number
-
+	hp: number;			// punti forza
+	ap: number;			// punti armatura
+	kills: number;		// nemici uccisi
+	score: number = 0;	// numero di uccisioni
+	numberOfDeaths: number;		// numero di volte in vui è stato ucciso
 	currentWeapon: string;
-	shotSpeed: number = 10;
-	reload: number;
-	reloadRate: number;
-	tick: boolean;
+	attackCounter: number = 0;
 
 	canvas:  any;
 	ctx:     any;
 	camera:  any;
 	map:     any
 	control: any;
-	playerShotHandler: any;
+	bullet:  any;
 
 
 	constructor(main: any) {
-		this.x = 400;
-		this.y = 300;
-		this.r = c.PLAYER_RADIUS
+		this.canvas = main.canvas;
+		this.ctx    = main.ctx;
+		this.camera = main.camera;
+		this.map    = main.map;
+
+		this.loadDefault();
+
+	}
+
+	loadDefault(){
+		this.x     = 400;
+		this.y     = 300;
+		this.r     = c.PLAYER_RADIUS
 		this.speed = c.PLAYER_SPEED;	// è uguale in tutte le direzioni
 		this.angle = 0;					// angolo tra asse x e puntatore del mouse
-
-		this.hp = 100;					// punti vita
-		this.ap = 10;					// punti armatura
+		this.hp    = c.PLAYER_HP;		// punti vita
+		this.ap    = c.PLAYER_AP;		// punti armatura
 		this.kills = 0;					// uccisioni
-
-		this.currentWeapon = 'None';		// arma corrente
-		this.reload = 0;
-		this.reloadRate = 12;
-		this.tick = false
-
-		this.canvas = main.canvas;
-		this.ctx = main.ctx;
-		this.camera = main.camera;
-		this.map = main.map;
+		this.numberOfDeaths = 0;	    // numero di volte in cui è stato ucciso
+		this.currentWeapon = c.PLAYER_STARTING_WEAPON;		// arma corrente
 	}
 
 	setControlHandler(control: any) {
 		this.control = control;
 	}
 
-	setShotHandler(handler:any){
-		this.playerShotHandler = handler;
+	setShotHandler(handler: any) {
+		this.bullet = handler;
 	}
 
 	isFollowedBY(camera: any, map: any) {
@@ -70,29 +69,28 @@ export class Player {
 		}
 	};
 
-
 	render() {
-		// draw the colored region
-		this.ctx.beginPath();
-		this.ctx.arc(this.x - this.camera.x, this.y - this.camera.y, this.r, 0, 2 * Math.PI, true);
-		this.ctx.fillStyle = c.PLAYER_COLOUR_INSIDE;
-		this.ctx.fill();
+			// draw the colored region
+			this.ctx.beginPath();
+			this.ctx.arc(this.x - this.camera.x, this.y - this.camera.y, this.r, 0, 2 * Math.PI, true);
+			this.ctx.fillStyle = c.PLAYER_COLOUR_INSIDE;
+			this.ctx.fill();
 
-		// draw the stroke
-		this.ctx.lineWidth = 2;
-		this.ctx.strokeStyle = c.PLAYER_COLOUR_OUTSIDE;
-		this.ctx.stroke();
+			// draw the stroke
+			this.ctx.lineWidth = 2;
+			this.ctx.strokeStyle = c.PLAYER_COLOUR_OUTSIDE;
+			this.ctx.stroke();
 
-		// beccuccio arma
-		this.ctx.strokeStyle = c.PLAYER_COLOUR_OUTSIDE;
-		this.ctx.beginPath();
-		this.ctx.moveTo(this.x - this.camera.x, this.y - this.camera.y);
-		var pointerLength = 25;
-		this.ctx.lineTo(
-			this.x - this.camera.x + pointerLength * Math.cos(this.angle),
-			this.y - this.camera.y + pointerLength * Math.sin(this.angle)
-		);
-		this.ctx.stroke();
+			// beccuccio arma
+			this.ctx.strokeStyle = c.PLAYER_COLOUR_OUTSIDE;
+			this.ctx.beginPath();
+			this.ctx.moveTo(this.x - this.camera.x, this.y - this.camera.y);
+			var pointerLength = 25;
+			this.ctx.lineTo(
+				this.x - this.camera.x + pointerLength * Math.cos(this.angle),
+				this.y - this.camera.y + pointerLength * Math.sin(this.angle)
+			);
+			this.ctx.stroke();
 	}
 
 	// collisione tra elementi della stessa imensione (tile e player)
@@ -109,6 +107,9 @@ export class Player {
 	}
 
 	update() {
+
+		this.attackCounter += 1;
+
 		if (this.control.w) { // W 
 			if (this.checkmove(this.x - this.r, this.y - this.r - this.speed)) {
 				this.y -= this.speed;
@@ -142,15 +143,16 @@ export class Player {
 			}
 		}
 		if (this.control.mouseLeft) {	// SE è PREMUTO IL btn del mouse
-			let vX = (this.control.mouseX -this.x) - this.camera.x;
-			let vY = (this.control.mouseY -this.y) + this.camera.y;
-			let dist = Math.sqrt(vX * vX + vY * vY);
-			vX /= dist;
+			let vX = (this.control.mouseX - (this.x - this.camera.x));
+			let vY = (this.control.mouseY - (this.y - this.camera.y));
+			let dist = Math.sqrt(vX * vX + vY * vY);	// si calcola la distanza
+			vX /= dist;									// si normalizza
 			vY /= dist;
-			let random= this.shotSpeed + Math.random() * 0.6 - 0.3;
-			this.playerShotHandler.create(this.x, this.y, vX * random, vY * random);
-			console.log(random);
-			this.reload = this.reloadRate
+			if (this.attackCounter > 4) {									// 4 è la frequenza di sparo
+				this.bullet.create(this.x, this.y, vX * 8, vY * 8, 'player');  // 8 è la velocità del proiettile
+				this.attackCounter = 0;
+			}
+
 		}
 		return false;
 	}

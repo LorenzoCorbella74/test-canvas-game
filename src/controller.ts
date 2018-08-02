@@ -83,6 +83,8 @@ export class ControlHandler {
     mouseUpEvent(e:any) {
         if (this.mouseLeft) {
             if (this.main.state == 'menuScreen' || this.main.state == 'gameOverScreen') {
+                this.player.loadDefault();
+                this.main.enemy.killAllEnemies();
                 this.main.startGame()
             }
         }
@@ -93,25 +95,26 @@ export class ControlHandler {
         }
     }
 
-    mouseMoveEvent(e) {
+    mouseMoveEvent(e:any) {
         var rect = this.canvas.getBoundingClientRect();
-        this.mouseX = e.clientX - rect.left;
-        this.mouseY = e.clientY - rect.top
-        this.player.angle = Helper.calculateAngle(this.player.x- this.camera.x, this.player.y - this.camera.y, this.mouseX - this.camera.x, this.mouseY- this.camera.y); // FIXME: devono essere relative alla camera?
+        this.mouseX = e.clientX - rect.left;    // tra 0 e 800
+        this.mouseY = e.clientY - rect.top;     // tra 0 e 600
+        // angolo tra il player e il mirino
+        this.player.angle = Helper.calculateAngle(this.player.x - this.camera.x, this.player.y -this.camera.y, this.mouseX, this.mouseY);
     }
 
-    mouseWheelEvent(e) {
-        // if (this.main.state == 'game') {
+    mouseWheelEvent(e:any) {
+         if (this.main.state == 'game') {
             this.player.wheel(e.wheelDelta ? e.wheelDelta : -e.detail);
-           /*  return true;
-        } */
-        /* if (this.mouseX > 0 && this.mouseX < this.canvas.width && this.mouseY > 0 && this.mouseY < this.canvas.height) {
+            return true;
+        }
+        if (this.mouseX > 0 && this.mouseX < this.canvas.width && this.mouseY > 0 && this.mouseY < this.canvas.height) {
             e.preventDefault();
             return false
-        } */
+        }
     }
     
-    contextMenuEvent(e) {
+    contextMenuEvent(e:any) {
         e.preventDefault()
     }
 

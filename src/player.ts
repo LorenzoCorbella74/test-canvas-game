@@ -8,7 +8,7 @@ export class Player {
 	r: number
 	speed: number;
 	angle: number;		
-
+	name: string;
 	hp: number;			// punti forza
 	ap: number;			// punti armatura
 	kills: number;		// nemici uccisi
@@ -36,6 +36,7 @@ export class Player {
 	}
 
 	loadDefault(){
+		this.name = "LORE";
 		this.x     = 400;
 		this.y     = 300;
 		this.r     = c.PLAYER_RADIUS

@@ -28,6 +28,7 @@ export class Enemy {
     create( x: number, y: number) {
         // TODO in funzione del numero di spawn point e del numero di giocatori
         let enemy:any = new Object();
+        enemy.name  = "BOT";
         enemy.x     = x || 75;
         enemy.y     = y || 50;
         enemy.r     = c.ENEMY_RADIUS;

@@ -66,7 +66,7 @@ export class BulletHandler {
             }
 
             // si guarda se i proiettili di qualche nemico impattano il player
-            if (shot.firedBy=='enemy' && this.Helper.circleCollision(shot, this.player)) {
+            if (shot.firedBy=='enemy' && Helper.circleCollision(shot, this.player)) {
                 this.player.hp -= shot.damage;
                 this.player.vX = shot.vX * 0.03;
                 this.player.vY = shot.vY * 0.03;
@@ -82,7 +82,7 @@ export class BulletHandler {
             // si guarda se i proiettili del player impattano qualche nemico
             for (let i = this.enemy.list.length - 1; i >= 0; i--) {
                 const obj = this.enemy.list[i];
-                if (shot.firedBy == 'player'&& this.Helper.circleCollision(shot, obj)) {
+                if (shot.firedBy == 'player'&& Helper.circleCollision(shot, obj)) {
                     obj.hp -= shot.damage;
                     obj.vX = shot.vX * 0.03;
                     obj.vY = shot.vY * 0.03;

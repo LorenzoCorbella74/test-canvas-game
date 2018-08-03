@@ -35,10 +35,12 @@ export const conf ={
     BULLET_DAMAGE: 5,
     
     // DETRITI
-    DEBRIS_COLOR: '#727267',
+    DEBRIS_COLOR: ['#800000','#812314','#823624','#814734','#7e5544','#796556','#727267'], // from maroon to #727267
+    DEBRIS_RADIUS: 3,
 
     // SANGUE
-    BLOOD_COLOUR: '#bb0b00',
+    BLOOD_COLOUR: ['#ff0000','#eb0001','#d60002','#c40002','#b10002','#9d0002','#8b0000'], // from red to darkred
+    BLOOD_RADIUS: 4,
 
     // POWERUP
     POWERUP_RADIUS: 6,

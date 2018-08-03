@@ -1,4 +1,5 @@
 import { conf as c } from './config';
+import {Helper} from'./helper';
 
 export class Blood {
     list:any[];
@@ -56,7 +57,7 @@ export class Blood {
             let y = sangue.y - this.main.camera.y;
             this.main.ctx.beginPath();
                     this.main.ctx.arc(x, y, sangue.radius, 0, 6.2832);
-                    this.main.ctx.fillStyle = c.BLOOD_COLOUR;
+                    this.main.ctx.fillStyle = Helper.randomElementInArray(c.BLOOD_COLOUR) ;
                     this.main.ctx.fill();
                     this.main.ctx.closePath()
         }

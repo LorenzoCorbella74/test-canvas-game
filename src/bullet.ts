@@ -15,7 +15,7 @@ export class BulletHandler {
     player:  any;
     enemy:   any;
     map:     any;
-    detriti: any;
+    particelle: any;
     blood:   any;
 
 
@@ -24,7 +24,7 @@ export class BulletHandler {
         this.main        = main;
         this.player      = main.player;
         this.enemy       = main.enemy;
-        this.detriti     = this.main.detriti;
+        this.particelle     = this.main.particelle;
     }
 
     useIstance(map: any, blood: any) {
@@ -59,7 +59,7 @@ export class BulletHandler {
                 !this.checkmove(shot.x + this.r, shot.y - this.r) ||
                 !this.checkmove(shot.x - this.r, shot.y + this.r) /* || 
             !this.checkmove(shot.x + shot.r, shot.y + shot.r) */) {
-                this.main.detriti.create(shot.x, shot.y, Math.random() * 2 - 2, Math.random() * 2 - 2, 3)
+                this.main.particelle.create(shot.x, shot.y, Math.random() * 2 - 2, Math.random() * 2 - 2, c.DEBRIS_RADIUS)
                 this.pool.push(shot);
                 this.list.splice(i, 1);
                 continue
@@ -71,7 +71,7 @@ export class BulletHandler {
                 this.player.vX = shot.vX * 0.03;
                 this.player.vY = shot.vY * 0.03;
                 shot.hp = -99;
-                this.blood.create(shot.x, shot.y,  Math.random() * 2 - 2, Math.random() * 2 - 2, 4) // crea il sangue
+                this.blood.create(shot.x, shot.y,  Math.random() * 2 - 2, Math.random() * 2 - 2, c.BLOOD_RADIUS) // crea il sangue
                 if(this.player.hp<=0){
                     this.player.numberOfDeaths++;
                     this.player.loadDefault();
@@ -87,7 +87,7 @@ export class BulletHandler {
                     obj.vX = shot.vX * 0.03;
                     obj.vY = shot.vY * 0.03;
                     shot.hp = -99;
-                    this.blood.create(shot.x, shot.y, Math.random() * 2 - 2, Math.random() * 2 - 2, 4) // crea il sangue
+                    this.blood.create(shot.x, shot.y, Math.random() * 2 - 2, Math.random() * 2 - 2, c.BLOOD_RADIUS) // crea il sangue
                     if (obj.hp <= 0) {
                         this.player.kills++;
                         obj.numberOfDeaths++;

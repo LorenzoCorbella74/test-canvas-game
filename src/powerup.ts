@@ -20,7 +20,7 @@ export class PowerUp {
 
     player:  any;
     bots:    any;
-    detriti: any;
+    particelle: any;
     ctx:     any;
     main:    any;
 
@@ -29,7 +29,7 @@ export class PowerUp {
         this.player  = main.player;
         this.bots    = main.enemy;
         this.ctx     = main.ctx;
-        this.detriti = main.detriti;
+        this.particelle = main.particelle;
     }
 
     update() {
@@ -44,7 +44,7 @@ export class PowerUp {
             if (powerup.visible && Helper.circleCollision(powerup, this.player)) {
                     this.player.hp += 5;
                     for (var j = 0; j < 10; j++) {
-                        this.detriti.create(powerup.x, powerup.y, Math.random() * 2 - 1, Math.random() * 2 - 1, 2 , powerup.color)
+                        this.particelle.create(powerup.x, powerup.y, Math.random() * 2 - 1, Math.random() * 2 - 1, 2 , powerup.color)
                     }
                     powerup.visible = false;
             }
@@ -55,8 +55,8 @@ export class PowerUp {
                 const bot = this.bots.list[i];
                 if (powerup.visible && Helper.circleCollision(powerup, bot)) {
                         bot.hp += 5;
-                        for (var j = 0; j < 9; j++) {
-                            this.detriti.create(powerup.x, powerup.y, Math.random() * 2 - 1, Math.random() * 2 - 1, 2, powerup.color)
+                        for (var j = 0; j < 12; j++) {
+                            this.particelle.create(powerup.x, powerup.y, Math.random() * 2 - 5, Math.random() * 2 - 5, 5, powerup.color)
                         }
                         powerup.visible = false;
                 }

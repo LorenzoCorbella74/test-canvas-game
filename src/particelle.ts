@@ -1,6 +1,7 @@
 import { conf as c } from './config';
+import {Helper} from'./helper';
 
-export class Detriti {
+export class Particelle {
     list:any[];
     pool:any[];
     main:any;
@@ -38,16 +39,16 @@ export class Detriti {
      * @param {*} vX    veocità x
      * @param {*} vY    velocità y
      * @param {*} r raggio del detrito (default =3)
-     * @memberof Detriti
+     * @memberof Particelle
      */
-    create (x:number, y:number, vX:number, vY:number, r: any=3, color:string) {
+    create (x:number, y:number, vX:number, vY:number, r: any=3, color?:string) {
         var obj = this.pool.length > 0 ? this.pool.pop() : new Object();
         obj.x  = x;
         obj.y  = y;
         obj.vX = vX;
         obj.vY = vY;
         obj.r  = r;
-        obj.color = color || c.DEBRIS_COLOR;
+        obj.color = color;
         this.list.push(obj)
     };
 
@@ -58,7 +59,7 @@ export class Detriti {
             let y = detrito.y - this.main.camera.y;
             this.main.ctx.beginPath();
                     this.main.ctx.arc(x, y, detrito.r, 0, 6.2832);
-                    this.main.ctx.fillStyle = detrito.color;
+                    this.main.ctx.fillStyle =  detrito.color || Helper.randomElementInArray(c.DEBRIS_COLOR);
                     this.main.ctx.fill();
                     this.main.ctx.closePath()
         }

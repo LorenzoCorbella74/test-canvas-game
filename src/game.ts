@@ -8,7 +8,7 @@ import { Map } from './maps';
 import {Helper} from'./helper';
 
 import {BulletHandler} from './bullet';
-import { Detriti } from './detriti';
+import { Particelle } from './particelle';
 import { Blood } from './blood';
 
 window.onload = function () {
@@ -31,7 +31,7 @@ export default class Game {
     camera:            Camera;
     control:           ControlHandler;
     powerup:           PowerUp;
-    detriti:           Detriti;
+    particelle:           Particelle;
     blood:             Blood;
     currentMap:        Map;
     state:             string;
@@ -60,7 +60,7 @@ export default class Game {
         this.camera        = new Camera(0, 0, c.CANVAS_WIDTH, c.CANVAS_HEIGHT, this);
         this.control       = new ControlHandler(this);
         this.currentMap    = new Map(this);
-        this.detriti       = new Detriti(this);
+        this.particelle       = new Particelle(this);
         this.powerup       = new PowerUp(this);
         this.blood         = new Blood(this);
         this.state         = 'loading';
@@ -130,7 +130,7 @@ export default class Game {
         this.enemy.update();
         this.bullet.update(); // bullets del player
         this.powerup.update();
-        this.detriti.update();
+        this.particelle.update();
         this.blood.update();
         // particles:esplosioni
     }
@@ -142,7 +142,7 @@ export default class Game {
         this.enemy.render();
         this.bullet.render(); // player bullets
         this.powerup.render();
-        this.detriti.render();
+        this.particelle.render();
         this.blood.render();
         // particles:esplosioni
 

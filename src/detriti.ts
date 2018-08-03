@@ -20,8 +20,8 @@ export class Detriti {
                 obj.y += -obj.vY;
                 obj.vX *= 0.96;
                 obj.vY *= 0.96;
-                obj.radius -= 0.1;
-                if (obj.radius <= 0) {
+                obj.r -= 0.1;
+                if (obj.r <= 0) {
                     this.pool.push(obj);
                     this.list.splice(i, 1);
                     continue
@@ -37,16 +37,17 @@ export class Detriti {
      * @param {*} y coordinata y del detrito
      * @param {*} vX    veocità x
      * @param {*} vY    velocità y
-     * @param {*} radius raggio del detrito (default =3)
+     * @param {*} r raggio del detrito (default =3)
      * @memberof Detriti
      */
-    create (x:number, y:number, vX:number, vY:number, radius: any=3) {
+    create (x:number, y:number, vX:number, vY:number, r: any=3, color:string) {
         var obj = this.pool.length > 0 ? this.pool.pop() : new Object();
-        obj.x = x;
-        obj.y = y;
+        obj.x  = x;
+        obj.y  = y;
         obj.vX = vX;
         obj.vY = vY;
-        obj.radius = radius;
+        obj.r  = r;
+        obj.color = color || c.DEBRIS_COLOR;
         this.list.push(obj)
     };
 
@@ -56,8 +57,8 @@ export class Detriti {
             let x = detrito.x - this.main.camera.x;
             let y = detrito.y - this.main.camera.y;
             this.main.ctx.beginPath();
-                    this.main.ctx.arc(x, y, detrito.radius, 0, 6.2832);
-                    this.main.ctx.fillStyle = c.DEBRIS_COLOR;
+                    this.main.ctx.arc(x, y, detrito.r, 0, 6.2832);
+                    this.main.ctx.fillStyle = detrito.color;
                     this.main.ctx.fill();
                     this.main.ctx.closePath()
         }

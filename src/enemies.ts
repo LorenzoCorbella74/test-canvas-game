@@ -6,6 +6,7 @@ export class Enemy {
     canvas: any;
     ctx:    any;
     camera: any;
+    main:   any;
     player: any;
     map:    any
     bullet: any;
@@ -18,17 +19,17 @@ export class Enemy {
 
         this.list = [];
         this.pool = []
-
+        this.main = main;
         this.player = main.player;
         this.canvas = main.canvas;
         this.camera = main.camera;
         this.ctx    = main.ctx;
     }
 
-    create( x: number, y: number) {
+    create( x: number, y: number, num:number) {
         // TODO in funzione del numero di spawn point e del numero di giocatori
         let enemy:any = new Object();
-        enemy.name  = "BOT";
+        enemy.name  = `BOT${num}`;
         enemy.x     = x || 75;
         enemy.y     = y || 50;
         enemy.r     = c.ENEMY_RADIUS;
@@ -48,7 +49,6 @@ export class Enemy {
     killAllEnemies(){
         this.list.length=0;
     }
-
 
     setShotHandler(handler: any) {
         this.bullet = handler;
@@ -81,7 +81,7 @@ export class Enemy {
                 this.ctx.strokeStyle = c.ENEMY_COLOUR_OUTSIDE;
                 this.ctx.beginPath();
                 this.ctx.moveTo(obj.x - this.camera.x, obj.y - this.camera.y);
-                var pointerLength = 25;
+                var pointerLength = c.ENEMY_RADIUS;
                 this.ctx.lineTo(
                     obj.x  - this.camera.x + pointerLength * Math.cos(obj.angleWithPlayer),
                     obj.y  - this.camera.y + pointerLength * Math.sin(obj.angleWithPlayer)
@@ -104,6 +104,19 @@ export class Enemy {
         }
     }
 
+    // trova quello con la distanza minore
+    // TODO: si deve filtrare su quelli VICINI e VISIBILI non su tutti !!!!
+    getNearest(origin:any, data: any){
+        let output:any = {dist:10000}; // elemento + vicino ad origin
+        data.powerup.forEach((e:any) => {
+            let distanza = Helper.calculateDistance(origin, e);
+            if(output.dist> distanza){
+                output = {dist: distanza, elem: e};
+            }
+        });
+        return output.elem;
+    }
+
     update() {
         for (let i = this.list.length - 1; i >= 0; i--) {
             const obj = this.list[i];
@@ -112,6 +125,8 @@ export class Enemy {
             obj.angleWithPlayer = Helper.calculateAngle(obj.x- this.camera.x, obj.y- this.camera.y,this.player.x - this.camera.x, this.player.y -this.camera.y);
 
             obj.attackCounter += 1;
+
+            // TODO: const powerupVicino = this.getNearest(obj, this.main.data)
 
             // get the target x and y
             obj.strategy.targetX = this.player.x;

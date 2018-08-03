@@ -86,7 +86,7 @@ export class Player {
 			this.ctx.strokeStyle = c.PLAYER_COLOUR_OUTSIDE;
 			this.ctx.beginPath();
 			this.ctx.moveTo(this.x - this.camera.x, this.y - this.camera.y);
-			var pointerLength = 25;
+			var pointerLength = 12.5;
 			this.ctx.lineTo(
 				this.x - this.camera.x + pointerLength * Math.cos(this.angle),
 				this.y - this.camera.y + pointerLength * Math.sin(this.angle)

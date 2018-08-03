@@ -1,67 +1,100 @@
+import { Helper } from './helper';
+import { conf as c } from './config';
+
+export const tipiPowerUp = {
+    'health': { hp:5, color:'blue', r:5 },
+    'megaHealth':{ hp:100, color:'blue', r: 10},
+    'armour': { ap:5, color:'green', r:5 },
+    'megaArmour':{ ap:50, color:'green', r: 10}
+}
+
 export class PowerUp {
 
-    radius:            number = 7;
-    reloadRate:        number = 0.95;
-    hp:                number = 3;
-    list:              any[]  = [];
-    pool:              any[]  = [];
+    // caratteristiche di ogni powerup
+    // radius: number = c.POWERUP_RADIUS;
+    // reloadRate: number  = 1000;   // cicli entro cui riappaiono una volta entrati in contatto
+    // visible:    boolean = true;
 
-    player:            any;
-    playerShotHandler: any;
-    ctx:               any;
-    main:              any;
+    list: any[] = [];
+    pool: any[] = [];
 
-    constructor(main:any) {
-        this.list.length = 0;
-        this.main        = main;
-        this.player      = main.player;
-        this.ctx         = main.ctx;
-        this.playerShotHandler = main.playerShotHandler
+    player:  any;
+    bots:    any;
+    detriti: any;
+    ctx:     any;
+    main:    any;
+
+    constructor(main: any) {
+        this.main    = main;
+        this.player  = main.player;
+        this.bots    = main.enemy;
+        this.ctx     = main.ctx;
+        this.detriti = main.detriti;
     }
 
     update() {
-        var player = this.player;
-        var dist;
         for (var i = this.list.length - 1; i >= 0; i--) {
-            var pickup = this.list[i];
-            pickup.delay--;
-            if (pickup.delay <= 0) {
-                dist = Math.sqrt((player.x - pickup.x) * (player.x - pickup.x) + (player.y - pickup.y) * (player.y - pickup.y)) - player.radius - pickup.radius;
-                if (dist <= 0) {
-                    player.hp += 5;
-                    for (var j = 0; j < 9; j++) {
-                        this.playerShotHandler.create(pickup.x, pickup.y, Math.random() * 2 - 1, Math.random() * 2 - 1)
+            var powerup = this.list[i];
+
+            if (!powerup.visible) {
+                powerup.reloadRate++;  // si inizia a contare se non visibile
+            }
+
+            // si guarda se i powerup entrano in contatto con il player
+            if (powerup.visible && Helper.circleCollision(powerup, this.player)) {
+                    this.player.hp += 5;
+                    for (var j = 0; j < 10; j++) {
+                        this.detriti.create(powerup.x, powerup.y, Math.random() * 2 - 1, Math.random() * 2 - 1, 2 , powerup.color)
                     }
-                    this.pool.push(pickup);
-                    this.list.splice(i, 1)  // si rimuove
-                } else if (dist <= 40) {
-                    pickup.x += (player.x - pickup.x) * (160 - dist * 4) * 0.001;   // logica che permette al powerup di essere risucchiato dall'agent
-                    pickup.y += (player.y - pickup.y) * (160 - dist * 4) * 0.001
+                    powerup.visible = false;
+            }
+
+
+            // si guarda se i powerup entrano in contatto con qualche nemico
+            for (let i = this.bots.list.length - 1; i >= 0; i--) {
+                const bot = this.bots.list[i];
+                if (powerup.visible && Helper.circleCollision(powerup, bot)) {
+                        bot.hp += 5;
+                        for (var j = 0; j < 9; j++) {
+                            this.detriti.create(powerup.x, powerup.y, Math.random() * 2 - 1, Math.random() * 2 - 1, 2, powerup.color)
+                        }
+                        powerup.visible = false;
                 }
-                pickup.delay = (dist - 40) / player.speed //
+            }
+
+            if (powerup.reloadRate > 1000) {	// numero di cicli oltre il quale è nuovamente visibile
+                powerup.visible = true;
+                powerup.reloadRate = 0;
             }
         }
     };
 
-    render(){
-        for (var i = this.list.length - 1; i >= 0; i--) {
-            var pickup = this.list[i];
-            let x = pickup.x - this.main.camera.x;
-            let y = pickup.y - this.main.camera.y;
-            this.ctx.beginPath();
-                    this.ctx.arc(x, y, pickup.radius, 0, 6.2832);
-                    this.ctx.fill();
-                    this.ctx.closePath()
+    render() {
+        for (let i = this.list.length - 1; i >= 0; i--) {
+            let powerup = this.list[i];
+            let x = powerup.x - this.main.camera.x;
+            let y = powerup.y - this.main.camera.y;
+            if (powerup.visible) {
+                this.ctx.beginPath();
+                this.ctx.arc(x, y, powerup.r, 0, 6.2832);
+                this.ctx.fillStyle = powerup.color;
+                this.ctx.fill();
+                this.ctx.closePath()
+            }
+
         }
     }
 
-    create(x:number, y:number) {
-        var pickup = this.pool.length > 0 ? this.pool.pop() : new Object();
-        pickup.x = x;
-        pickup.y = y;
-        pickup.delay = 0;
-        pickup.radius = this.radius;
-        this.list.push(pickup)
+    create(x: number, y: number, type: string) {
+        let tipo = tipiPowerUp[type];
+        let powerup        = this.pool.length > 0 ? this.pool.pop(): new Object();
+        powerup.x          = x;
+        powerup.y          = y;
+        powerup.reloadRate = 0;
+        powerup.visible    = true;
+        powerup.r          = tipo.r;
+        powerup.color      = tipo.color;
+        this.list.push(powerup);
     };
 }
 

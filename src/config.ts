@@ -7,7 +7,7 @@ export const conf ={
     // GAME
     GAME_KILLS_TO_WIN:15,
     GAME_MATCH_DURATION: 10,
-    GAME_BOTS_PER_MATCH:4,
+    GAME_BOTS_PER_MATCH:1,
     
     // MAP
     TILE_SIZE: 25,
@@ -39,6 +39,9 @@ export const conf ={
 
     // SANGUE
     BLOOD_COLOUR: '#bb0b00',
+
+    // POWERUP
+    POWERUP_RADIUS: 6,
     
     // HUD
     FONT_FAMILY : '"Segoe UI",Arial,sans-serif',

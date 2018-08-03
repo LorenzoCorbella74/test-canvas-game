@@ -1,13 +1,20 @@
 export class Helper {
 
     static calculateAngle(cx: number, cy: number, ex: number, ey: number) {
-        var dy = ey - cy;
-        var dx = ex - cx;
-        var theta = Math.atan2(dy, dx); // range (-PI, PI]
+        let dy = ey - cy;
+        let dx = ex - cx;
+        let theta = Math.atan2(dy, dx); // range (-PI, PI]
         // theta *= 180 / Math.PI; // rads to degs, range (-180, 180]
         // if (theta < 0) theta = 360 + theta; // range [0, 360)
         // if (theta < 0) theta = Math.PI + theta; // range [0, 360)
         return theta;
+    }
+    
+    static calculateDistance(obj1: any, obj2: any) {
+        let tx = obj1.x - obj2.x,
+            ty = obj1.y - obj2.y,
+            dist = Math.sqrt(tx * tx + ty * ty);
+        return dist;
     }
 
     static randomElementInArray(items: any){

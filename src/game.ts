@@ -40,7 +40,7 @@ export default class Game {
     killsToWin:    number = c.GAME_KILLS_TO_WIN;
     matchDuration: number = c.GAME_MATCH_DURATION;
     numberOfBots:  number = c.GAME_BOTS_PER_MATCH;
-    randomSpawnPoints:any;
+    data:any;
 
     // UI
     fontFamily:        string = c.FONT_FAMILY;;
@@ -59,9 +59,9 @@ export default class Game {
 
         this.camera        = new Camera(0, 0, c.CANVAS_WIDTH, c.CANVAS_HEIGHT, this);
         this.control       = new ControlHandler(this);
-        this.powerup       = new PowerUp(this);
         this.currentMap    = new Map(this);
         this.detriti       = new Detriti(this);
+        this.powerup       = new PowerUp(this);
         this.blood         = new Blood(this);
         this.state         = 'loading';
         // si lega gli handler dei controlli al player
@@ -82,11 +82,17 @@ export default class Game {
         this.canvas.style.cursor='crosshair';
         
         let botsArray = Array(this.numberOfBots).fill(null).map((e,i)=> i);
-        this.randomSpawnPoints = this.currentMap.loadSpawnPointsAndPowerUps();
+        this.data = this.currentMap.loadSpawnPointsAndPowerUps();
+
          botsArray.forEach((elem:any, index:number) => {
-             let e = this.randomSpawnPoints.spawn[index];
-             this.enemy.create(e.x,e.y); // si crea un nemico
+             let e = this.data.spawn[index];
+             this.enemy.create(e.x,e.y, index); // si crea un nemico
          });
+
+         // POWERUP
+         this.data.powerup.forEach((e:any) => {
+            this.powerup.create(e.x, e.y, e.type); // si crea il powerup
+        });
 
         // this.enemy.create(75,50); // si crea un nemico
 

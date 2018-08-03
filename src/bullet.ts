@@ -74,7 +74,7 @@ export class BulletHandler {
                 this.blood.create(shot.x, shot.y,  Math.random() * 2 - 2, Math.random() * 2 - 2, c.BLOOD_RADIUS) // crea il sangue
                 if(this.player.hp<=0){
                     this.player.numberOfDeaths++;
-                    this.player.loadDefault();
+                    this.player.spawn();
                 }
                 continue
             }

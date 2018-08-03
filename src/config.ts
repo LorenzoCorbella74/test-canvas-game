@@ -60,6 +60,7 @@ https://medium.com/@haidermalik504/classes-in-typescript-ec5e75196201
 /*
 
     For colors: http://gka.github.io/chroma.js/#cubehelix-hue
+    https://gka.github.io/palettes
 
 */
 

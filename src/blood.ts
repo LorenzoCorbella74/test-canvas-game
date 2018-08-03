@@ -42,8 +42,8 @@ export class Blood {
      */
     create (x:number, y:number, vX:number, vY:number, radius: any=3) {
         var obj = this.pool.length > 0 ? this.pool.pop() : new Object();
-        obj.x = x;
-        obj.y = y;
+        obj.x  = x;
+        obj.y  = y;
         obj.vX = vX;
         obj.vY = vY;
         obj.radius = radius;

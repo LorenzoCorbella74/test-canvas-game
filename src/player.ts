@@ -1,3 +1,5 @@
+import { Camera } from './camera';
+import { Helper } from './helper';
 import { conf as c } from './config';
 
 export class Player {
@@ -20,12 +22,14 @@ export class Player {
 	canvas:  any;
 	ctx:     any;
 	camera:  any;
+	main:     any
 	map:     any
 	control: any;
 	bullet:  any;
 
 
 	constructor(main: any) {
+		this.main   = main;
 		this.canvas = main.canvas;
 		this.ctx    = main.ctx;
 		this.camera = main.camera;
@@ -92,6 +96,27 @@ export class Player {
 				this.y - this.camera.y + pointerLength * Math.sin(this.angle)
 			);
 			this.ctx.stroke();
+	}
+
+	spawn(){
+		const spawn = Helper.getSpawnPoint(this.main.data.spawn);
+		this.x = spawn.x /* - this.camera.x */;
+		this.y = spawn.y /* -this.camera.y */;
+		this.camera.x  =this.x -400;	// TODO: nel caso di spawn point vicini ai bordi non funziona !!!
+		this.camera.y  =this.y -300;
+		// this.isFollowedBY(this.camera, this.main.currentMap);
+		this.r     = c.PLAYER_RADIUS
+		this.speed = c.PLAYER_SPEED;	// è uguale in tutte le direzioni
+		this.angle = 0;					// angolo tra asse x e puntatore del mouse
+		this.hp    = c.PLAYER_HP;		// punti vita
+		this.ap    = c.PLAYER_AP;		// punti armatura
+		// this.kills = 0;					// uccisioni
+		// this.numberOfDeaths = 0;	    // numero di volte in cui è stato ucciso
+		this.currentWeapon = c.PLAYER_STARTING_WEAPON;		// arma corrente
+		
+
+		// this.isFollowedBY(this.camera, this.main.currentMap);
+		// this.camera.setCurrentPlayer(this);
 	}
 
 	// collisione tra elementi della stessa imensione (tile e player)

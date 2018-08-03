@@ -63,6 +63,7 @@ export class Enemy {
     render() {
         for (let i = this.list.length - 1; i >= 0; i--) {
             const obj = this.list[i];
+            
             // TODO: calcolo dell'angolo con il player per il mirino del nemico
 
             //if (!obj.dead) {

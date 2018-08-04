@@ -1,6 +1,7 @@
 export class Helper {
 
     static spawnUsed: number = 0;
+    static botsNameIndex: number = 0;
 
     static getSpawnPoint(arr: any[]) {
         let _spawn = this.spawnUsed;
@@ -9,6 +10,17 @@ export class Helper {
             this.spawnUsed = 0;
         } else {
             this.spawnUsed++;
+        }
+        return arr[_spawn]
+    }
+
+    static getBotsName(arr: any[]) {
+        let _spawn = this.botsNameIndex;
+        if (_spawn == arr.length) {
+            _spawn= 0;
+            this.botsNameIndex = 0;
+        } else {
+            this.botsNameIndex++;
         }
         return arr[_spawn]
     }

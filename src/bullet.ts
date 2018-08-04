@@ -74,6 +74,7 @@ export class BulletHandler {
                 this.blood.create(shot.x, shot.y,  Math.random() * 2 - 2, Math.random() * 2 - 2, c.BLOOD_RADIUS) // crea il sangue
                 if(this.player.hp<=0){
                     this.player.numberOfDeaths++;
+                    this.enemy.list[shot.index].kills++;    // si aumenta lo score del bot che ha sparato il proiettile
                     this.player.spawn();
                 }
                 continue
@@ -124,7 +125,7 @@ export class BulletHandler {
         }
     }
 
-    create(x, y, vX, vY, firedBy:string) {
+    create(x, y, vX, vY, firedBy:string, index:number) {
         let shot      = this.pool.length > 0 ? this.pool.pop(): {};
         shot.x       = x;
         shot.y       = y;
@@ -132,6 +133,7 @@ export class BulletHandler {
         shot.vY      = vY;
         shot.firedBy = firedBy;
         shot.r       = this.r;
+        shot.index   = index;
         shot.damage  = this.damage;
         this.list.push(shot);
     }

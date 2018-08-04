@@ -14,12 +14,11 @@ export class Enemy {
     list:   any;
     pool:   any;
 
-
     constructor(main: any) {
 
-        this.list = [];
-        this.pool = []
-        this.main = main;
+        this.list   = [];
+        this.pool   = []
+        this.main   = main;
         this.player = main.player;
         this.canvas = main.canvas;
         this.camera = main.camera;
@@ -27,22 +26,22 @@ export class Enemy {
     }
 
     create( x: number, y: number, num:number) {
-        // TODO in funzione del numero di spawn point e del numero di giocatori
         let enemy:any = new Object();
-        enemy.name  = `BOT${num}`;
-        enemy.x     = x || 75;
-        enemy.y     = y || 50;
-        enemy.r     = c.ENEMY_RADIUS;
-        enemy.velX  = 0;
-        enemy.velY  = 10;
+        enemy.id              = `BOT${num}`;
+        enemy.name            = Helper.getBotsName(c.ENEMY_NAMES);
+        enemy.x               = x || 75;
+        enemy.y               = y || 50;
+        enemy.r               = c.ENEMY_RADIUS;
+        enemy.velX            = 0;
+        enemy.velY            = 10;
         enemy.angleWithPlayer = 0;
-        enemy.hp    = c.ENEMY_HP;
-        enemy.ap    = c.ENEMY_AP;
-        enemy.kills    = 0;
-        enemy.speed = c.ENEMY_SPEED;
-        enemy.attackCounter = 0;
-        enemy.strategy ={};
-        enemy.numberOfDeaths =0;
+        enemy.hp              = c.ENEMY_HP;
+        enemy.ap              = c.ENEMY_AP;
+        enemy.kills           = 0;
+        enemy.speed           = c.ENEMY_SPEED;
+        enemy.attackCounter   = 0;
+        enemy.strategy        = {};
+        enemy.numberOfDeaths  = 0;
         this.list[this.list.length] = enemy
     };
 
@@ -63,9 +62,6 @@ export class Enemy {
     render() {
         for (let i = this.list.length - 1; i >= 0; i--) {
             const obj = this.list[i];
-            
-            // TODO: calcolo dell'angolo con il player per il mirino del nemico
-
             //if (!obj.dead) {
                 // draw the colored region
                 this.ctx.beginPath();
@@ -200,7 +196,7 @@ export class Enemy {
                     vX /= dist;									// si normalizza
                     vY /= dist;
                     if (obj.attackCounter > 5) {									// 4 è la frequenza di sparo
-                        this.bullet.create(obj.x, obj.y, vX * 8, vY * 8, 'enemy');  // 8 è la velocità del proiettile
+                        this.bullet.create(obj.x, obj.y, vX * 8, vY * 8, 'enemy', i);  // 8 è la velocità del proiettile
                         obj.attackCounter = 0;
                     }
 

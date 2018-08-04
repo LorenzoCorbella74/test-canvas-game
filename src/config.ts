@@ -5,8 +5,8 @@ export const conf ={
     CANVAS_HEIGHT:600,
 
     // GAME
-    GAME_KILLS_TO_WIN:15,
-    GAME_MATCH_DURATION: 10,
+    GAME_KILLS_TO_WIN:5,
+    GAME_MATCH_DURATION: 5,    // MINUTI 
     GAME_BOTS_PER_MATCH:1,
     
     // MAP
@@ -29,6 +29,7 @@ export const conf ={
     ENEMY_STARTING_WEAPON: 'rifle',
     ENEMY_COLOUR_INSIDE: '#f90c00',
     ENEMY_COLOUR_OUTSIDE: '#bb0b00',
+    ENEMY_NAMES: ['Ranger','Phobos','Mynx','Orbb','Sarge','Grunt','Hunter','Klesk','Slash','Anarki','Razor','Visor','Bones','Doom','Major','Xaero'],
 
     // BULLETS
     BULLET_RADIUS: 3,

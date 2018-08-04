@@ -98,25 +98,34 @@ export class Player {
 			this.ctx.stroke();
 	}
 
-	spawn(){
-		const spawn = Helper.getSpawnPoint(this.main.data.spawn);
-		this.x = spawn.x /* - this.camera.x */;
-		this.y = spawn.y /* -this.camera.y */;
-		this.camera.x  =this.x -400;	// TODO: nel caso di spawn point vicini ai bordi non funziona !!!
-		this.camera.y  =this.y -300;
-		// this.isFollowedBY(this.camera, this.main.currentMap);
-		this.r     = c.PLAYER_RADIUS
-		this.speed = c.PLAYER_SPEED;	// è uguale in tutte le direzioni
-		this.angle = 0;					// angolo tra asse x e puntatore del mouse
-		this.hp    = c.PLAYER_HP;		// punti vita
-		this.ap    = c.PLAYER_AP;		// punti armatura
-		// this.kills = 0;					// uccisioni
-		// this.numberOfDeaths = 0;	    // numero di volte in cui è stato ucciso
-		this.currentWeapon = c.PLAYER_STARTING_WEAPON;		// arma corrente
-		
+	private adjustCamera(){
+		if(this.x > (this.map.mapSize.w - c.CANVAS_WIDTH)){
+			this.camera.x = this.map.mapSize.w - c.CANVAS_WIDTH;
+		}
+		if(this.x < c.CANVAS_WIDTH){
+			this.camera.x = 0;
+		}
+		if(this.y < c.CANVAS_HEIGHT){
+			this.camera.y = 0;
+		}
+		if(this.y > (this.map.mapSize.h - c.CANVAS_HEIGHT)){
+			this.camera.y = this.map.mapSize.h - c.CANVAS_HEIGHT;
+		}
+	}
 
-		// this.isFollowedBY(this.camera, this.main.currentMap);
-		// this.camera.setCurrentPlayer(this);
+	spawn(){
+			const spawn = Helper.getSpawnPoint(this.main.data.spawn);
+			this.x = spawn.x;
+			this.y = spawn.y;
+			this.adjustCamera();
+			this.r = c.PLAYER_RADIUS
+			this.speed = c.PLAYER_SPEED;	// è uguale in tutte le direzioni
+			this.angle = 0;					// angolo tra asse x e puntatore del mouse
+			this.hp = c.PLAYER_HP;		// punti vita
+			this.ap = c.PLAYER_AP;		// punti armatura
+			// this.kills = 0;				// uccisioni
+			// this.numberOfDeaths = 0;	    // numero di volte in cui è stato ucciso
+			this.currentWeapon = c.PLAYER_STARTING_WEAPON;		// arma corrente
 	}
 
 	// collisione tra elementi della stessa imensione (tile e player)

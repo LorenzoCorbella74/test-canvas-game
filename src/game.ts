@@ -31,7 +31,7 @@ export default class Game {
     camera:            Camera;
     control:           ControlHandler;
     powerup:           PowerUp;
-    particelle:           Particelle;
+    particelle:        Particelle;
     blood:             Blood;
     currentMap:        Map;
     state:             string;
@@ -40,7 +40,8 @@ export default class Game {
     killsToWin:    number = c.GAME_KILLS_TO_WIN;
     matchDuration: number = c.GAME_MATCH_DURATION;
     numberOfBots:  number = c.GAME_BOTS_PER_MATCH;
-    data:any;
+    gameType:      string = 'Deathmatch';           // TODO: sarà in seguito anche Team Deathmatch, Capture the flag, Skirmish
+    data:          any;
 
     // UI
     fontFamily:        string = c.FONT_FAMILY;;
@@ -60,7 +61,7 @@ export default class Game {
         this.camera        = new Camera(0, 0, c.CANVAS_WIDTH, c.CANVAS_HEIGHT, this);
         this.control       = new ControlHandler(this);
         this.currentMap    = new Map(this);
-        this.particelle       = new Particelle(this);
+        this.particelle    = new Particelle(this);
         this.powerup       = new PowerUp(this);
         this.blood         = new Blood(this);
         this.state         = 'loading';
@@ -94,8 +95,6 @@ export default class Game {
             this.powerup.create(e.x, e.y, e.type); // si crea il powerup
         });
 
-        // this.enemy.create(75,50); // si crea un nemico
-
         this.gameLoop();
     }
 
@@ -103,23 +102,19 @@ export default class Game {
         if (this.state != 'game') {
             return
         }
-        if (this.player.kills == this.killsToWin) {
-            this.state = 'gameOverScreen';
-            this.loadStatsScreen(this);
-            return
-        }
 
-        // se il numero dei nemici vivi è minore del numero dei bots
-       /*  if (this.enemy.list.length < this.numberOfBots) {
-            setTimeout(() => {
-                // take a random spawn points
-                let r = Helper.randomElementInArray(this.randomSpawnPoints.spawn)
-                this.enemy.create(r.x, r.y); // si crea un nemico
-            }, 3000);
-        } */
+        for (let i = 0; i < this.enemy.list.length; i++) {
+            const bot = this.enemy.list[i];
+            if (this.player.kills == this.killsToWin || bot.kills == this.killsToWin) {
+                this.state = 'gameOverScreen';
+                this.loadStatsScreen(this);
+                return; 
+            }
+        }
 
         // need to bind the current this reference to the callback
         requestAnimationFrame(this.gameLoop.bind(this));
+
         this.updateAll();
         this.renderAll();
     }
@@ -128,7 +123,7 @@ export default class Game {
         this.player.update();
         this.camera.update();
         this.enemy.update();
-        this.bullet.update(); // bullets del player
+        this.bullet.update(); 
         this.powerup.update();
         this.particelle.update();
         this.blood.update();
@@ -140,7 +135,7 @@ export default class Game {
         this.currentMap.render();
         this.player.render();
         this.enemy.render();
-        this.bullet.render(); // player bullets
+        this.bullet.render(); 
         this.powerup.render();
         this.particelle.render();
         this.blood.render();
@@ -196,15 +191,19 @@ export default class Game {
         main.state = 'gameOverScreen';
         main.control.mouseLeft = false;
         main.ctx.clearRect(0, 0, main.canvas.width, main.canvas.height);
-        var hW = main.canvas.width * 0.5;
+        var hW = main.canvas.width * 0.3;
         var hH = main.canvas.height * 0.5;
         var dark = 'rgba(0,0,0)';
         var medium = 'rgba(0,0,0)';
         var light = 'rgba(0,0,0)';
         this.textONCanvas(main.ctx, '2D Shooter', 9, 18, 'normal 21px/1 ' + main.fontFamily, light, 'left');
         this.textONCanvas(main.ctx, 'Partita completata!', hW, hH - 70, 'normal 22px/1 ' + main.fontFamily, dark);
-        this.textONCanvas(main.ctx, 'Kills:' + main.player.kills, hW, hH - 30, 'normal 16px/1 ' + main.fontFamily, medium);
-        this.textONCanvas(main.ctx, 'Click to Restart', hW, hH + 10, 'normal 17px/1 ' + main.fontFamily, dark);
+        this.textONCanvas(main.ctx, `${main.player.name} - ${main.player.kills} - ${main.player.numberOfDeaths}`, hW, hH - 30, 'normal 16px/1 ' + main.fontFamily, medium);
+        for (let i = 0; i < this.enemy.list.length; i++) {
+            const bot = this.enemy.list[i];
+            this.textONCanvas(main.ctx, `${bot.name} - ${bot.kills} - ${bot.numberOfDeaths}`, hW, hH - 30 +(20*(i+1)), 'normal 16px/1 ' + main.fontFamily, medium);
+        }
+        this.textONCanvas(main.ctx, 'Click to Restart', hW, main.canvas.height - 44, 'normal 17px/1 ' + main.fontFamily, dark);
         this.textONCanvas(main.ctx, 'L.Corbella © 2018', 9, main.canvas.height - 14, 'normal 13px/1 ' + main.fontFamily, light, 'left')
     }
 }

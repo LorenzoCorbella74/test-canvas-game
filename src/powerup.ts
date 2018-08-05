@@ -25,10 +25,10 @@ export class PowerUp {
     main:    any;
 
     constructor(main: any) {
-        this.main    = main;
-        this.player  = main.player;
-        this.bots    = main.enemy;
-        this.ctx     = main.ctx;
+        this.main       = main;
+        this.player     = main.player;
+        this.bots       = main.enemy;
+        this.ctx        = main.ctx;
         this.particelle = main.particelle;
     }
 
@@ -72,9 +72,9 @@ export class PowerUp {
     render() {
         for (let i = this.list.length - 1; i >= 0; i--) {
             let powerup = this.list[i];
-            let x = powerup.x - this.main.camera.x;
-            let y = powerup.y - this.main.camera.y;
             if (powerup.visible) {
+                let x = powerup.x - this.main.camera.x;
+                let y = powerup.y - this.main.camera.y;
                 this.ctx.beginPath();
                 this.ctx.arc(x, y, powerup.r, 0, 6.2832);
                 this.ctx.fillStyle = powerup.color;

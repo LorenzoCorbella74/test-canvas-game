@@ -24,6 +24,9 @@ export default class Game {
     width:             number = c.CANVAS_WIDTH; // window.innerWidth;
     height:            number = c.CANVAS_HEIGHT; // window.innerHeight;
 
+    lastRender:number =0;
+    fps:number =0;
+
     // GAME ENTITIES
     player:            Player;
     enemy:             Enemy;
@@ -35,16 +38,22 @@ export default class Game {
     blood:             Blood;
     currentMap:        Map;
     state:             string;
+    timeleft:          number;
 
     // GAME PARAMETERS
-    killsToWin:    number = c.GAME_KILLS_TO_WIN;
-    matchDuration: number = c.GAME_MATCH_DURATION;
-    numberOfBots:  number = c.GAME_BOTS_PER_MATCH;
+    start:         boolean = true;      // flags that you want the countdown to start
+    stopTime     = 0;                   // used to hold the stop time
+    stop         = false;               // flag to indicate that stop time has been reached
+    timeTillStop = 0;                   // holds the display time
+    killsToWin:    number  = c.GAME_KILLS_TO_WIN;
+    matchDuration: number  = c.GAME_MATCH_DURATION;
+    numberOfBots:  number  = c.GAME_BOTS_PER_MATCH;
     gameType:      string = 'Deathmatch';           // TODO: sarà in seguito anche Team Deathmatch, Capture the flag, Skirmish
     data:          any;
 
     // UI
-    fontFamily:        string = c.FONT_FAMILY;;
+    fontFamily:        string = c.FONT_FAMILY;
+    paused:boolean = false;
 
     constructor() {
         this.canvas        = <HTMLCanvasElement>document.getElementById('canvas');
@@ -95,10 +104,26 @@ export default class Game {
             this.powerup.create(e.x, e.y, e.type); // si crea il powerup
         });
 
-        this.gameLoop();
+        this.gameLoop(0);
     }
 
-    private gameLoop(): void {
+    private gameLoop(timestamp:number): void {
+
+        this.canvas.style.cursor='crosshair';
+        
+        let progress = timestamp - this.lastRender;
+        this.fps = Math.floor(1000/progress);
+
+        if(this.start){                                     // do we need to start the timer
+            this.stopTime = timestamp + this.matchDuration; // yes the set the stoptime
+            this.start = false;                             // clear the start flag
+        }else{                                              // waiting for stop
+            if(timestamp >= this.stopTime){                 // has stop time been reached?
+                this.stop = true;                           // yes the flag to stop
+            }
+        }
+        this.timeTillStop = Math.floor(this.stopTime - timestamp)/1000;      // for display of time till stop
+
         if (this.state != 'game') {
             return
         }
@@ -106,20 +131,26 @@ export default class Game {
         for (let i = 0; i < this.enemy.list.length; i++) {
             const bot = this.enemy.list[i];
             if (this.player.kills == this.killsToWin || bot.kills == this.killsToWin) {
-                this.state = 'gameOverScreen';
                 this.loadStatsScreen(this);
                 return; 
             }
         }
 
-        // need to bind the current this reference to the callback
-        requestAnimationFrame(this.gameLoop.bind(this));
-
-        this.updateAll();
-        this.renderAll();
+        if(!this.paused){
+            this.updateAll(progress);
+            this.renderAll(progress);
+        }
+        
+        this.lastRender = timestamp;
+      
+        if (!this.stop) {
+            requestAnimationFrame(this.gameLoop.bind(this));
+        } else {
+            this.loadStatsScreen(this);
+        }
     }
 
-    updateAll() {
+    updateAll(progress:number) {
         this.player.update();
         this.camera.update();
         this.enemy.update();
@@ -130,7 +161,7 @@ export default class Game {
         // particles:esplosioni
     }
 
-    renderAll(): void {
+    renderAll(progress): void {
         this.ctx.clearRect(0, 0, this.width, this.height);  // svuota il canvas
         this.currentMap.render();
         this.player.render();
@@ -141,10 +172,10 @@ export default class Game {
         this.blood.render();
         // particles:esplosioni
 
-        this.renderHUD();   // HUD
+        this.renderHUD(progress);   // HUD
     }
 
-    private renderHUD() {
+    private renderHUD(progress:number) {
         this.ctx.fillStyle = c.HUD_BACKGROUND;
         this.ctx.fillRect(0, 0, c.CANVAS_WIDTH, c.TILE_SIZE);
         this.ctx.textAlign = 'LEFT';
@@ -153,11 +184,28 @@ export default class Game {
         this.ctx.fillText('HP ', 5, c.TILE_SIZE / 2);
         this.ctx.fillText('AP ', 85, c.TILE_SIZE / 2);
         this.ctx.fillText('Kills ', 165, c.TILE_SIZE / 2);
+        this.ctx.fillText('TIME ', 600, c.TILE_SIZE / 2);
+        this.ctx.fillText('FPS ', 700, c.TILE_SIZE / 2);
+        if(!this.player.alive){
+            this.ctx.fillText('Respawn in ', 400, c.TILE_SIZE / 2);
+        }
         this.ctx.font = 'bold 14px/1 Arial';
         this.ctx.fillStyle = 'yellow';
-        this.ctx.fillText(Math.round(this.player.hp).toString(), 30, c.TILE_SIZE / 2);
-        this.ctx.fillText(Math.round(this.player.ap).toString(), 110, c.TILE_SIZE / 2);
-        this.ctx.fillText(Math.round(this.player.kills).toString(), 200, c.TILE_SIZE / 2);
+        this.ctx.fillText(this.player.hp.toString(), 30, c.TILE_SIZE / 2);
+        this.ctx.fillText(this.player.ap.toString(), 110, c.TILE_SIZE / 2);
+        this.ctx.fillText(this.player.kills.toString(), 200, c.TILE_SIZE / 2);
+        this.ctx.fillText(this.timeTillStop.toString(), 640, c.TILE_SIZE / 2);
+        this.ctx.fillText(this.fps.toString(), 740, c.TILE_SIZE / 2);
+        if (!this.player.alive) {
+            this.timeleft = c.GAME_RESPAWN_TIME;
+            /* let countDownTimer = setInterval(() => {
+                this.timeleft--;
+                if (this.timeleft < 0){
+                    clearInterval(countDownTimer);
+                }
+            }, progress); */
+            this.ctx.fillText(Math.round(this.timeleft/1000).toString(), 500, c.TILE_SIZE / 2);
+        }
     }
 
     textONCanvas(context, text, x, y, font, style, align?, baseline?) {
@@ -178,7 +226,7 @@ export default class Game {
         var dark = 'rgba(0,0,0)';
         var medium = 'rgba(0,0,0)';
         var light = 'rgba(0,0,0)';
-        this.textONCanvas(main.ctx, 'TEST 2D Shooter', hW, hH - 100, 'normal 32px/1 ' + main.fontFamily, light, );
+        this.textONCanvas(main.ctx, 'Corbe Shooter 2D', hW, hH - 100, 'normal 32px/1 ' + main.fontFamily, light, );
         this.textONCanvas(main.ctx, 'Use "WASD" to move and "Left Click" to shoot.', hW, hH - 30, 'normal 15px/1 ' + main.fontFamily, medium);
         this.textONCanvas(main.ctx, 'Use mouse wheel to change weapons.', hW, hH - 10, 'normal 15px/1 ' + main.fontFamily, medium);
         this.textONCanvas(main.ctx, 'Click to Start', hW, hH + 50, 'normal 17px/1 ' + main.fontFamily, dark);
@@ -188,7 +236,7 @@ export default class Game {
 
     loadStatsScreen(main: any) {
         main.canvas.style.cursor='pointer';
-        main.state = 'gameOverScreen';
+        main.state = 'statsScreen';
         main.control.mouseLeft = false;
         main.ctx.clearRect(0, 0, main.canvas.width, main.canvas.height);
         var hW = main.canvas.width * 0.3;
@@ -196,7 +244,7 @@ export default class Game {
         var dark = 'rgba(0,0,0)';
         var medium = 'rgba(0,0,0)';
         var light = 'rgba(0,0,0)';
-        this.textONCanvas(main.ctx, '2D Shooter', 9, 18, 'normal 21px/1 ' + main.fontFamily, light, 'left');
+        this.textONCanvas(main.ctx, 'Corbe Shooter 2D', 9, 18, 'normal 21px/1 ' + main.fontFamily, light);
         this.textONCanvas(main.ctx, 'Partita completata!', hW, hH - 70, 'normal 22px/1 ' + main.fontFamily, dark);
         this.textONCanvas(main.ctx, `${main.player.name} - ${main.player.kills} - ${main.player.numberOfDeaths}`, hW, hH - 30, 'normal 16px/1 ' + main.fontFamily, medium);
         for (let i = 0; i < this.enemy.list.length; i++) {
@@ -205,5 +253,21 @@ export default class Game {
         }
         this.textONCanvas(main.ctx, 'Click to Restart', hW, main.canvas.height - 44, 'normal 17px/1 ' + main.fontFamily, dark);
         this.textONCanvas(main.ctx, 'L.Corbella © 2018', 9, main.canvas.height - 14, 'normal 13px/1 ' + main.fontFamily, light, 'left')
+    }
+    
+    // screen di pausa
+    loadPauseScreen(main: any) {
+        main.canvas.style.cursor='pointer';
+        main.paused = true;
+        main.control.mouseDown = false;
+        main.ctx.fillStyle = 'rgba(255,255,255,0.65)';
+        main.ctx.fillRect(0, 0, main.canvas.width, main.canvas.height);
+        var hW = main.canvas.width * 0.5;
+        var hH = main.canvas.height * 0.5;
+        var dark = 'rgba(0,0,0,0.9)';
+        var medium = 'rgba(0,0,0,0.5)';
+        var light = 'rgba(0,0,0,0.3)';
+        this.textONCanvas(main.ctx, 'Paused', hW, hH - 15, 'normal 22px/1 ' + main.fontFamily, dark);
+        this.textONCanvas(main.ctx, 'Click to Continue', hW, hH + 15, 'normal 17px/1 ' + main.fontFamily, dark)
     }
 }

@@ -1,15 +1,16 @@
 import {Helper} from'./helper';
+import Game from './game';
 
 export class ControlHandler {
 
-    a:         boolean;
-    d:         boolean;
-    w:         boolean;
-    s:         boolean;
-    mouseLeft: boolean;
-    mouseRight: boolean;
-    mouseX:    number;
-    mouseY:    number;
+    a:          boolean = false;
+    d:          boolean = false;
+    w:          boolean = false;
+    s:          boolean = false;
+    mouseLeft:  boolean = false;
+    mouseRight: boolean = false;
+    mouseX:     number  = 0;
+    mouseY:     number = 0;
 
     main:   any;
     canvas: any;
@@ -17,18 +18,11 @@ export class ControlHandler {
     player: any;
 
     constructor(main: any){
-        this.a = false;
-        this.d = false;
-        this.w = false;
-        this.s = false;
-        this.mouseLeft = false;
-        this.mouseRight = false;
-        this.mouseX = 0;
-        this.mouseY = 0;
-        this.main = main;
+        this.main   = main;
         this.canvas = main.canvas;
         this.camera = main.camera;
         this.player = main.player;
+
         this.canvas.addEventListener('keydown', this.keyDownEvent.bind(this));
         this.canvas.addEventListener('keyup', this.keyUpEvent.bind(this));
         this.canvas.addEventListener('mousedown', this.mouseDownEvent.bind(this));
@@ -57,7 +51,7 @@ export class ControlHandler {
         }
     }
     
-    keyUpEvent(e:any) {
+    keyUpEvent(e: any) {
         if (e.keyCode == 87 || e.keyCode == 38) {
             this.w = false
         } else if (e.keyCode == 83) {
@@ -66,6 +60,11 @@ export class ControlHandler {
             this.a = false
         } else if (e.keyCode == 68) {
             this.d = false
+        } else if (e.keyCode == 80) {
+            if (!this.main.paused) {    // se non è già in pausa...
+                this.main.paused = true;
+                this.main.loadPauseScreen(this.main);
+            }
         } else if (this.mouseX > 0 && this.mouseX < this.canvas.width && this.mouseY > 0 && this.mouseY < this.canvas.height) {
             e.preventDefault();
             return false
@@ -82,16 +81,22 @@ export class ControlHandler {
     
     mouseUpEvent(e:any) {
         if (this.mouseLeft) {
-            if (this.main.state == 'menuScreen' || this.main.state == 'gameOverScreen') {
-                this.player.loadDefault();
-                this.main.enemy.killAllEnemies();
-                this.main.startGame()
+            if (this.main.state == 'menuScreen') {
+                this.main.startGame();
+            }
+            if (this.main.paused) {
+                this.main.paused= false;
+            }
+            if (this.main.state == 'statsScreen') {
+                let app = new Game();
+                app.loadMenuScreen(app);
             }
         }
+
         if (e.button == 0) {
-            this.mouseLeft = false
+            this.mouseLeft = false;
         } else if (e.button == 2) {
-            this.mouseRight = false
+            this.mouseRight = false;
         }
     }
 

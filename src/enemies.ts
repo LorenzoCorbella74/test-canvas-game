@@ -118,96 +118,96 @@ export class Enemy {
         for (let i = this.list.length - 1; i >= 0; i--) {
             const obj = this.list[i];
 
-            // si calcola l'angolo rispetto allo stesso sistema di riferimento (camera)
-            obj.angleWithPlayer = Helper.calculateAngle(obj.x- this.camera.x, obj.y- this.camera.y,this.player.x - this.camera.x, this.player.y -this.camera.y);
+            if (this.player.alive) {
+                // si calcola l'angolo rispetto allo stesso sistema di riferimento (camera)
+                obj.angleWithPlayer = Helper.calculateAngle(obj.x - this.camera.x, obj.y - this.camera.y, this.player.x - this.camera.x, this.player.y - this.camera.y);
 
-            obj.attackCounter += 1;
+                obj.attackCounter += 1;
 
-            // TODO: const powerupVicino = this.getNearest(obj, this.main.data)
+                // TODO: const powerupVicino = this.getNearest(obj, this.main.data)
 
-            // get the target x and y
-            obj.strategy.targetX = this.player.x;
-            obj.strategy.targetY = this.player.y;
+                // get the target x and y
+                obj.strategy.targetX = this.player.x;
+                obj.strategy.targetY = this.player.y;
 
-            // We need to get the distance this time around
-            var tx = obj.strategy.targetX - obj.x,
-                ty = obj.strategy.targetY - obj.y,
-                dist = Math.sqrt(tx * tx + ty * ty);
+                // We need to get the distance
+                var tx = obj.strategy.targetX - obj.x,
+                    ty = obj.strategy.targetY - obj.y,
+                    dist = Math.sqrt(tx * tx + ty * ty);
 
-            /* 
-            * we calculate a velocity for our object this time around
-            * divide the target x and y by the distance and multiply it by our speed
-            * this gives us a constant movement speed.
-            */
+                /* 
+                * we calculate a velocity for our object this time around
+                * divide the target x and y by the distance and multiply it by our speed
+                * this gives us a constant movement speed.
+                */
 
-            obj.velX = (tx / dist) * obj.speed;
-            obj.velY = (ty / dist) * obj.speed;
+                obj.velX = (tx / dist) * obj.speed;
+                obj.velY = (ty / dist) * obj.speed;
 
-            // si va verso il player 
-            if (dist > (150 - this.player.r)) {
-                // add our velocities
-                if (obj.velX > 0) {
-                    obj.strategy.d = obj.velX;
+                // si va verso il player 
+                if (dist > (150 - this.player.r)) {
+                    // add our velocities
+                    if (obj.velX > 0) {
+                        obj.strategy.d = obj.velX;
+                    } else {
+                        obj.strategy.a = obj.velX;
+                    }
+                    if (obj.velY > 0) {
+                        obj.strategy.s = obj.velX;
+                    } else {
+                        obj.strategy.w = obj.velX;
+                    }
+
+                    if (obj.strategy.w) { // W 
+                        if (this.checkmove(obj.x - obj.r, obj.y - obj.r - obj.speed)) {
+                            obj.y -= obj.speed;
+                            if (obj.y - obj.r < this.camera.y) {
+                                obj.y = this.camera.y + obj.r;
+                            }
+                        }
+                    }
+                    if (obj.strategy.s) {	// S
+                        if (this.checkmove(obj.x - obj.r, obj.y - obj.r + obj.speed)) {
+                            obj.y += obj.speed;
+                            if (obj.y + obj.r >= this.camera.y + this.camera.h) {
+                                obj.y = this.camera.y + this.camera.h - obj.r;
+                            }
+                        }
+                    }
+                    if (obj.strategy.a) {	// a
+                        if (this.checkmove(obj.x - obj.r - obj.speed, obj.y - obj.r)) {
+                            obj.x -= obj.speed;
+                            if (obj.x - obj.r < this.camera.x) {
+                                obj.x = this.camera.x + obj.r;
+                            }
+                        }
+                    }
+                    if (obj.strategy.d) {	// d
+                        if (this.checkmove(obj.x - obj.r + obj.speed, obj.y - obj.r)) {
+                            obj.x += obj.speed;
+                            if (obj.x + obj.r >= this.map.mapSize.w) {
+                                obj.x = this.camera.x + this.camera.w - obj.r;
+                            }
+                        }
+                    }
+                    if (dist < 350) {	// SE non troppo lontano SPARA!
+                        let vX = (this.player.x - this.camera.x) - (obj.x - this.camera.x);
+                        let vY = (this.player.y - this.camera.y) - (obj.y - this.camera.y);
+                        let dist = Math.sqrt(vX * vX + vY * vY);	// si calcola la distanza
+                        vX /= dist;									// si normalizza
+                        vY /= dist;
+                        if (obj.attackCounter > 5) {									// 4 è la frequenza di sparo
+                            this.bullet.create(obj.x, obj.y, vX * 8, vY * 8, 'enemy', i);  // 8 è la velocità del proiettile
+                            obj.attackCounter = 0;
+                        }
+
+                    }
+                    
                 } else {
-                    obj.strategy.a = obj.velX;
+                    // si cerca il powerup + vicino
+                    console.log('si rimane fermi...');
                 }
-                if (obj.velY > 0) {
-                    obj.strategy.s = obj.velX;
-                } else {
-                    obj.strategy.w = obj.velX;
-                }
-
-                if (obj.strategy.w) { // W 
-                    if (this.checkmove(obj.x - obj.r, obj.y - obj.r - obj.speed)) {
-                        obj.y -= obj.speed;
-                        if (obj.y - obj.r < this.camera.y) {
-                            obj.y = this.camera.y + obj.r;
-                        }
-                    }
-                }
-                if (obj.strategy.s) {	// S
-                    if (this.checkmove(obj.x - obj.r, obj.y - obj.r + obj.speed)) {
-                        obj.y += obj.speed;
-                        if (obj.y + obj.r >= this.camera.y + this.camera.h) {
-                            obj.y = this.camera.y + this.camera.h - obj.r;
-                        }
-                    }
-                }
-                if (obj.strategy.a) {	// a
-                    if (this.checkmove(obj.x - obj.r - obj.speed, obj.y - obj.r)) {
-                        obj.x -= obj.speed;
-                        if (obj.x - obj.r < this.camera.x) {
-                            obj.x = this.camera.x + obj.r;
-                        }
-                    }
-                }
-                if (obj.strategy.d) {	// d
-                    if (this.checkmove(obj.x - obj.r + obj.speed, obj.y - obj.r)) {
-                        obj.x += obj.speed;
-                        if (obj.x + obj.r >= this.map.mapSize.w) {
-                            obj.x = this.camera.x + this.camera.w - obj.r;
-                        }
-                    }
-                }
-                if (dist < 350) {	// SE non troppo lontano SPARA!
-                    let vX =  (this.player.x - this.camera.x) - (obj.x - this.camera.x)  ;
-                    let vY =   (this.player.y - this.camera.y) - (obj.y - this.camera.y) ;
-                    let dist = Math.sqrt(vX * vX + vY * vY);	// si calcola la distanza
-                    vX /= dist;									// si normalizza
-                    vY /= dist;
-                    if (obj.attackCounter > 5) {									// 4 è la frequenza di sparo
-                        this.bullet.create(obj.x, obj.y, vX * 8, vY * 8, 'enemy', i);  // 8 è la velocità del proiettile
-                        obj.attackCounter = 0;
-                    }
-
-                }
-                return false;
-            } else {
-            // si va a dx o sx randomicamente
-                console.log('si rimane fermi...');
             }
-            
-
         }
     }
 

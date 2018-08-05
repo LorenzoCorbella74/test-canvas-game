@@ -66,16 +66,21 @@ export class BulletHandler {
             }
 
             // si guarda se i proiettili di qualche nemico impattano il player
-            if (shot.firedBy=='enemy' && Helper.circleCollision(shot, this.player)) {
+            if (shot.firedBy=='enemy' && this.player.alive && Helper.circleCollision(shot, this.player)) {
                 this.player.hp -= shot.damage;
                 this.player.vX = shot.vX * 0.03;
                 this.player.vY = shot.vY * 0.03;
                 shot.hp = -99;
                 this.blood.create(shot.x, shot.y,  Math.random() * 2 - 2, Math.random() * 2 - 2, c.BLOOD_RADIUS) // crea il sangue
+                this.pool.push(shot);
+                this.list.splice(i, 1);
                 if(this.player.hp<=0){
+                    this.player.alive = false;
                     this.player.numberOfDeaths++;
                     this.enemy.list[shot.index].kills++;    // si aumenta lo score del bot che ha sparato il proiettile
-                    this.player.spawn();
+                    setTimeout(() => {
+                        this.player.respawn();
+                    }, c.GAME_RESPAWN_TIME); 
                 }
                 continue
             }

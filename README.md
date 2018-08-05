@@ -1,11 +1,23 @@
-# 2D shooter javascript engine
+# Corbe 2D shooter!
 
-Esempio di shooter 2D realizzato per studiare il canvas e lo sviluppo di giochi con tecnologie web. 
+Esempio di shooter 2D realizzato per studiare il canvas e lo sviluppo di giochi con tecnologie web. Il gioco ricrea le meccaniche di arena shooter quali Quake 3 Arena, Unreal tournament, etc
 
-## Usage
+## Features
+- [x] map built with tiles 
+- [ ] different types of tiles 
+- [x] camera following different entities (player, bots) 
+- [x] collision system for all mouvable entities
+- [x] particles (debris, blood, explosion)
+- [x] powerups system with different respawn time
+- [ ] different weapons
+- [ ] different game modes (deathmatch, team deathmach, capture the flag, skirmish)
+- [ ] bots AI
+- [ ] multiplayer
+- [ ] music and effects
+
 
 ### Installation
-Installare tramite
+Installare tramite:
 
     npm install
 
@@ -22,14 +34,13 @@ Compile TypeScript app and copy index.html to the `dist` folder.
 
 
 
-
 ## Built With
 
 HTML5, CSS, Typescript, canvas, parcel
 
 ## Versioning
 
-Versione 1
+Versione 0.0.5
 
 ## License
 

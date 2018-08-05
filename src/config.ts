@@ -6,8 +6,9 @@ export const conf ={
 
     // GAME
     GAME_KILLS_TO_WIN:5,
-    GAME_MATCH_DURATION: 5,    // MINUTI 
-    GAME_BOTS_PER_MATCH:1,
+    GAME_MATCH_DURATION: 60000, // in ms 
+    GAME_BOTS_PER_MATCH:3,
+    GAME_RESPAWN_TIME:3000,         // in ms
     
     // MAP
     TILE_SIZE: 25,

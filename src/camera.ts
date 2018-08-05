@@ -36,4 +36,20 @@ export class Camera {
         }
     }
 
+    // adjust camera after respawn
+    adjustCamera(actor:any){
+		if(actor.x > (this.map.mapSize.w - c.CANVAS_WIDTH)){
+			this.x = this.map.mapSize.w - c.CANVAS_WIDTH;
+		}
+		if(actor.x < c.CANVAS_WIDTH){
+			this.x = 0;
+		}
+		if(actor.y < c.CANVAS_HEIGHT){
+			this.y = 0;
+		}
+		if(actor.y > (this.map.mapSize.h - c.CANVAS_HEIGHT)){
+			this.y = this.map.mapSize.h - c.CANVAS_HEIGHT;
+		}
+	}
+
 };

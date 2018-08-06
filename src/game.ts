@@ -42,13 +42,13 @@ export default class Game {
 
     // GAME PARAMETERS
     start:         boolean = true;      // flags that you want the countdown to start
-    stopTime     = 0;                   // used to hold the stop time
-    stop         = false;               // flag to indicate that stop time has been reached
-    timeTillStop = 0;                   // holds the display time
+    stopTime:      number  = 0;         // used to hold the stop time
+    stop:          boolean = false;     // flag to indicate that stop time has been reached
+    timeTillStop:  number  = 0;         // holds the display time
     killsToWin:    number  = c.GAME_KILLS_TO_WIN;
     matchDuration: number  = c.GAME_MATCH_DURATION;
     numberOfBots:  number  = c.GAME_BOTS_PER_MATCH;
-    gameType:      string = 'Deathmatch';           // TODO: sarà in seguito anche Team Deathmatch, Capture the flag, Skirmish
+    gameType:      string  = 'Deathmatch';           // TODO: sarà in seguito anche Team Deathmatch, Capture the flag, Skirmish
     data:          any;
 
     // UI
@@ -87,22 +87,35 @@ export default class Game {
     }
 
     // fa partire il gameloop
-    startGame() {
-        this.state = 'game';
+    startGame(restart:boolean = false) {
+        this.state         = 'game';
+        this.start         = true;      // flags that you want the countdown to start
+        this.stopTime      = 0;         // used to hold the stop time
+        this.stop          = false;     // flag to indicate that stop time has been reached
+        this.timeTillStop  = 0;         // holds the display time
+        this.killsToWin    = c.GAME_KILLS_TO_WIN;
+        this.matchDuration = c.GAME_MATCH_DURATION;
+        this.numberOfBots  = c.GAME_BOTS_PER_MATCH;
         this.canvas.style.cursor='crosshair';
         
         let botsArray = Array(this.numberOfBots).fill(null).map((e,i)=> i);
         this.data = this.currentMap.loadSpawnPointsAndPowerUps();
-
-         botsArray.forEach((elem:any, index:number) => {
-             let e = this.data.spawn[index];
-             this.enemy.create(e.x,e.y, index); // si crea un nemico
-         });
-
-         // POWERUP
-         this.data.powerup.forEach((e:any) => {
+        
+        botsArray.forEach((elem:any, index:number) => {
+            let e = this.data.spawn[index];
+            this.enemy.create(e.x,e.y, index); // si crea un nemico
+        });
+        
+        // POWERUP
+        this.data.powerup.forEach((e:any) => {
             this.powerup.create(e.x, e.y, e.type); // si crea il powerup
         });
+
+        if(restart){
+            this.player.respawn();
+        }else{
+            this.player.loadDefault();      // si inizializza il player
+        }
 
         this.gameLoop(0);
     }
@@ -151,25 +164,25 @@ export default class Game {
     }
 
     updateAll(progress:number) {
-        this.player.update();
-        this.camera.update();
-        this.enemy.update();
-        this.bullet.update(); 
-        this.powerup.update();
-        this.particelle.update();
-        this.blood.update();
+        this.player.update(progress);
+        this.camera.update(progress);
+        this.enemy.update(progress);
+        this.bullet.update(progress); 
+        this.powerup.update(progress);
+        this.particelle.update(progress);
+        this.blood.update(progress);
         // particles:esplosioni
     }
 
-    renderAll(progress): void {
+    renderAll(progress:number): void {
         this.ctx.clearRect(0, 0, this.width, this.height);  // svuota il canvas
-        this.currentMap.render();
-        this.player.render();
-        this.enemy.render();
-        this.bullet.render(); 
-        this.powerup.render();
-        this.particelle.render();
-        this.blood.render();
+        this.currentMap.render(progress);
+        this.player.render(progress);
+        this.enemy.render(progress);
+        this.bullet.render(progress); 
+        this.powerup.render(progress);
+        this.particelle.render(progress);
+        this.blood.render(progress);
         // particles:esplosioni
 
         this.renderHUD(progress);   // HUD
@@ -239,12 +252,12 @@ export default class Game {
         main.state = 'statsScreen';
         main.control.mouseLeft = false;
         main.ctx.clearRect(0, 0, main.canvas.width, main.canvas.height);
-        var hW = main.canvas.width * 0.3;
+        var hW = main.canvas.width * 0.5;
         var hH = main.canvas.height * 0.5;
         var dark = 'rgba(0,0,0)';
         var medium = 'rgba(0,0,0)';
         var light = 'rgba(0,0,0)';
-        this.textONCanvas(main.ctx, 'Corbe Shooter 2D', 9, 18, 'normal 21px/1 ' + main.fontFamily, light);
+        this.textONCanvas(main.ctx, 'Corbe Shooter 2D',hW, hH - 100, 'normal 21px/1 ' + main.fontFamily, light);
         this.textONCanvas(main.ctx, 'Partita completata!', hW, hH - 70, 'normal 22px/1 ' + main.fontFamily, dark);
         this.textONCanvas(main.ctx, `${main.player.name} - ${main.player.kills} - ${main.player.numberOfDeaths}`, hW, hH - 30, 'normal 16px/1 ' + main.fontFamily, medium);
         for (let i = 0; i < this.enemy.list.length; i++) {

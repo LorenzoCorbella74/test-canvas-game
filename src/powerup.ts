@@ -32,12 +32,12 @@ export class PowerUp {
         this.particelle = main.particelle;
     }
 
-    update() {
+    update(progress:number) {
         for (var i = this.list.length - 1; i >= 0; i--) {
             var powerup = this.list[i];
 
             if (!powerup.visible) {
-                powerup.reloadRate++;  // si inizia a contare se non visibile
+                powerup.reloadRate+= progress;  // si inizia a contare se non visibile
             }
 
             // si guarda se i powerup entrano in contatto con il player
@@ -62,14 +62,14 @@ export class PowerUp {
                 }
             }
 
-            if (powerup.reloadRate > 1000) {	// numero di cicli oltre il quale è nuovamente visibile
+            if (powerup.reloadRate > c.POWERUP_SPAWN_TIME) {	// numero di cicli oltre il quale è nuovamente visibile
                 powerup.visible = true;
                 powerup.reloadRate = 0;
             }
         }
     };
 
-    render() {
+    render(progress:number) {
         for (let i = this.list.length - 1; i >= 0; i--) {
             let powerup = this.list[i];
             if (powerup.visible) {

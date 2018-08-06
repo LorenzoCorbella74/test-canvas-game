@@ -6,7 +6,7 @@ export const conf ={
 
     // GAME
     GAME_KILLS_TO_WIN:5,
-    GAME_MATCH_DURATION: 60000, // in ms 
+    GAME_MATCH_DURATION: 90000, // in ms 
     GAME_BOTS_PER_MATCH:3,
     GAME_RESPAWN_TIME:3000,         // in ms
     
@@ -46,6 +46,7 @@ export const conf ={
 
     // POWERUP
     POWERUP_RADIUS: 6,
+    POWERUP_SPAWN_TIME: 30*1000,
     
     // HUD
     FONT_FAMILY : '"Segoe UI",Arial,sans-serif',

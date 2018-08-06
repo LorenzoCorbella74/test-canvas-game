@@ -4,4 +4,5 @@ canvas {
 	position:relative;
 	margin: 0 auto 0 auto;
 	background: #ffffff;
+	box-shadow: 0 0 16px 2px rgba(0,0,0,0.8);
 }

@@ -59,7 +59,7 @@ export class Enemy {
     }
 
 
-    render() {
+    render(progress:number) {
         for (let i = this.list.length - 1; i >= 0; i--) {
             const obj = this.list[i];
             //if (!obj.dead) {
@@ -114,7 +114,7 @@ export class Enemy {
         return output.elem;
     }
 
-    update() {
+    update(progress:number) {
         for (let i = this.list.length - 1; i >= 0; i--) {
             const obj = this.list[i];
 
@@ -122,7 +122,7 @@ export class Enemy {
                 // si calcola l'angolo rispetto allo stesso sistema di riferimento (camera)
                 obj.angleWithPlayer = Helper.calculateAngle(obj.x - this.camera.x, obj.y - this.camera.y, this.player.x - this.camera.x, this.player.y - this.camera.y);
 
-                obj.attackCounter += 1;
+                obj.attackCounter += progress;
 
                 // TODO: const powerupVicino = this.getNearest(obj, this.main.data)
 
@@ -190,13 +190,13 @@ export class Enemy {
                             }
                         }
                     }
-                    if (dist < 350) {	// SE non troppo lontano SPARA!
+                    if (dist < 350 && this.checkIfIsSeen(this.player, obj)) {	// SE non troppo lontano SPARA!
                         let vX = (this.player.x - this.camera.x) - (obj.x - this.camera.x);
                         let vY = (this.player.y - this.camera.y) - (obj.y - this.camera.y);
                         let dist = Math.sqrt(vX * vX + vY * vY);	// si calcola la distanza
                         vX /= dist;									// si normalizza
                         vY /= dist;
-                        if (obj.attackCounter > 5) {									// 4 è la frequenza di sparo
+                        if (obj.attackCounter > 200) {									// frequenza di sparo
                             this.bullet.create(obj.x, obj.y, vX * 8, vY * 8, 'enemy', i);  // 8 è la velocità del proiettile
                             obj.attackCounter = 0;
                         }
@@ -209,6 +209,17 @@ export class Enemy {
                 }
             }
         }
+    }
+
+    checkIfIsSeen(obj1:any, obj2:any){
+
+        let obj1Tile = this.map.map[Math.floor(obj1.y / c.TILE_SIZE)][Math.floor(obj1.x / c.TILE_SIZE)];
+        let obj2Tile = this.map.map[Math.floor(obj2.y / c.TILE_SIZE)][Math.floor(obj2.x / c.TILE_SIZE)];
+
+        console.log(obj1Tile,obj2Tile)
+
+        return true;
+
     }
 
 }

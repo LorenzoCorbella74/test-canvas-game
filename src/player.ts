@@ -38,22 +38,23 @@ export class Player {
 		this.camera = main.camera;
 		this.map    = main.map;
 		// this.control = main.control;
-		this.loadDefault();
+		// this.loadDefault();
 	}
 
 	loadDefault(){
 		this.name = "Lorenzo";
-		this.x     = 400;
-		this.y     = 300;
-		this.r     = c.PLAYER_RADIUS
-		this.speed = c.PLAYER_SPEED;	// è uguale in tutte le direzioni
-		this.angle = 0;					// angolo tra asse x e puntatore del mouse
-		this.hp    = c.PLAYER_HP;		// punti vita
-		this.ap    = c.PLAYER_AP;		// punti armatura
+		this.respawn();
+		// this.x     = 400;
+		// this.y     = 300;
+		// this.r     = c.PLAYER_RADIUS
+		// this.speed = c.PLAYER_SPEED;	// è uguale in tutte le direzioni
+		// this.angle = 0;					// angolo tra asse x e puntatore del mouse
+		// this.hp    = c.PLAYER_HP;		// punti vita
+		// this.ap    = c.PLAYER_AP;		// punti armatura
 		this.kills = 0;					// uccisioni
-		this.alive = true;				// 
+		// this.alive = true;				// 
 		this.numberOfDeaths = 0;	    // numero di volte in cui è stato ucciso
-		this.currentWeapon = c.PLAYER_STARTING_WEAPON;		// arma corrente
+		// this.currentWeapon = c.PLAYER_STARTING_WEAPON;		// arma corrente
 	}
 
 	setControlHandler(control: any) {
@@ -77,7 +78,7 @@ export class Player {
 		}
 	};
 
-	render() {
+	render(progress:number) {
 		if(this.alive){	// solo se il player è vivo!
 			// draw the colored region
 			this.ctx.beginPath();
@@ -132,7 +133,7 @@ export class Player {
 		}
 	}
 
-	update() {
+	update(progress:number) {
 
 		this.attackCounter += 1;
 

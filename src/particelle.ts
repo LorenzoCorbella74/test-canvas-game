@@ -12,7 +12,7 @@ export class Particelle {
         this.main = main;
     }
 
-    update () {
+    update (progress:number) {
         if (this.list.length > 0) {
             var obj;
             for (var i = this.list.length - 1; i >= 0; i--) {
@@ -52,7 +52,7 @@ export class Particelle {
         this.list.push(obj)
     };
 
-    render(){
+    render(progress:number){
         for (var i = this.list.length - 1; i >= 0; i--) {
             var detrito = this.list[i];
             let x = detrito.x - this.main.camera.x;

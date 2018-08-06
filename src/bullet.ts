@@ -47,7 +47,7 @@ export class BulletHandler {
 
 
 
-    update() {
+    update(progress:number) {
         let shot, i;
         for (i = this.list.length - 1; i >= 0; i--) {
             shot = this.list[i];
@@ -117,7 +117,7 @@ export class BulletHandler {
         }
     }
 
-    render() {
+    render(progress:number) {
         for (let j = this.list.length - 1; j >= 0; j--) {
             const obj = this.list[j];
             let x = obj.x - this.main.camera.x;

@@ -111,7 +111,7 @@ export class Map {
         this.c.fillRect(xPos - (thickness), yPos - (thickness), width + (thickness * 2), height + (thickness * 2));
     }
 
-    render() {
+    render(progress:number) {
         var onXTile = Math.floor((this.camera.x + (this.camera.w / 2)) / this.tileSize);
         var onYTile = Math.floor((this.camera.y + (this.camera.h / 2)) / this.tileSize);
         this.c.beginPath();

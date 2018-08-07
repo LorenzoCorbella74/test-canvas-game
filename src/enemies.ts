@@ -1,4 +1,3 @@
-import { conf as c } from './config';
 import {Helper} from'./helper';
 
 export class Enemy {
@@ -7,6 +6,7 @@ export class Enemy {
     ctx:    any;
     camera: any;
     main:   any;
+    c:      any;
     player: any;
     map:    any
     bullet: any;
@@ -14,50 +14,42 @@ export class Enemy {
     list:   any;
     pool:   any;
 
-    constructor(main: any) {
+    constructor() {
 
+    }
+
+    init(main:any){
         this.list   = [];
         this.pool   = []
         this.main   = main;
+        this.c      = main.c;
         this.player = main.player;
         this.canvas = main.canvas;
         this.camera = main.camera;
+        this.map    = main.currentMap;
+        this.bullet = main.bullet;
         this.ctx    = main.ctx;
     }
 
     create( x: number, y: number, num:number) {
         let enemy:any = new Object();
         enemy.id              = `BOT${num}`;
-        enemy.name            = Helper.getBotsName(c.ENEMY_NAMES);
+        enemy.name            = Helper.getBotsName(this.c.ENEMY_NAMES);
         enemy.x               = x || 75;
         enemy.y               = y || 50;
-        enemy.r               = c.ENEMY_RADIUS;
+        enemy.r               = this.c.ENEMY_RADIUS;
         enemy.velX            = 0;
         enemy.velY            = 10;
         enemy.angleWithPlayer = 0;
-        enemy.hp              = c.ENEMY_HP;
-        enemy.ap              = c.ENEMY_AP;
+        enemy.hp              = this.c.ENEMY_HP;
+        enemy.ap              = this.c.ENEMY_AP;
         enemy.kills           = 0;
-        enemy.speed           = c.ENEMY_SPEED;
+        enemy.speed           = this.c.ENEMY_SPEED;
         enemy.attackCounter   = 0;
         enemy.strategy        = {};
         enemy.numberOfDeaths  = 0;
         this.list[this.list.length] = enemy
     };
-
-    killAllEnemies(){
-        this.list.length=0;
-    }
-
-    setShotHandler(handler: any) {
-        this.bullet = handler;
-    }
-
-    isFollowedBY(camera: any, map: any) {
-        this.camera = camera;
-        this.map = map
-    }
-
 
     render(progress:number) {
         for (let i = this.list.length - 1; i >= 0; i--) {
@@ -66,19 +58,19 @@ export class Enemy {
                 // draw the colored region
                 this.ctx.beginPath();
                 this.ctx.arc(obj.x - this.camera.x, obj.y - this.camera.y, obj.r, 0, 2 * Math.PI, true);
-                this.ctx.fillStyle = c.ENEMY_COLOUR_INSIDE;
+                this.ctx.fillStyle = this.c.ENEMY_COLOUR_INSIDE;
                 this.ctx.fill();
 
                 // draw the stroke
                 this.ctx.lineWidth = 2;
-                this.ctx.strokeStyle = c.ENEMY_COLOUR_OUTSIDE;
+                this.ctx.strokeStyle = this.c.ENEMY_COLOUR_OUTSIDE;
                 this.ctx.stroke();
 
                 // beccuccio arma
-                this.ctx.strokeStyle = c.ENEMY_COLOUR_OUTSIDE;
+                this.ctx.strokeStyle = this.c.ENEMY_COLOUR_OUTSIDE;
                 this.ctx.beginPath();
                 this.ctx.moveTo(obj.x - this.camera.x, obj.y - this.camera.y);
-                var pointerLength = c.ENEMY_RADIUS;
+                var pointerLength = this.c.ENEMY_RADIUS;
                 this.ctx.lineTo(
                     obj.x  - this.camera.x + pointerLength * Math.cos(obj.angleWithPlayer),
                     obj.y  - this.camera.y + pointerLength * Math.sin(obj.angleWithPlayer)
@@ -91,10 +83,10 @@ export class Enemy {
     // collisione tra elementi della stessa imensione (tile e player)
     // SOURCE: https://codereview.stackexchange.com/questions/60439/2d-tilemap-collision-method
     checkmove(x: number, y: number): boolean {
-        if (this.map.map[Math.floor(y / c.TILE_SIZE)][Math.floor(x / c.TILE_SIZE)].solid == 1
-            || this.map.map[Math.floor(y / c.TILE_SIZE)][Math.ceil(x / c.TILE_SIZE)].solid == 1
-            || this.map.map[Math.ceil(y / c.TILE_SIZE)][Math.floor(x / c.TILE_SIZE)].solid == 1
-            || this.map.map[Math.ceil(y / c.TILE_SIZE)][Math.ceil(x / c.TILE_SIZE)].solid == 1) {
+        if (this.map.map[Math.floor(y / this.c.TILE_SIZE)][Math.floor(x / this.c.TILE_SIZE)].solid == 1
+            || this.map.map[Math.floor(y / this.c.TILE_SIZE)][Math.ceil(x / this.c.TILE_SIZE)].solid == 1
+            || this.map.map[Math.ceil(y / this.c.TILE_SIZE)][Math.floor(x / this.c.TILE_SIZE)].solid == 1
+            || this.map.map[Math.ceil(y / this.c.TILE_SIZE)][Math.ceil(x / this.c.TILE_SIZE)].solid == 1) {
             return false;
         } else {
             return true;
@@ -205,7 +197,7 @@ export class Enemy {
                     
                 } else {
                     // si cerca il powerup + vicino
-                    console.log('si rimane fermi...');
+                    // console.log('si rimane fermi...');
                 }
             }
         }
@@ -213,10 +205,10 @@ export class Enemy {
 
     checkIfIsSeen(obj1:any, obj2:any){
 
-        let obj1Tile = this.map.map[Math.floor(obj1.y / c.TILE_SIZE)][Math.floor(obj1.x / c.TILE_SIZE)];
-        let obj2Tile = this.map.map[Math.floor(obj2.y / c.TILE_SIZE)][Math.floor(obj2.x / c.TILE_SIZE)];
-
-        console.log(obj1Tile,obj2Tile)
+        // let obj1Tile = this.map.map[Math.floor(obj1.y / this.c.TILE_SIZE)][Math.floor(obj1.x / this.c.TILE_SIZE)];
+        // let obj2Tile = this.map.map[Math.floor(obj2.y / this.c.TILE_SIZE)][Math.floor(obj2.x / this.c.TILE_SIZE)];
+// 
+        // console.log(obj1Tile,obj2Tile)
 
         return true;
 

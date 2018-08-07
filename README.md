@@ -16,6 +16,9 @@ Esempio di shooter 2D realizzato per studiare il canvas e lo sviluppo di giochi 
 - [ ] music and effects
 
 
+- [ ] movimenti in funzione del tempo: [source](https://www.viget.com/articles/time-based-animation/)
+
+
 ### Installation
 Installare tramite:
 

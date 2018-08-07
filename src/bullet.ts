@@ -1,51 +1,44 @@
-import { conf as c } from './config';
 import {Helper} from'./helper';
 
 export class BulletHandler {
 
-    // CARATTERISTICHE DEL BULLET
-    r:  number = c.BULLET_RADIUS;
-    damage:  number = c.BULLET_DAMAGE;
-    firedBy: string;    // indica da chi è sparato il colpo ( player, enemy )
-
     list:    any[]  = [];
     pool:    any[]  = []
 
-    main:    any;
-    player:  any;
-    enemy:   any;
-    map:     any;
+    main:       any;
+    c:          any;
+    player:     any;
+    enemy:      any;
+    map:        any;
     particelle: any;
-    blood:   any;
+    blood:      any;
 
 
-    constructor(main: any) {
+    constructor() { }
+
+    init(main: any){
         this.list.length = 0;
         this.main        = main;
+        this.c           = main.c; 
         this.player      = main.player;
         this.enemy       = main.enemy;
-        this.particelle     = this.main.particelle;
-    }
-
-    useIstance(map: any, blood: any) {
-        this.map = map;
-        this.blood = blood;
+        this.particelle  = main.particelle;
+        this.map         = main.currentMap;
+        this.blood       = main.blood;
     }
 
     // collisione tra elementi della stessa imensione (tile e player)
     // SOURCE: https://codereview.stackexchange.com/questions/60439/2d-tilemap-collision-method
     checkmove(x: number, y: number): boolean {
-        if (this.map.map[Math.floor(y / c.TILE_SIZE)][Math.floor(x / c.TILE_SIZE)].solid == 1
-            || this.map.map[Math.floor(y / c.TILE_SIZE)][Math.ceil(x / c.TILE_SIZE)].solid == 1
-            || this.map.map[Math.ceil(y / c.TILE_SIZE)][Math.floor(x / c.TILE_SIZE)].solid == 1
-            || this.map.map[Math.ceil(y / c.TILE_SIZE)][Math.ceil(x / c.TILE_SIZE)].solid == 1) {
+        if (this.map.map[Math.floor(y / this.c.TILE_SIZE)][Math.floor(x / this.c.TILE_SIZE)].solid == 1
+            || this.map.map[Math.floor(y / this.c.TILE_SIZE)][Math.ceil(x / this.c.TILE_SIZE)].solid == 1
+            || this.map.map[Math.ceil(y / this.c.TILE_SIZE)][Math.floor(x / this.c.TILE_SIZE)].solid == 1
+            || this.map.map[Math.ceil(y / this.c.TILE_SIZE)][Math.ceil(x / this.c.TILE_SIZE)].solid == 1) {
             return false;
         } else {
             return true;
         }
     }
-
-
 
     update(progress:number) {
         let shot, i;
@@ -56,10 +49,10 @@ export class BulletHandler {
 
             // collisione con i muri
             if (/*!this.checkmove(/* shot.x - shot.r, shot.y - shot.r) || */
-                !this.checkmove(shot.x + this.r, shot.y - this.r) ||
-                !this.checkmove(shot.x - this.r, shot.y + this.r) /* || 
+                !this.checkmove(shot.x + this.c.BULLET_RADIUS, shot.y - this.c.BULLET_RADIUS) ||
+                !this.checkmove(shot.x - this.c.BULLET_RADIUS, shot.y + this.c.BULLET_RADIUS) /* || 
             !this.checkmove(shot.x + shot.r, shot.y + shot.r) */) {
-                this.main.particelle.create(shot.x, shot.y, Math.random() * 2 - 2, Math.random() * 2 - 2, c.DEBRIS_RADIUS)
+                this.main.particelle.create(shot.x, shot.y, Math.random() * 2 - 2, Math.random() * 2 - 2, this.c.DEBRIS_RADIUS)
                 this.pool.push(shot);
                 this.list.splice(i, 1);
                 continue
@@ -71,7 +64,7 @@ export class BulletHandler {
                 this.player.vX = shot.vX * 0.03;
                 this.player.vY = shot.vY * 0.03;
                 shot.hp = -99;
-                this.blood.create(shot.x, shot.y,  Math.random() * 2 - 2, Math.random() * 2 - 2, c.BLOOD_RADIUS) // crea il sangue
+                this.blood.create(shot.x, shot.y,  Math.random() * 2 - 2, Math.random() * 2 - 2, this.c.BLOOD_RADIUS) // crea il sangue
                 this.pool.push(shot);
                 this.list.splice(i, 1);
                 if(this.player.hp<=0){
@@ -80,7 +73,7 @@ export class BulletHandler {
                     this.enemy.list[shot.index].kills++;    // si aumenta lo score del bot che ha sparato il proiettile
                     setTimeout(() => {
                         this.player.respawn();
-                    }, c.GAME_RESPAWN_TIME); 
+                    }, this.c.GAME_RESPAWN_TIME); 
                 }
                 continue
             }
@@ -93,11 +86,11 @@ export class BulletHandler {
                     obj.vX = shot.vX * 0.03;
                     obj.vY = shot.vY * 0.03;
                     shot.hp = -99;
-                    this.blood.create(shot.x, shot.y, Math.random() * 2 - 2, Math.random() * 2 - 2, c.BLOOD_RADIUS) // crea il sangue
+                    this.blood.create(shot.x, shot.y, Math.random() * 2 - 2, Math.random() * 2 - 2, this.c.BLOOD_RADIUS) // crea il sangue
                     if (obj.hp <= 0) {
                         this.player.kills++;
                         obj.numberOfDeaths++;
-                        // TODO: RESPAWN
+                        // TODO: RESPAWN: al momento ora i nemici si tolgono dall'array...
                          this.enemy.pool[this.enemy.pool.length] = shot;
                          this.enemy.list.splice(i, 1);
                     }
@@ -130,23 +123,18 @@ export class BulletHandler {
         }
     }
 
-    create(x, y, vX, vY, firedBy:string, index:number) {
-        let shot      = this.pool.length > 0 ? this.pool.pop(): {};
+    create(x:number, y:number, vX:number, vY:number, firedBy:string, index:number) {
+        let shot     = this.pool.length > 0 ? this.pool.pop(): {};
         shot.x       = x;
         shot.y       = y;
         shot.vX      = vX;
         shot.vY      = vY;
-        shot.firedBy = firedBy;
-        shot.r       = this.r;
+        shot.firedBy = firedBy; // indica da chi è sparato il colpo ( player, enemy )
+        shot.r       = this.c.BULLET_RADIUS;
         shot.index   = index;
-        shot.damage  = this.damage;
+        shot.damage  = this.c.BULLET_DAMAGE;
         this.list.push(shot);
     }
 
-    // se colpisce qualcosa si rimuove
-    hit(i) {
-        this.pool.push(this.list[i]);
-        this.list.splice(i, 1)
-    };
 }
 

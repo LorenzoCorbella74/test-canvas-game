@@ -1,6 +1,7 @@
+
 import { conf as c } from './config';
 
-export const map = [
+export const demoMap = [
     [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
     [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
     [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
@@ -83,52 +84,58 @@ export const types = [
 
 export class Map {
 
-    tileSize:          number  = c.TILE_SIZE;
+    tileSize:          number;
     mapSize:           any;
     camera:            any;
     powerup:           any;
     main:              any;
     c:                 any;
+    ctx:               any;
     map:               any;
-    currentVisibleMap: any = map;
+    currentVisibleMap: any = demoMap;
 
-    constructor(main: any) {
-        this.camera  = main.camera;
-        this.main    = main;
-        this.powerup = main.powerup;
-        this.c       = main.ctx;
-        this.map     = map;
+    constructor() {
+    }
+
+    init(main: any){
+        this.camera   = main.camera;
+        this.main     = main;
+        this.c        = main.c;
+        this.tileSize = this.c.TILE_SIZE;
+        this.powerup  = main.powerup;
+        this.ctx      = main.ctx;
+        this.map      = demoMap;
         // dimensioni in pixels
         this.mapSize = {
-            h:         (map.length * this.tileSize),
-            w:         (map[0].length * this.tileSize),
+            h:         (this.map.length * this.tileSize),
+            w:         (this.map[0].length * this.tileSize),
         }
-        console.log('Mappa: ', this.mapSize);
+        // console.log('Mappa: ', this.mapSize);
     }
 
     drawBorder(xPos: number, yPos: number, width: number, height: number, thickness = 1) {
-        this.c.fillStyle = 'white';
-        this.c.fillRect(xPos - (thickness), yPos - (thickness), width + (thickness * 2), height + (thickness * 2));
+        this.ctx.fillStyle = 'white';
+        this.ctx.fillRect(xPos - (thickness), yPos - (thickness), width + (thickness * 2), height + (thickness * 2));
     }
 
     render(progress:number) {
         var onXTile = Math.floor((this.camera.x + (this.camera.w / 2)) / this.tileSize);
         var onYTile = Math.floor((this.camera.y + (this.camera.h / 2)) / this.tileSize);
-        this.c.beginPath();
+        this.ctx.beginPath();
         for (let a = 0; a < types.length; a++) {    // per tutti i tipi di tile
             const key = types[a];
             for (let j = onYTile - 13; j < onYTile + 13; j++) { // sono 24 
                 for (let l = onXTile - 17; l < onXTile + 17; l++) {
-                    if (j >= 0 && l >= 0 && j < map.length && l < map[j].length) {
-                        if (map[j][l] == key.id) {
+                    if (j >= 0 && l >= 0 && j < this.map.length && l < this.map[j].length) {
+                        if (this.map[j][l] == key.id) {
                             this.currentVisibleMap[j][l] = key;
                         }
                         // si renderizza relativamente alla camera !!!
                         if(this.currentVisibleMap[j][l].solid!==1){
                             this.drawBorder(l * this.tileSize - this.camera.x, j * this.tileSize - this.camera.y, this.tileSize, this.tileSize);
                         }
-                        this.c.fillStyle = this.currentVisibleMap[j][l].colour;
-                        this.c.fillRect(l * this.tileSize - this.camera.x, j * this.tileSize - this.camera.y, this.tileSize, this.tileSize);
+                        this.ctx.fillStyle = this.currentVisibleMap[j][l].colour;
+                        this.ctx.fillRect(l * this.tileSize - this.camera.x, j * this.tileSize - this.camera.y, this.tileSize, this.tileSize);
                     } 
                 } 
             } 
@@ -140,10 +147,10 @@ export class Map {
         let output = {};
         output.spawn =[]; 
         output.powerup =[];
-        for (let j = 0; j < map.length; j++) {
-            for (let l = 0; l < map[j].length; l++) {
-                if (j >= 0 && l >= 0 && j < map.length && l < map[j].length) {
-                    if (map[j][l] == 2) {
+        for (let j = 0; j < this.map.length; j++) {
+            for (let l = 0; l < this.map[j].length; l++) {
+                if (j >= 0 && l >= 0 && j < this.map.length && l < this.map[j].length) {
+                    if (this.map[j][l] == 2) {
                         output.spawn.push({
                             x: l * this.tileSize - this.camera.x + 12.5,
                             y: j * this.tileSize - this.camera.y + 12.5
@@ -151,14 +158,14 @@ export class Map {
                     }
 
                     // POWERUPS
-                    if (map[j][l] == 10) {
+                    if (this.map[j][l] == 10) {
                         output.powerup.push({
                             x: l * this.tileSize - this.camera.x + 12.5,
                             y: j * this.tileSize - this.camera.y + 12.5,
                             type: 'health'
                         });
                     }
-                    if (map[j][l] == 12) {
+                    if (this.map[j][l] == 12) {
                         output.powerup.push({
                             x: l * this.tileSize - this.camera.x + 12.5,
                             y: j * this.tileSize - this.camera.y + 12.5,

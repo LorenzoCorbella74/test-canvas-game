@@ -88,10 +88,7 @@ export class ControlHandler {
                 this.main.paused= false;
             }
             if (this.main.state == 'statsScreen') {
-                this.main = new Game();
-                this.main.loadMenuScreen(this.main);
-                // this.main.startGame();
-                // this.player.loadDefault();
+                this.main.startGame();
             }
         }
 

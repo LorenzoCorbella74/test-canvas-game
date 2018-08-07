@@ -2,10 +2,10 @@ import { Enemy } from './enemies';
 import { PowerUp } from './powerup';
 import { ControlHandler } from './controller';
 import { Player } from './player';
-import { conf as c } from './config';
+import { Config } from './config';
 import { Camera } from './camera';
 import { Map } from './maps';
-import {Helper} from'./helper';
+/* import {Helper} from'./helper'; */
 
 import {BulletHandler} from './bullet';
 import { Particelle } from './particelle';
@@ -21,103 +21,105 @@ export default class Game {
     // CANVAS
     canvas:            HTMLCanvasElement;
     ctx:               CanvasRenderingContext2D;
-    width:             number = c.CANVAS_WIDTH; // window.innerWidth;
-    height:            number = c.CANVAS_HEIGHT; // window.innerHeight;
 
-    lastRender:number =0;
-    fps:number =0;
+    lastRender:number;
+    fps:number;
 
     // GAME ENTITIES
-    player:            Player;
-    enemy:             Enemy;
-    bullet:            BulletHandler;
-    camera:            Camera;
-    control:           ControlHandler;
-    powerup:           PowerUp;
-    particelle:        Particelle;
-    blood:             Blood;
-    currentMap:        Map;
+    player:     Player;
+    enemy:      Enemy;
+    bullet:     BulletHandler;
+    camera:     Camera;
+    control:    ControlHandler;
+    powerup:    PowerUp;
+    particelle: Particelle;
+    blood:      Blood;
+    currentMap: Map;
+    c:          Config;
     state:             string;
     timeleft:          number;
 
     // GAME PARAMETERS
-    start:         boolean = true;      // flags that you want the countdown to start
-    stopTime:      number  = 0;         // used to hold the stop time
-    stop:          boolean = false;     // flag to indicate that stop time has been reached
-    timeTillStop:  number  = 0;         // holds the display time
-    killsToWin:    number  = c.GAME_KILLS_TO_WIN;
-    matchDuration: number  = c.GAME_MATCH_DURATION;
-    numberOfBots:  number  = c.GAME_BOTS_PER_MATCH;
-    gameType:      string  = 'Deathmatch';           // TODO: sarà in seguito anche Team Deathmatch, Capture the flag, Skirmish
+    start:         boolean;     // flags that you want the countdown to start
+    stopTime:      number;      // used to hold the stop time
+    stop:          boolean;     // flag to indicate that stop time has been reached
+    timeTillStop:  number;      // holds the display time
+    killsToWin:    number;
+    matchDuration: number;
+    numberOfBots:  number;
+    gameType:      string;           // TODO: sarà in seguito anche Team Deathmatch, Capture the flag, Skirmish
     data:          any;
 
     // UI
-    fontFamily:        string = c.FONT_FAMILY;
+    fontFamily:        string;
     paused:boolean = false;
 
     constructor() {
         this.canvas        = <HTMLCanvasElement>document.getElementById('canvas');
-        this.canvas.width  = this.width;
-        this.canvas.height = this.height;
+        this.canvas.height = 600; // window.innerHeight
+        this.canvas.width  = 800; // window.innerWidth
         this.ctx           = this.canvas.getContext("2d");
-        
-        this.player        = new Player(this);  // PLAYER
-        this.enemy         = new Enemy(this);    // ENEMY
-        this.bullet        = new BulletHandler(this);
-        this.player.setShotHandler(this.bullet);
-        this.enemy.setShotHandler(this.bullet);
-
-        this.camera        = new Camera(0, 0, c.CANVAS_WIDTH, c.CANVAS_HEIGHT, this);
+        this.player        = new Player();  // PLAYER
+        this.enemy         = new Enemy();    // ENEMY
+        this.bullet        = new BulletHandler();
+        this.camera        = new Camera();
         this.control       = new ControlHandler(this);
-        this.currentMap    = new Map(this);
-        this.particelle    = new Particelle(this);
-        this.powerup       = new PowerUp(this);
-        this.blood         = new Blood(this);
+        this.currentMap    = new Map();
+        this.particelle    = new Particelle();
+        this.powerup       = new PowerUp();
+        this.blood         = new Blood();
         this.state         = 'loading';
-        // si lega gli handler dei controlli al player
-        this.player.setControlHandler(this.control);
-        this.player.isFollowedBY(this.camera, this.currentMap);
-        this.enemy.isFollowedBY(this.camera, this.currentMap);
-        
-        this.bullet.useIstance(this.currentMap, this.blood);
-        
-        // Camera is set to the player and on the default map
-        this.camera.setCurrentMap(this.currentMap);
-        this.camera.setCurrentPlayer(this.player);
     }
-
+    
     // fa partire il gameloop
-    startGame(restart:boolean = false) {
-        this.state         = 'game';
-        this.start         = true;      // flags that you want the countdown to start
-        this.stopTime      = 0;         // used to hold the stop time
-        this.stop          = false;     // flag to indicate that stop time has been reached
-        this.timeTillStop  = 0;         // holds the display time
-        this.killsToWin    = c.GAME_KILLS_TO_WIN;
-        this.matchDuration = c.GAME_MATCH_DURATION;
-        this.numberOfBots  = c.GAME_BOTS_PER_MATCH;
-        this.canvas.style.cursor='crosshair';
+    startGame() {
+        this.c = new Config();
+        this.canvas.height = this.c.CANVAS_HEIGHT; // window.innerHeight
+        this.canvas.width  = this.c.CANVAS_WIDTH; // window.innerWidth
+        this.state               = 'game';
+        this.start               = true;      // flags that you want the countdown to start
+        this.lastRender = 0;
+        this.fps = 0;
+        this.stopTime            = 0;         // used to hold the stop time
+        this.stop                = false;     // flag to indicate that stop time has been reached
+        this.timeTillStop        = 0;         // holds the display time
+        this.killsToWin          = this.c.GAME_KILLS_TO_WIN;
+        this.matchDuration       = this.c.GAME_MATCH_DURATION;
+        this.numberOfBots        = this.c.GAME_BOTS_PER_MATCH;
+        this.gameType            = 'Deathmatch'
+        this.canvas.style.cursor = 'crosshair';
+        this.fontFamily          = this.c.FONT_FAMILY
         
+        // bots names
         let botsArray = Array(this.numberOfBots).fill(null).map((e,i)=> i);
-        this.data = this.currentMap.loadSpawnPointsAndPowerUps();
         
+        // init entities
+        this.currentMap.init(this);
+        this.player.init(this);
+        this.camera.init(0, 0, this.c.CANVAS_WIDTH, this.c.CANVAS_HEIGHT, this);
+        this.enemy.init(this);
+        this.bullet.init(this);
+        this.blood.init(this);
+        this.particelle.init(this);
+        this.powerup.init(this);
+
+        // loading spawnPoint + powerups + weapons
+        this.data = this.currentMap.loadSpawnPointsAndPowerUps();
+
+         // POWERUP & WEAPONS
+         this.data.powerup.forEach((e:any) => {
+            this.powerup.create(e.x, e.y, e.type); // si crea il powerup
+        });
+
+        // si crea i nemici
         botsArray.forEach((elem:any, index:number) => {
             let e = this.data.spawn[index];
             this.enemy.create(e.x,e.y, index); // si crea un nemico
         });
-        
-        // POWERUP
-        this.data.powerup.forEach((e:any) => {
-            this.powerup.create(e.x, e.y, e.type); // si crea il powerup
-        });
 
-        if(restart){
-            this.player.respawn();
-        }else{
-            this.player.loadDefault();      // si inizializza il player
-        }
+        this.player.createPlayer();      // si inizializza il player
 
-        this.gameLoop(0);
+        requestAnimationFrame(this.gameLoop.bind(this));
     }
 
     private gameLoop(timestamp:number): void {
@@ -160,6 +162,7 @@ export default class Game {
             requestAnimationFrame(this.gameLoop.bind(this));
         } else {
             this.loadStatsScreen(this);
+            return;
         }
     }
 
@@ -189,35 +192,35 @@ export default class Game {
     }
 
     private renderHUD(progress:number) {
-        this.ctx.fillStyle = c.HUD_BACKGROUND;
-        this.ctx.fillRect(0, 0, c.CANVAS_WIDTH, c.TILE_SIZE);
+        this.ctx.fillStyle = this.c.HUD_BACKGROUND;
+        this.ctx.fillRect(0, 0, this.c.CANVAS_WIDTH, this.c.TILE_SIZE);
         this.ctx.textAlign = 'LEFT';
         this.ctx.font = 'bold 14px/1 Arial';
         this.ctx.fillStyle = '#565454';
-        this.ctx.fillText('HP ', 5, c.TILE_SIZE / 2);
-        this.ctx.fillText('AP ', 85, c.TILE_SIZE / 2);
-        this.ctx.fillText('Kills ', 165, c.TILE_SIZE / 2);
-        this.ctx.fillText('TIME ', 600, c.TILE_SIZE / 2);
-        this.ctx.fillText('FPS ', 700, c.TILE_SIZE / 2);
+        this.ctx.fillText('HP ', 5, this.c.TILE_SIZE / 2);
+        this.ctx.fillText('AP ', 85, this.c.TILE_SIZE / 2);
+        this.ctx.fillText('Kills ', 165, this.c.TILE_SIZE / 2);
+        this.ctx.fillText('TIME ', 600, this.c.TILE_SIZE / 2);
+        this.ctx.fillText('FPS ', 700, this.c.TILE_SIZE / 2);
         if(!this.player.alive){
-            this.ctx.fillText('Respawn in ', 400, c.TILE_SIZE / 2);
+            this.ctx.fillText('Respawn in ', 400, this.c.TILE_SIZE / 2);
         }
         this.ctx.font = 'bold 14px/1 Arial';
         this.ctx.fillStyle = 'yellow';
-        this.ctx.fillText(this.player.hp.toString(), 30, c.TILE_SIZE / 2);
-        this.ctx.fillText(this.player.ap.toString(), 110, c.TILE_SIZE / 2);
-        this.ctx.fillText(this.player.kills.toString(), 200, c.TILE_SIZE / 2);
-        this.ctx.fillText(this.timeTillStop.toString(), 640, c.TILE_SIZE / 2);
-        this.ctx.fillText(this.fps.toString(), 740, c.TILE_SIZE / 2);
+        this.ctx.fillText(this.player.hp.toString(), 30, this.c.TILE_SIZE / 2);
+        this.ctx.fillText(this.player.ap.toString(), 110, this.c.TILE_SIZE / 2);
+        this.ctx.fillText(this.player.kills.toString(), 200, this.c.TILE_SIZE / 2);
+        this.ctx.fillText(this.timeTillStop.toString(), 640, this.c.TILE_SIZE / 2);
+        this.ctx.fillText(this.fps.toString(), 740, this.c.TILE_SIZE / 2);
         if (!this.player.alive) {
-            this.timeleft = c.GAME_RESPAWN_TIME;
+            this.timeleft = this.c.GAME_RESPAWN_TIME;
             /* let countDownTimer = setInterval(() => {
                 this.timeleft--;
                 if (this.timeleft < 0){
                     clearInterval(countDownTimer);
                 }
             }, progress); */
-            this.ctx.fillText(Math.round(this.timeleft/1000).toString(), 500, c.TILE_SIZE / 2);
+            this.ctx.fillText(Math.round(this.timeleft/1000).toString(), 500, this.c.TILE_SIZE / 2);
         }
     }
 

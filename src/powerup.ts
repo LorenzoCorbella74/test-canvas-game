@@ -1,5 +1,4 @@
 import { Helper } from './helper';
-import { conf as c } from './config';
 
 export const tipiPowerUp = {
     'health': { hp:5, color:'blue', r:5 },
@@ -10,27 +9,40 @@ export const tipiPowerUp = {
 
 export class PowerUp {
 
-    // caratteristiche di ogni powerup
-    // radius: number = c.POWERUP_RADIUS;
-    // reloadRate: number  = 1000;   // cicli entro cui riappaiono una volta entrati in contatto
-    // visible:    boolean = true;
-
     list: any[] = [];
     pool: any[] = [];
 
-    player:  any;
-    bots:    any;
+    player:     any;
+    bots:       any;
     particelle: any;
-    ctx:     any;
-    main:    any;
+    ctx:        any;
+    main:       any;
+    c:          any;
 
-    constructor(main: any) {
+    constructor() { 
+    }
+
+    init(main: any){
+        this.list = [];
         this.main       = main;
+        this.c          = main.c;
         this.player     = main.player;
         this.bots       = main.enemy;
         this.ctx        = main.ctx;
         this.particelle = main.particelle;
     }
+
+    create(x: number, y: number, type: string) {
+        let tipo = tipiPowerUp[type];
+        let powerup        = this.pool.length > 0 ? this.pool.pop(): new Object();
+        powerup.x          = x;
+        powerup.y          = y;
+        powerup.reloadRate = 0;
+        powerup.visible    = true;
+        powerup.r          = tipo.r;
+        powerup.color      = tipo.color;
+        this.list.push(powerup);
+    };
 
     update(progress:number) {
         for (var i = this.list.length - 1; i >= 0; i--) {
@@ -62,7 +74,7 @@ export class PowerUp {
                 }
             }
 
-            if (powerup.reloadRate > c.POWERUP_SPAWN_TIME) {	// numero di cicli oltre il quale è nuovamente visibile
+            if (powerup.reloadRate > this.c.POWERUP_SPAWN_TIME) {	// numero di cicli oltre il quale è nuovamente visibile
                 powerup.visible = true;
                 powerup.reloadRate = 0;
             }
@@ -84,17 +96,5 @@ export class PowerUp {
 
         }
     }
-
-    create(x: number, y: number, type: string) {
-        let tipo = tipiPowerUp[type];
-        let powerup        = this.pool.length > 0 ? this.pool.pop(): new Object();
-        powerup.x          = x;
-        powerup.y          = y;
-        powerup.reloadRate = 0;
-        powerup.visible    = true;
-        powerup.r          = tipo.r;
-        powerup.color      = tipo.color;
-        this.list.push(powerup);
-    };
 }
 

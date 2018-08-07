@@ -25,49 +25,40 @@ export class Player {
 	canvas:  any;
 	ctx:     any;
 	camera:  any;
-	main:     any
+	main:    any
+	c:       any
 	map:     any
 	control: any;
 	bullet:  any;
 
 
-	constructor(main: any) {
-		this.main   = main;
-		this.canvas = main.canvas;
-		this.ctx    = main.ctx;
-		this.camera = main.camera;
-		this.map    = main.map;
-		// this.control = main.control;
-		// this.loadDefault();
+	constructor() {
 	}
 
-	loadDefault(){
+	init(main: any){
+		this.main    = main;
+		this.c       = main.c;
+		this.canvas  = main.canvas;
+		this.ctx     = main.ctx;
+		this.camera  = main.camera;
+		this.bullet  = main.bullet;
+		this.map     = main.currentMap;
+		this.control = main.control;
+	}
+
+	createPlayer(){
 		this.name = "Lorenzo";
-		this.respawn();
-		// this.x     = 400;
-		// this.y     = 300;
-		// this.r     = c.PLAYER_RADIUS
-		// this.speed = c.PLAYER_SPEED;	// è uguale in tutte le direzioni
-		// this.angle = 0;					// angolo tra asse x e puntatore del mouse
-		// this.hp    = c.PLAYER_HP;		// punti vita
-		// this.ap    = c.PLAYER_AP;		// punti armatura
+		this.x     = 400;
+		this.y     = 300;
+		this.r     = this.c.PLAYER_RADIUS
+		this.speed = this.c.PLAYER_SPEED;	// è uguale in tutte le direzioni
+		this.angle = 0;					// angolo tra asse x e puntatore del mouse
+		this.hp    = this.c.PLAYER_HP;		// punti vita
+		this.ap    = this.c.PLAYER_AP;		// punti armatura
 		this.kills = 0;					// uccisioni
-		// this.alive = true;				// 
+		this.alive = true;				// 
 		this.numberOfDeaths = 0;	    // numero di volte in cui è stato ucciso
-		// this.currentWeapon = c.PLAYER_STARTING_WEAPON;		// arma corrente
-	}
-
-	setControlHandler(control: any) {
-		this.control = control;
-	}
-
-	setShotHandler(handler: any) {
-		this.bullet = handler;
-	}
-
-	isFollowedBY(camera: any, map: any) {
-		this.camera = camera;
-		this.map = map
+		this.currentWeapon = this.c.PLAYER_STARTING_WEAPON;		// arma corrente
 	}
 
 	wheel(delta: number) {
@@ -83,16 +74,16 @@ export class Player {
 			// draw the colored region
 			this.ctx.beginPath();
 			this.ctx.arc(this.x - this.camera.x, this.y - this.camera.y, this.r, 0, 2 * Math.PI, true);
-			this.ctx.fillStyle = c.PLAYER_COLOUR_INSIDE;
+			this.ctx.fillStyle = this.c.PLAYER_COLOUR_INSIDE;
 			this.ctx.fill();
 
 			// draw the stroke
 			this.ctx.lineWidth = 2;
-			this.ctx.strokeStyle = c.PLAYER_COLOUR_OUTSIDE;
+			this.ctx.strokeStyle = this.c.PLAYER_COLOUR_OUTSIDE;
 			this.ctx.stroke();
 
 			// beccuccio arma
-			this.ctx.strokeStyle = c.PLAYER_COLOUR_OUTSIDE;
+			this.ctx.strokeStyle = this.c.PLAYER_COLOUR_OUTSIDE;
 			this.ctx.beginPath();
 			this.ctx.moveTo(this.x - this.camera.x, this.y - this.camera.y);
 			var pointerLength = 12.5;
@@ -109,24 +100,24 @@ export class Player {
 			this.x = spawn.x;
 			this.y = spawn.y;
 			this.camera.adjustCamera(this);
-			this.r     = c.PLAYER_RADIUS
-			this.speed = c.PLAYER_SPEED;	// è uguale in tutte le direzioni
+			this.r     = this.c.PLAYER_RADIUS
+			this.speed = this.c.PLAYER_SPEED;	// è uguale in tutte le direzioni
 			this.angle = 0;					// angolo tra asse x e puntatore del mouse
-			this.hp    = c.PLAYER_HP;		// punti vita
-			this.ap    = c.PLAYER_AP;		// punti armatura
+			this.hp    = this.c.PLAYER_HP;		// punti vita
+			this.ap    = this.c.PLAYER_AP;		// punti armatura
 			this.alive = true;				// il player è nuovamente presente in gioco
 			// this.kills = 0;				// si mantengono...
 			// this.numberOfDeaths = 0;	    // si mantengono...
-			this.currentWeapon = c.PLAYER_STARTING_WEAPON;		// arma corrente
+			this.currentWeapon = this.c.PLAYER_STARTING_WEAPON;		// arma corrente
 	}
 
 	// collisione tra elementi della stessa imensione (tile e player)
 	// SOURCE: https://codereview.stackexchange.com/questions/60439/2d-tilemap-collision-method
 	checkmove(x: number, y: number): boolean {
-		if (this.map.map[Math.floor(y / c.TILE_SIZE)][Math.floor(x / c.TILE_SIZE)].solid == 1
-			|| this.map.map[Math.floor(y / c.TILE_SIZE)][Math.ceil(x / c.TILE_SIZE)].solid == 1
-			|| this.map.map[Math.ceil(y / c.TILE_SIZE)][Math.floor(x / c.TILE_SIZE)].solid == 1
-			|| this.map.map[Math.ceil(y / c.TILE_SIZE)][Math.ceil(x / c.TILE_SIZE)].solid == 1) {
+		if (this.map.map[Math.floor(y / this.c.TILE_SIZE)][Math.floor(x / this.c.TILE_SIZE)].solid == 1
+			|| this.map.map[Math.floor(y / this.c.TILE_SIZE)][Math.ceil(x / this.c.TILE_SIZE)].solid == 1
+			|| this.map.map[Math.ceil(y / this.c.TILE_SIZE)][Math.floor(x / this.c.TILE_SIZE)].solid == 1
+			|| this.map.map[Math.ceil(y / this.c.TILE_SIZE)][Math.ceil(x / this.c.TILE_SIZE)].solid == 1) {
 			return false;
 		} else {
 			return true;
@@ -135,7 +126,7 @@ export class Player {
 
 	update(progress:number) {
 
-		this.attackCounter += 1;
+		this.attackCounter += progress;
 
 		if(this.alive){
 			if (this.control.w) { // W 
@@ -176,7 +167,7 @@ export class Player {
 				let dist = Math.sqrt(vX * vX + vY * vY);	// si calcola la distanza
 				vX /= dist;									// si normalizza
 				vY /= dist;
-				if (this.attackCounter > 4) {									// 4 è la frequenza di sparo
+				if (this.attackCounter > 200) {				// 200 è la frequenza di sparo = 5 colpi al sec
 					this.bullet.create(this.x, this.y, vX * 8, vY * 8, 'player');  // 8 è la velocità del proiettile
 					this.attackCounter = 0;
 				}

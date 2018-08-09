@@ -83,15 +83,15 @@ export class Enemy {
     // collisione tra elementi della stessa imensione (tile e player)
     // SOURCE: https://codereview.stackexchange.com/questions/60439/2d-tilemap-collision-method
     checkmove(x: number, y: number): boolean {
-        if (this.map.map[Math.floor(y / this.c.TILE_SIZE)][Math.floor(x / this.c.TILE_SIZE)].solid == 1
-            || this.map.map[Math.floor(y / this.c.TILE_SIZE)][Math.ceil(x / this.c.TILE_SIZE)].solid == 1
-            || this.map.map[Math.ceil(y / this.c.TILE_SIZE)][Math.floor(x / this.c.TILE_SIZE)].solid == 1
-            || this.map.map[Math.ceil(y / this.c.TILE_SIZE)][Math.ceil(x / this.c.TILE_SIZE)].solid == 1) {
-            return false;
-        } else {
-            return true;
-        }
-    }
+		if (this.map.map[Math.floor(y / this.c.TILE_SIZE)][Math.floor(x / this.c.TILE_SIZE)] == 1
+			|| this.map.map[Math.floor(y / this.c.TILE_SIZE)][Math.ceil(x / this.c.TILE_SIZE)] == 1
+			|| this.map.map[Math.ceil(y / this.c.TILE_SIZE)][Math.floor(x / this.c.TILE_SIZE)] == 1
+			|| this.map.map[Math.ceil(y / this.c.TILE_SIZE)][Math.ceil(x / this.c.TILE_SIZE)] == 1) {
+			return false;
+		} else {
+			return true;
+		}
+	}
 
     // trova quello con la distanza minore
     // TODO: si deve filtrare su quelli VICINI e VISIBILI non su tutti !!!!
@@ -137,7 +137,7 @@ export class Enemy {
                 obj.velY = (ty / dist) * obj.speed;
 
                 // si va verso il player 
-                if (dist > (150 - this.player.r)) {
+                if (dist > (25 - this.player.r)) {
                     // add our velocities
                     if (obj.velX > 0) {
                         obj.strategy.d = obj.velX;
@@ -156,6 +156,11 @@ export class Enemy {
                             if (obj.y - obj.r < this.camera.y) {
                                 obj.y = this.camera.y + obj.r;
                             }
+                            // collisione con il player
+                            if (Helper.circleCollision(obj, this.player)) {
+                                this.player.y -= 4 * obj.speed;
+                                obj.y += 2 * this.player.speed;
+                            }
                         }
                     }
                     if (obj.strategy.s) {	// S
@@ -163,6 +168,11 @@ export class Enemy {
                             obj.y += obj.speed;
                             if (obj.y + obj.r >= this.camera.y + this.camera.h) {
                                 obj.y = this.camera.y + this.camera.h - obj.r;
+                            }
+                            // collisione con il player
+                            if (Helper.circleCollision(obj, this.player)) {
+                                this.player.y += 4 * obj.speed;
+                                obj.y -= 2 * this.player.speed;
                             }
                         }
                     }
@@ -172,6 +182,11 @@ export class Enemy {
                             if (obj.x - obj.r < this.camera.x) {
                                 obj.x = this.camera.x + obj.r;
                             }
+                            // collisione con il player
+                            if (Helper.circleCollision(obj, this.player)) {
+                                this.player.x -= 4 * obj.speed;
+                                obj.x += 2 * this.player.speed;
+                            }
                         }
                     }
                     if (obj.strategy.d) {	// d
@@ -179,6 +194,11 @@ export class Enemy {
                             obj.x += obj.speed;
                             if (obj.x + obj.r >= this.map.mapSize.w) {
                                 obj.x = this.camera.x + this.camera.w - obj.r;
+                            }
+                            // collisione con il player 
+                            if (Helper.circleCollision(obj, this.player)) {
+                                this.player.x += 4 * obj.speed;
+                                obj.x -= 2 * this.player.speed;
                             }
                         }
                     }

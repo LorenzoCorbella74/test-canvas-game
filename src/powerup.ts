@@ -35,18 +35,27 @@ export class PowerUp {
     create(x: number, y: number, type: string) {
         let tipo = tipiPowerUp[type];
         let powerup        = this.pool.length > 0 ? this.pool.pop(): new Object();
-        powerup.x          = x;
-        powerup.y          = y;
-        powerup.reloadRate = 0;
-        powerup.visible    = true;
-        powerup.r          = tipo.r;
-        powerup.color      = tipo.color;
+        powerup.x            = x;
+        powerup.y            = y;
+        powerup.reloadRate   = 0;
+        powerup.visible      = true;
+        powerup.r            = tipo.r;
+        powerup.color        = tipo.color;
+        // animazione SOURCE: https://stackoverflow.com/questions/20445357/canvas-rotate-circle-in-certain-speed-using-requestanimationframe
+        powerup.startAngle   = 2*Math.PI;
+        powerup.endAngle     = Math.PI*1.5;
+        powerup.currentAngle = 0;
         this.list.push(powerup);
     };
 
     update(progress:number) {
         for (var i = this.list.length - 1; i >= 0; i--) {
             var powerup = this.list[i];
+
+            powerup.currentAngle += progress * 0.004;  // animazione...
+
+            /// reset angle
+            powerup.currentAngle %= 2 * Math.PI;
 
             if (!powerup.visible) {
                 powerup.reloadRate+= progress;  // si inizia a contare se non visibile
@@ -92,6 +101,12 @@ export class PowerUp {
                 this.ctx.fillStyle = powerup.color;
                 this.ctx.fill();
                 this.ctx.closePath()
+
+                this.ctx.beginPath();                  
+                this.ctx.arc(x, y, powerup.r + 2.5, powerup.startAngle + powerup.currentAngle, powerup.endAngle + powerup.currentAngle, false);
+                this.ctx.strokeStyle = powerup.color;
+                this.ctx.lineWidth = 2.0;
+                this.ctx.stroke();
             }
 
         }

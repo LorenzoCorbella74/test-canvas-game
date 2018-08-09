@@ -43,10 +43,10 @@ export class Particelle {
             var obj;
             for (var i = this.list.length - 1; i >= 0; i--) {
                 obj = this.list[i];
-                obj.x += -obj.vX;
-                obj.y += -obj.vY;
-                obj.vX *= 0.96;
-                obj.vY *= 0.96;
+                obj.x += - obj.vX; // si inverte il segno
+                obj.y += - obj.vY;   // si inverte il segno
+                obj.vX *= 0.97;
+                obj.vY *= 0.97;
                 obj.r -= 0.1;
                 if (obj.r <= 0) {
                     this.pool.push(obj);

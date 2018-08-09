@@ -26,6 +26,7 @@ export class Player {
 	ctx:     any;
 	camera:  any;
 	main:    any
+	enemy:    any
 	c:       any
 	map:     any
 	control: any;
@@ -41,6 +42,7 @@ export class Player {
 		this.canvas  = main.canvas;
 		this.ctx     = main.ctx;
 		this.camera  = main.camera;
+		this.enemy  = main.enemy;
 		this.bullet  = main.bullet;
 		this.map     = main.currentMap;
 		this.control = main.control;
@@ -111,18 +113,20 @@ export class Player {
 			this.currentWeapon = this.c.PLAYER_STARTING_WEAPON;		// arma corrente
 	}
 
-	// collisione tra elementi della stessa imensione (tile e player)
+	// collisione tra elementi della stessa dimensione (tile e player)
 	// SOURCE: https://codereview.stackexchange.com/questions/60439/2d-tilemap-collision-method
 	checkmove(x: number, y: number): boolean {
-		if (this.map.map[Math.floor(y / this.c.TILE_SIZE)][Math.floor(x / this.c.TILE_SIZE)].solid == 1
-			|| this.map.map[Math.floor(y / this.c.TILE_SIZE)][Math.ceil(x / this.c.TILE_SIZE)].solid == 1
-			|| this.map.map[Math.ceil(y / this.c.TILE_SIZE)][Math.floor(x / this.c.TILE_SIZE)].solid == 1
-			|| this.map.map[Math.ceil(y / this.c.TILE_SIZE)][Math.ceil(x / this.c.TILE_SIZE)].solid == 1) {
+		if (this.map.map[Math.floor(y / this.c.TILE_SIZE)][Math.floor(x / this.c.TILE_SIZE)] == 1
+			|| this.map.map[Math.floor(y / this.c.TILE_SIZE)][Math.ceil(x / this.c.TILE_SIZE)] == 1
+			|| this.map.map[Math.ceil(y / this.c.TILE_SIZE)][Math.floor(x / this.c.TILE_SIZE)] == 1
+			|| this.map.map[Math.ceil(y / this.c.TILE_SIZE)][Math.ceil(x / this.c.TILE_SIZE)] == 1) {
 			return false;
 		} else {
 			return true;
 		}
 	}
+
+
 
 	update(progress:number) {
 
@@ -130,11 +134,19 @@ export class Player {
 
 		if(this.alive){
 			if (this.control.w) { // W 
+				
 				if (this.checkmove(this.x - this.r, this.y - this.r - this.speed)) {
 					this.y -= this.speed;
 					if (this.y - this.r < this.camera.y) {
 						this.y = this.camera.y + this.r;
 					}
+					// collisione con nemici
+					// this.enemy.list.forEach((enemy:any) => {
+					// 	if(Helper.circleCollision(enemy, this)){
+					// 		this.y += 4*this.speed;
+					// 		enemy.y -= 2* this.speed;
+					// 	}
+					// });
 				}
 			}
 			if (this.control.s) {	// S
@@ -143,6 +155,13 @@ export class Player {
 					if (this.y + this.r >= this.camera.y + this.camera.h) {
 						this.y = this.camera.y + this.camera.h - this.r;
 					}
+					// collisione con nemici
+					// this.enemy.list.forEach((enemy:any) => {
+					// 	if(Helper.circleCollision(enemy, this)){
+					// 		this.y -= 4*this.speed;
+					// 		enemy.y +=2*this.speed;
+					// 	}
+					// });
 				}
 			}
 			if (this.control.a) {	// a
@@ -151,6 +170,13 @@ export class Player {
 					if (this.x - this.r < this.camera.x) {
 						this.x = this.camera.x + this.r;
 					}
+					// collisione con nemici
+					// this.enemy.list.forEach((enemy:any) => {
+					// 	if(Helper.circleCollision(enemy, this)){
+					// 		this.x += 4*this.speed;
+					// 		enemy.x -=2*this.speed;
+					// 	}
+					// });
 				}
 			}
 			if (this.control.d) {	// d
@@ -159,6 +185,13 @@ export class Player {
 					if (this.x + this.r >= this.map.mapSize.w) {
 						this.x = this.camera.x + this.camera.w - this.r;
 					}
+					// collisione con nemici
+					// this.enemy.list.forEach((enemy:any) => {
+					// 	if(Helper.circleCollision(enemy, this)){
+					// 		this.y -= 4* this.speed;
+					// 		enemy.x +=2* this.speed;
+					// 	}
+					// });
 				}
 			}
 			if (this.control.mouseLeft) {	// SE è PREMUTO IL btn del mouse

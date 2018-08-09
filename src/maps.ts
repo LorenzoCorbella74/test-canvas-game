@@ -118,28 +118,33 @@ export class Map {
         this.ctx.fillRect(xPos - (thickness), yPos - (thickness), width + (thickness * 2), height + (thickness * 2));
     }
 
-    render(progress:number) {
+    render(progress: number) {
         var onXTile = Math.floor((this.camera.x + (this.camera.w / 2)) / this.tileSize);
         var onYTile = Math.floor((this.camera.y + (this.camera.h / 2)) / this.tileSize);
         this.ctx.beginPath();
-        for (let a = 0; a < types.length; a++) {    // per tutti i tipi di tile
-            const key = types[a];
-            for (let j = onYTile - 13; j < onYTile + 13; j++) { // sono 24 
-                for (let l = onXTile - 17; l < onXTile + 17; l++) {
+        //for (let a = 0; a < types.length; a++) {    // per tutti i tipi di tile
+            //const key = types[a];
+            for (let j = onYTile - 13; j < onYTile + 13; j++) { // sono 24 righe
+                for (let l = onXTile - 17; l < onXTile + 17; l++) { // sono 32 colonne
                     if (j >= 0 && l >= 0 && j < this.map.length && l < this.map[j].length) {
-                        if (this.map[j][l] == key.id) {
-                            this.currentVisibleMap[j][l] = key;
-                        }
+                        // if (this.map[j][l] == key.id) {
+                        //     this.currentVisibleMap[j][l] = key;
+                        // }
                         // si renderizza relativamente alla camera !!!
-                        if(this.currentVisibleMap[j][l].solid!==1){
-                            this.drawBorder(l * this.tileSize - this.camera.x, j * this.tileSize - this.camera.y, this.tileSize, this.tileSize);
-                        }
-                        this.ctx.fillStyle = this.currentVisibleMap[j][l].colour;
+                        // if(this.map[j][l] == 1){
+                             this.drawBorder(l * this.tileSize - this.camera.x, j * this.tileSize - this.camera.y, this.tileSize, this.tileSize);
+                        //}
+                        this.ctx.fillStyle = this.map[j][l] == 1?'#868679':'#ddd5d5';
                         this.ctx.fillRect(l * this.tileSize - this.camera.x, j * this.tileSize - this.camera.y, this.tileSize, this.tileSize);
+                        
+                        this.ctx.font = 'bold 8px/1 Arial';
+                        this.ctx.fillStyle = '#494242';
+                        this.ctx.fillText(j.toString(), l * this.tileSize - this.camera.x +2, j * this.tileSize - this.camera.y + 10);
+                        this.ctx.fillText(l.toString(), l * this.tileSize - this.camera.x +2, j * this.tileSize - this.camera.y + 20);
                     } 
                 } 
             } 
-        }
+        //}
 
     }
 

@@ -19,6 +19,7 @@ export class Player {
 	numberOfDeaths: number;		// numero di volte in vui è stato ucciso
 
 	currentWeapon:  string;		// arma corrente
+	damage:  number;		// 1 capacità di far danno 1 normale 4 quaddamage
 	attackCounter: number = 0;	// frequenza di sparo
 	alive: boolean;		// se il player è vivo o morto ()
 
@@ -54,6 +55,7 @@ export class Player {
 		this.y     = 300;
 		this.r     = this.c.PLAYER_RADIUS
 		this.speed = this.c.PLAYER_SPEED;	// è uguale in tutte le direzioni
+		this.damage = 1;	// è uguale in tutte le direzioni
 		this.angle = 0;					// angolo tra asse x e puntatore del mouse
 		this.hp    = this.c.PLAYER_HP;		// punti vita
 		this.ap    = this.c.PLAYER_AP;		// punti armatura
@@ -104,6 +106,7 @@ export class Player {
 			this.camera.adjustCamera(this);
 			this.r     = this.c.PLAYER_RADIUS
 			this.speed = this.c.PLAYER_SPEED;	// è uguale in tutte le direzioni
+			this.damage = 1;	// è uguale in tutte le direzioni
 			this.angle = 0;					// angolo tra asse x e puntatore del mouse
 			this.hp    = this.c.PLAYER_HP;		// punti vita
 			this.ap    = this.c.PLAYER_AP;		// punti armatura
@@ -201,7 +204,7 @@ export class Player {
 				vX /= dist;									// si normalizza
 				vY /= dist;
 				if (this.attackCounter > 200) {				// 200 è la frequenza di sparo = 5 colpi al sec
-					this.bullet.create(this.x, this.y, vX * 8, vY * 8, 'player');  // 8 è la velocità del proiettile
+					this.bullet.create(this.x, this.y, vX * 8, vY * 8, 'player', null ,this.damage);  // 8 è la velocità del proiettile
 					this.attackCounter = 0;
 				}
 			}

@@ -53,6 +53,7 @@ export default class Game {
     // UI
     fontFamily:        string;
     paused:boolean = false;
+    debug:boolean = false;
 
     constructor() {
         this.canvas        = <HTMLCanvasElement>document.getElementById('canvas');

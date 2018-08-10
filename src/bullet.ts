@@ -199,7 +199,7 @@ export class BulletHandler {
         }
     }
 
-    create(x:number, y:number, vX:number, vY:number, firedBy:string, index:number) {
+    create(x:number, y:number, vX:number, vY:number, firedBy:string, index:number, damage?:number) {
         let shot     = this.pool.length > 0 ? this.pool.pop(): {};
         shot.old_x = x;
         shot.x     = x;
@@ -210,7 +210,7 @@ export class BulletHandler {
         shot.firedBy = firedBy; // indica da chi è sparato il colpo ( player, enemy )
         shot.r       = this.c.BULLET_RADIUS;
         shot.index   = index;
-        shot.damage  = this.c.BULLET_DAMAGE;
+        shot.damage  = damage || this.c.BULLET_DAMAGE;
         this.list.push(shot);
     }
 

@@ -109,7 +109,7 @@ export class PowerUp {
             // si guarda se i powerup entrano in contatto con il player
             if (powerup.visible && Helper.circleCollision(powerup, this.player)) {
                 for (var j = 0; j < 10; j++) {
-                    this.particelle.create(powerup.x, powerup.y, Math.random() * 2 - 5, Math.random() * 2 - 5, 2 , powerup.color)
+                    this.particelle.create(powerup.x, powerup.y, Math.random() * 2 - 2, Math.random() * 2 - 2, 2 , powerup.color)
                 }
                 powerup.visible = false;
                 if(powerup.duration){
@@ -123,7 +123,7 @@ export class PowerUp {
                 const bot = this.bots.list[i];
                 if (powerup.visible && Helper.circleCollision(powerup, bot)) {
                     for (var j = 0; j < 12; j++) {
-                        this.particelle.create(powerup.x, powerup.y, Math.random() * 2 - 5, Math.random() * 2 - 5, 5, powerup.color)
+                        this.particelle.create(powerup.x, powerup.y, Math.random() * 2 - 2, Math.random() * 2 - 2, 5, powerup.color)
                     }
                     powerup.visible = false;
                     if(powerup.duration){

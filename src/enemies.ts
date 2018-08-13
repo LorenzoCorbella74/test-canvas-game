@@ -2,6 +2,7 @@ import {Helper} from'./helper';
 
 export class Enemy {
 
+    // entities
     canvas: any;
     ctx:    any;
     camera: any;
@@ -14,9 +15,7 @@ export class Enemy {
     list:   any;
     pool:   any;
 
-    constructor() {
-
-    }
+    constructor() { }
 
     init(main:any){
         this.list   = [];
@@ -143,7 +142,7 @@ export class Enemy {
                 obj.velY = (ty / dist) * obj.speed;
 
                 // si va verso il player 
-                if (dist > (25 - this.player.r)) {
+                if (dist > (125 - this.player.r)) {
                     // add our velocities
                     if (obj.velX > 0) {
                         obj.strategy.d = obj.velX;
@@ -208,11 +207,11 @@ export class Enemy {
                             // }
                         }
                     }
-                    if (dist < 350 && this.checkIfIsSeen(this.player, obj)) {	// SE non troppo lontano SPARA!
+                    if (dist < 350 && this.checkIfIsSeen(this.player, obj)) {	// SE non troppo lontano e visibile SPARA!
                         let vX = (this.player.x - this.camera.x) - (obj.x - this.camera.x);
                         let vY = (this.player.y - this.camera.y) - (obj.y - this.camera.y);
                         let dist = Math.sqrt(vX * vX + vY * vY);	// si calcola la distanza
-                        vX /= dist;									// si normalizza
+                        vX /= dist;									// si normalizza e si calcola la direzione
                         vY /= dist;
                         if (obj.attackCounter > 200) {									// frequenza di sparo
                             this.bullet.create(obj.x, obj.y, vX * 8, vY * 8, 'enemy', i);  // 8 è la velocità del proiettile

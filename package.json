@@ -6,9 +6,9 @@
   "license": "MIT",
   "main": "index.js",
   "scripts": {
-    "start": "parcel serve src/index.html",
-    "build": "cross-env NODE_ENV=production parcel build src/index.html --public-url .",
-    "watch": "parcel watch src/index.html",
+    "start": "parcel serve index.html",
+    "build": "cross-env NODE_ENV=production parcel build index.html --public-url .",
+    "watch": "parcel watch index.html",
     "deploy": "npm run build"
   },
   "devDependencies": {

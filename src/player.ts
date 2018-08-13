@@ -73,12 +73,22 @@ export class Player {
 		}
 	};
 
+	private getPlayerColour(){
+		if(this.speed>5){
+			return 'yellow';
+		}
+		if(this.damage>1){
+			return 'violet';
+		}
+		return this.c.PLAYER_COLOUR_INSIDE;
+	}
+
 	render(progress:number) {
 		if(this.alive){	// solo se il player è vivo!
 			// draw the colored region
 			this.ctx.beginPath();
 			this.ctx.arc(this.x - this.camera.x, this.y - this.camera.y, this.r, 0, 2 * Math.PI, true);
-			this.ctx.fillStyle = this.c.PLAYER_COLOUR_INSIDE;
+			this.ctx.fillStyle = this.getPlayerColour();
 			this.ctx.fill();
 
 			// draw the stroke

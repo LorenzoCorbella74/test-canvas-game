@@ -210,7 +210,7 @@ export class BulletHandler {
         shot.firedBy = firedBy; // indica da chi è sparato il colpo ( player, enemy )
         shot.r       = this.c.BULLET_RADIUS;
         shot.index   = index;
-        shot.damage  = damage || this.c.BULLET_DAMAGE;
+        shot.damage  =damage? damage*this.c.BULLET_DAMAGE: this.c.BULLET_DAMAGE;
         this.list.push(shot);
     }
 

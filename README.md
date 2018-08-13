@@ -8,14 +8,12 @@ Esempio di shooter 2D realizzato per studiare il canvas e lo sviluppo di giochi 
 - [x] camera following different entities (player, bots) 
 - [x] collision system for all mouvable entities
 - [x] particles (debris, blood, explosion)
-- [x] powerups system with different respawn time
+- [ ] powerups system with different respawn time + counter
 - [ ] different weapons
 - [ ] different game modes (deathmatch, team deathmach, capture the flag, skirmish)
 - [ ] bots AI
 - [ ] music and effects
 - [ ] multiplayer
-
-
 - [ ] movimenti in funzione del tempo: [source](https://www.viget.com/articles/time-based-animation/)
 
 

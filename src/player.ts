@@ -106,13 +106,13 @@ export class Player {
 			this.camera.adjustCamera(this);
 			this.r     = this.c.PLAYER_RADIUS
 			this.speed = this.c.PLAYER_SPEED;	// è uguale in tutte le direzioni
-			this.damage = 1;	// è uguale in tutte le direzioni
-			this.angle = 0;					// angolo tra asse x e puntatore del mouse
+			this.damage = 1;					// è il moltiplicatore del danno (quad = 4)
+			this.angle = 0;						// angolo tra asse x e puntatore del mouse
 			this.hp    = this.c.PLAYER_HP;		// punti vita
 			this.ap    = this.c.PLAYER_AP;		// punti armatura
-			this.alive = true;				// il player è nuovamente presente in gioco
-			// this.kills = 0;				// si mantengono...
-			// this.numberOfDeaths = 0;	    // si mantengono...
+			this.alive = true;					// il player è nuovamente presente in gioco
+			// this.kills = 0;					// si mantengono...
+			// this.numberOfDeaths = 0;	    	// si mantengono...
 			this.currentWeapon = this.c.PLAYER_STARTING_WEAPON;		// arma corrente
 	}
 
@@ -129,11 +129,9 @@ export class Player {
 		}
 	}
 
-
-
 	update(progress:number) {
 
-		this.attackCounter += progress;
+		this.attackCounter += progress;	// contatore frequenza di sparo
 
 		if(this.alive){
 			if (this.control.w) { // W 

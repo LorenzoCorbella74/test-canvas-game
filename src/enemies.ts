@@ -76,6 +76,12 @@ export class Enemy {
                     obj.y  - this.camera.y + pointerLength * Math.sin(obj.angleWithPlayer)
                 );
                 this.ctx.stroke();
+
+                //if (this.main.debug) {
+                    this.ctx.font = 'bold 8px/1 Arial';
+                    this.ctx.fillStyle = 'white';
+                    this.ctx.fillText(obj.hp.toString(), obj.x - this.camera.x -5, obj.y - this.camera.y);
+                // }
             //}
         }
     }

@@ -157,10 +157,10 @@ export class Enemy {
                                 obj.y = this.camera.y + obj.r;
                             }
                             // collisione con il player
-                            if (Helper.circleCollision(obj, this.player)) {
-                                this.player.y -= 4 * obj.speed;
-                                obj.y += 2 * this.player.speed;
-                            }
+                            // if (Helper.circleCollision(obj, this.player)) {
+                            //     this.player.y -= 4 * obj.speed;
+                            //     obj.y += 2 * this.player.speed;
+                            // }
                         }
                     }
                     if (obj.strategy.s) {	// S
@@ -170,10 +170,10 @@ export class Enemy {
                                 obj.y = this.camera.y + this.camera.h - obj.r;
                             }
                             // collisione con il player
-                            if (Helper.circleCollision(obj, this.player)) {
-                                this.player.y += 4 * obj.speed;
-                                obj.y -= 2 * this.player.speed;
-                            }
+                            // if (Helper.circleCollision(obj, this.player)) {
+                            //     this.player.y += 4 * obj.speed;
+                            //     obj.y -= 2 * this.player.speed;
+                            // }
                         }
                     }
                     if (obj.strategy.a) {	// a
@@ -183,10 +183,10 @@ export class Enemy {
                                 obj.x = this.camera.x + obj.r;
                             }
                             // collisione con il player
-                            if (Helper.circleCollision(obj, this.player)) {
-                                this.player.x -= 4 * obj.speed;
-                                obj.x += 2 * this.player.speed;
-                            }
+                            // if (Helper.circleCollision(obj, this.player)) {
+                            //     this.player.x -= 4 * obj.speed;
+                            //     obj.x += 2 * this.player.speed;
+                            // }
                         }
                     }
                     if (obj.strategy.d) {	// d
@@ -196,10 +196,10 @@ export class Enemy {
                                 obj.x = this.camera.x + this.camera.w - obj.r;
                             }
                             // collisione con il player 
-                            if (Helper.circleCollision(obj, this.player)) {
-                                this.player.x += 4 * obj.speed;
-                                obj.x -= 2 * this.player.speed;
-                            }
+                            // if (Helper.circleCollision(obj, this.player)) {
+                            //     this.player.x += 4 * obj.speed;
+                            //     obj.x -= 2 * this.player.speed;
+                            // }
                         }
                     }
                     if (dist < 350 && this.checkIfIsSeen(this.player, obj)) {	// SE non troppo lontano SPARA!

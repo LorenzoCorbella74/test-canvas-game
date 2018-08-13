@@ -43,7 +43,7 @@ export class Player {
 		this.canvas  = main.canvas;
 		this.ctx     = main.ctx;
 		this.camera  = main.camera;
-		this.enemy  = main.enemy;
+		this.enemy   = main.enemy;
 		this.bullet  = main.bullet;
 		this.map     = main.currentMap;
 		this.control = main.control;

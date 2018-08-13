@@ -5,8 +5,8 @@ export const tipiPowerUp = {
     'megaHealth': { name: 'megaHealth', hp: 50, color: 'blue', r: 10, spawnTime: 30000 },
     'armour': { name: 'armour', ap: 5, color: 'green', r: 5,, spawnTime: 30000 },
     'megaArmour': { name: 'megaArmour', ap: 50, color: 'green', r: 10, spawnTime: 30000 },
-    'quad': { name: 'quad', moltiplier: 4, color: 'violet', r: 10, spawnTime: 30000, enterAfter: 1000, duration: 20000 },
-    'speed': { name: 'speed', moltiplier: 2, color: 'yellow', r: 10, spawnTime: 30000, enterAfter: 1000, duration: 20000 },
+    'quad': { name: 'quad', multiplier: 4, color: 'violet', r: 10, spawnTime: 30000, enterAfter: 1000, duration: 20000 },
+    'speed': { name: 'speed', multiplier: 2, color: 'yellow', r: 10, spawnTime: 30000, enterAfter: 1000, duration: 20000 },
 }
 
 export class PowerUp {
@@ -71,9 +71,9 @@ export class PowerUp {
         } else if (powerup.type.name=='megaArmour'){
             who.ap += powerup.type.ap;
         } else if (powerup.type.name=='quad'){
-            who.damage *= powerup.type.multiplier;
+             who.damage *= powerup.type.multiplier;
         } else if (powerup.type.name=='speed'){
-            who.speed *= powerup.type.multiplier;
+             who.speed *= powerup.type.multiplier;
         }
     }
 
@@ -102,7 +102,7 @@ export class PowerUp {
             }
 
             // se non è visibile e ha una durata inizia a contare la durata dell'effetto (quad, speed, etc)
-            if(!powerup.visible && powerup.duration){
+            if(!powerup.visible && powerup.duration && powerup.startDurationRate){
                 powerup.durationRate+= progress;
             }
 
@@ -112,6 +112,9 @@ export class PowerUp {
                     this.particelle.create(powerup.x, powerup.y, Math.random() * 2 - 5, Math.random() * 2 - 5, 2 , powerup.color)
                 }
                 powerup.visible = false;
+                if(powerup.duration){
+                    powerup.startDurationRate= true;
+                }  
                 this.upgrade(powerup, this.player);
             }
 
@@ -123,6 +126,9 @@ export class PowerUp {
                         this.particelle.create(powerup.x, powerup.y, Math.random() * 2 - 5, Math.random() * 2 - 5, 5, powerup.color)
                     }
                     powerup.visible = false;
+                    if(powerup.duration){
+                        powerup.startDurationRate= true;
+                    }  
                     this.upgrade(powerup, bot);
                 }
             }
@@ -132,10 +138,11 @@ export class PowerUp {
                 powerup.visible = true;
                 powerup.reloadRate = 0;
             }
-
+            
             // FINE EFFETTO 
             if(powerup.durationRate> powerup.duration){
                 this.deupgrade(powerup, this.player);   // FIXME: per ora è solo per il player...
+                powerup.startDurationRate= false;
                 powerup.durationRate = 0;
             }
         }
@@ -145,6 +152,7 @@ export class PowerUp {
         for (let i = this.list.length - 1; i >= 0; i--) {
             let powerup = this.list[i];
             if (powerup.visible) {
+                // centro pulsante
                 powerup.r1 =  2 + 0.1 + Math.sin(powerup.angleForDinamicRadius)*2;   // il sin va da -1 a +1
                 let x = powerup.x - this.main.camera.x;
                 let y = powerup.y - this.main.camera.y;
@@ -154,6 +162,7 @@ export class PowerUp {
                 this.ctx.fill();
                 this.ctx.closePath()
 
+                // cerchio esterno
                 this.ctx.beginPath();                  
                 this.ctx.arc(x, y, powerup.r + 2.5, powerup.startAngle + powerup.currentAngle, powerup.endAngle + powerup.currentAngle, false);
                 this.ctx.strokeStyle = powerup.color;

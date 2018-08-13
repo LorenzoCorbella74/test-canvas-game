@@ -7,7 +7,7 @@ export class Config {
     // GAME
     GAME_KILLS_TO_WIN:      number = 5;
     GAME_MATCH_DURATION:    number = 90000; // in ms 
-    GAME_BOTS_PER_MATCH:    number = 0;
+    GAME_BOTS_PER_MATCH:    number = 3;
     GAME_RESPAWN_TIME:      number = 3000;         // in ms
     
     // MAP
@@ -23,13 +23,13 @@ export class Config {
     PLAYER_COLOUR_OUTSIDE: string = '#4b58a0';
 
     // ENEMIES
-    ENEMY_SPEED:number = 3.5;
-    ENEMY_RADIUS:number = 12.5;
-    ENEMY_HP:number = 100;
-    ENEMY_AP:number = 100;
-    ENEMY_STARTING_WEAPON:string = 'rifle';
-    ENEMY_COLOUR_INSIDE:string = '#f90c00';
-    ENEMY_COLOUR_OUTSIDE:string = '#bb0b00';
+    ENEMY_SPEED:           number = 3.5;
+    ENEMY_RADIUS:          number = 12.5;
+    ENEMY_HP:              number = 100;
+    ENEMY_AP:              number = 100;
+    ENEMY_STARTING_WEAPON: string = 'rifle';
+    ENEMY_COLOUR_INSIDE:   string = '#f90c00';
+    ENEMY_COLOUR_OUTSIDE:  string = '#bb0b00';
     ENEMY_NAMES:string[] = ['Ranger','Phobos','Mynx','Orbb','Sarge','Grunt','Hunter','Klesk','Slash','Anarki','Razor','Visor','Bones','Doom','Major','Xaero'],
 
     // BULLETS

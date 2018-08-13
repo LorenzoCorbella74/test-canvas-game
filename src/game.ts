@@ -179,7 +179,7 @@ export default class Game {
     }
 
     renderAll(progress:number): void {
-        this.ctx.clearRect(0, 0, this.width, this.height);  // svuota il canvas
+        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);  // svuota il canvas
         this.currentMap.render(progress);
         this.player.render(progress);
         this.enemy.render(progress);

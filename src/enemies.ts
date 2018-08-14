@@ -1,86 +1,86 @@
-import {Helper} from'./helper';
+import { Helper } from './helper';
 
 export class Enemy {
 
     // entities
     canvas: any;
-    ctx:    any;
+    ctx: any;
     camera: any;
-    main:   any;
-    c:      any;
+    main: any;
+    c: any;
     player: any;
-    map:    any
+    map: any
     bullet: any;
 
-    list:   any;
-    pool:   any;
+    list: any;
+    pool: any;
 
     constructor() { }
 
-    init(main:any){
-        this.list   = [];
-        this.pool   = []
-        this.main   = main;
-        this.c      = main.c;
+    init(main: any) {
+        this.list = [];
+        this.pool = []
+        this.main = main;
+        this.c = main.c;
         this.player = main.player;
         this.canvas = main.canvas;
         this.camera = main.camera;
-        this.map    = main.currentMap;
+        this.map = main.currentMap;
         this.bullet = main.bullet;
-        this.ctx    = main.ctx;
+        this.ctx = main.ctx;
     }
 
-    create( x: number, y: number, num:number) {
-        let enemy:any = new Object();
-        enemy.id              = `BOT${num}`;
-        enemy.name            = Helper.getBotsName(this.c.ENEMY_NAMES);
-        enemy.x               = x || 75;
-        enemy.y               = y || 50;
-        enemy.r               = this.c.ENEMY_RADIUS;
-        enemy.velX            = 0;
-        enemy.velY            = 10;
+    create(x: number, y: number, num: number) {
+        let enemy: any = new Object();
+        enemy.id = `BOT${num}`;
+        enemy.name = Helper.getBotsName(this.c.ENEMY_NAMES);
+        enemy.x = x || 75;
+        enemy.y = y || 50;
+        enemy.r = this.c.ENEMY_RADIUS;
+        enemy.velX = 0;
+        enemy.velY = 10;
         enemy.angleWithPlayer = 0;
-        enemy.hp              = this.c.ENEMY_HP;
-        enemy.ap              = this.c.ENEMY_AP;
-        enemy.kills           = 0;
-        enemy.speed           = this.c.ENEMY_SPEED;
-        enemy.attackCounter   = 0;
-        enemy.strategy        = {};
-        enemy.numberOfDeaths  = 0;
+        enemy.hp = this.c.ENEMY_HP;
+        enemy.ap = this.c.ENEMY_AP;
+        enemy.kills = 0;
+        enemy.speed = this.c.ENEMY_SPEED;
+        enemy.attackCounter = 0;
+        enemy.strategy = {};
+        enemy.numberOfDeaths = 0;
         this.list[this.list.length] = enemy
     };
 
-    render(progress:number) {
+    render(progress: number) {
         for (let i = this.list.length - 1; i >= 0; i--) {
             const obj = this.list[i];
             //if (!obj.dead) {
-                // draw the colored region
-                this.ctx.beginPath();
-                this.ctx.arc(obj.x - this.camera.x, obj.y - this.camera.y, obj.r, 0, 2 * Math.PI, true);
-                this.ctx.fillStyle = this.c.ENEMY_COLOUR_INSIDE;
-                this.ctx.fill();
+            // draw the colored region
+            this.ctx.beginPath();
+            this.ctx.arc(obj.x - this.camera.x, obj.y - this.camera.y, obj.r, 0, 2 * Math.PI, true);
+            this.ctx.fillStyle = this.c.ENEMY_COLOUR_INSIDE;
+            this.ctx.fill();
 
-                // draw the stroke
-                this.ctx.lineWidth = 2;
-                this.ctx.strokeStyle = this.c.ENEMY_COLOUR_OUTSIDE;
-                this.ctx.stroke();
+            // draw the stroke
+            this.ctx.lineWidth = 2;
+            this.ctx.strokeStyle = this.c.ENEMY_COLOUR_OUTSIDE;
+            this.ctx.stroke();
 
-                // beccuccio arma
-                this.ctx.strokeStyle = this.c.ENEMY_COLOUR_OUTSIDE;
-                this.ctx.beginPath();
-                this.ctx.moveTo(obj.x - this.camera.x, obj.y - this.camera.y);
-                var pointerLength = this.c.ENEMY_RADIUS;
-                this.ctx.lineTo(
-                    obj.x  - this.camera.x + pointerLength * Math.cos(obj.angleWithPlayer),
-                    obj.y  - this.camera.y + pointerLength * Math.sin(obj.angleWithPlayer)
-                );
-                this.ctx.stroke();
+            // beccuccio arma
+            this.ctx.strokeStyle = this.c.ENEMY_COLOUR_OUTSIDE;
+            this.ctx.beginPath();
+            this.ctx.moveTo(obj.x - this.camera.x, obj.y - this.camera.y);
+            var pointerLength = this.c.ENEMY_RADIUS;
+            this.ctx.lineTo(
+                obj.x - this.camera.x + pointerLength * Math.cos(obj.angleWithPlayer),
+                obj.y - this.camera.y + pointerLength * Math.sin(obj.angleWithPlayer)
+            );
+            this.ctx.stroke();
 
-                //if (this.main.debug) {
-                    this.ctx.font = 'bold 8px/1 Arial';
-                    this.ctx.fillStyle = 'white';
-                    this.ctx.fillText(obj.hp.toString(), obj.x - this.camera.x -5, obj.y - this.camera.y);
-                // }
+            //if (this.main.debug) {
+            this.ctx.font = 'bold 8px/1 Arial';
+            this.ctx.fillStyle = 'white';
+            this.ctx.fillText(obj.hp.toString(), obj.x - this.camera.x - 5, obj.y - this.camera.y);
+            // }
             //}
         }
     }
@@ -88,30 +88,30 @@ export class Enemy {
     // collisione tra elementi della stessa imensione (tile e player)
     // SOURCE: https://codereview.stackexchange.com/questions/60439/2d-tilemap-collision-method
     checkmove(x: number, y: number): boolean {
-		if (this.map.map[Math.floor(y / this.c.TILE_SIZE)][Math.floor(x / this.c.TILE_SIZE)] == 1
-			|| this.map.map[Math.floor(y / this.c.TILE_SIZE)][Math.ceil(x / this.c.TILE_SIZE)] == 1
-			|| this.map.map[Math.ceil(y / this.c.TILE_SIZE)][Math.floor(x / this.c.TILE_SIZE)] == 1
-			|| this.map.map[Math.ceil(y / this.c.TILE_SIZE)][Math.ceil(x / this.c.TILE_SIZE)] == 1) {
-			return false;
-		} else {
-			return true;
-		}
-	}
+        if (this.map.map[Math.floor(y / this.c.TILE_SIZE)][Math.floor(x / this.c.TILE_SIZE)] == 1
+            || this.map.map[Math.floor(y / this.c.TILE_SIZE)][Math.ceil(x / this.c.TILE_SIZE)] == 1
+            || this.map.map[Math.ceil(y / this.c.TILE_SIZE)][Math.floor(x / this.c.TILE_SIZE)] == 1
+            || this.map.map[Math.ceil(y / this.c.TILE_SIZE)][Math.ceil(x / this.c.TILE_SIZE)] == 1) {
+            return false;
+        } else {
+            return true;
+        }
+    }
 
     // trova quello con la distanza minore
     // TODO: si deve filtrare su quelli VICINI e VISIBILI non su tutti !!!!
-    getNearest(origin:any, data: any){
-        let output:any = {dist:10000}; // elemento + vicino ad origin
-        data.powerup.forEach((e:any) => {
+    getNearest(origin: any, data: any) {
+        let output: any = { dist: 10000 }; // elemento + vicino ad origin
+        data.powerup.forEach((e: any) => {
             let distanza = Helper.calculateDistance(origin, e);
-            if(output.dist> distanza){
-                output = {dist: distanza, elem: e};
+            if (output.dist > distanza) {
+                output = { dist: distanza, elem: e };
             }
         });
         return output.elem;
     }
 
-    update(progress:number) {
+    update(progress: number) {
         for (let i = this.list.length - 1; i >= 0; i--) {
             const obj = this.list[i];
 
@@ -207,7 +207,7 @@ export class Enemy {
                             // }
                         }
                     }
-                    if (dist < 350 && this.checkIfIsSeen(this.player, obj)) {	// SE non troppo lontano e visibile SPARA!
+                    if (dist < 300 && this.checkIfIsSeen( this.player, obj)) {	// SE non troppo lontano e visibile SPARA!
                         let vX = (this.player.x - this.camera.x) - (obj.x - this.camera.x);
                         let vY = (this.player.y - this.camera.y) - (obj.y - this.camera.y);
                         let dist = Math.sqrt(vX * vX + vY * vY);	// si calcola la distanza
@@ -219,7 +219,7 @@ export class Enemy {
                         }
 
                     }
-                    
+
                 } else {
                     // si cerca il powerup + vicino
                     // console.log('si rimane fermi...');
@@ -228,15 +228,58 @@ export class Enemy {
         }
     }
 
-    checkIfIsSeen(obj1:any, obj2:any){
+    // se true è avvenuta la collisione se false no...
+    myCheckCollision(shot: any, map: any) {
+        if (shot.x - shot.old_x > 0 && map[Math.floor(shot.y / this.c.TILE_SIZE)][Math.floor((shot.x + this.c.BULLET_RADIUS) / this.c.TILE_SIZE)] == 1) {
+            shot.x = shot.old_x;
+            return true;
+        }
+        if (shot.x - shot.old_x > 0 && map[Math.floor(shot.y / this.c.TILE_SIZE)][Math.floor((shot.x - this.c.BULLET_RADIUS) / this.c.TILE_SIZE)] == 1) {
+            shot.x = shot.old_x;
+            return true;
+        }
+        if (shot.y + shot.old_y > 0 && map[Math.floor((shot.y + this.c.BULLET_RADIUS) / this.c.TILE_SIZE)][Math.floor(shot.x / this.c.TILE_SIZE)] == 1) {
+            shot.y = shot.old_y;
+            return true;
+        }
+        if (shot.y + shot.old_y < 0 && map[Math.floor((shot.y - this.c.BULLET_RADIUS) / this.c.TILE_SIZE)][Math.floor(shot.x / this.c.TILE_SIZE)] == 1) {
+            shot.y = shot.old_y;
+            return true;
+        }
+        return false;
+    }
 
-        // let obj1Tile = this.map.map[Math.floor(obj1.y / this.c.TILE_SIZE)][Math.floor(obj1.x / this.c.TILE_SIZE)];
-        // let obj2Tile = this.map.map[Math.floor(obj2.y / this.c.TILE_SIZE)][Math.floor(obj2.x / this.c.TILE_SIZE)];
-// 
-        // console.log(obj1Tile,obj2Tile)
+    checkIfIsSeen(obj1: any, obj2: any) {
 
-        return true;
-
+        return true
+        /* let ray = new Object();
+        ray.x = obj1.x;
+        ray.y = obj1.y;
+        ray.r = 2;
+        let vX = (obj1.x) - (obj2.x);
+        let vY = (obj1.y) - (obj2.y);
+        let dist = Math.sqrt(vX * vX + vY * vY);	// si calcola la distanza 
+        vX /= dist;									// si normalizza e si calcola la direzione
+        vY /= dist;
+        ray.old_X = ray.x;
+        ray.old_Y = ray.y;
+        ray.x += vX;
+        ray.y += vY;
+        //console.log(ray, dist);
+        let output;
+        for (let i = 0; i < dist; i+=5) {
+            output = this.myCheckCollision(ray, this.map.map);
+            if (!output) {  // se non è avvenuta si aggiorna le coordinate del raggio
+                ray.old_X = ray.x;
+                ray.old_Y = ray.y;
+                ray.x += vX;
+                ray.y += vY;
+                
+            }
+            console.log(ray, output);
+            break;
+        }
+        return output; */
     }
 
 }

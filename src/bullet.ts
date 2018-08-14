@@ -27,88 +27,25 @@ export class BulletHandler {
         this.blood       = main.blood;
     }
 
-    // collisione tra elementi della stessa imensione (tile e player)
-    // SOURCE: https://codereview.stackexchange.com/questions/60439/2d-tilemap-collision-method
-    checkmove(x: number, y: number): boolean {
-        if (this.map.map[Math.floor(y / this.c.TILE_SIZE)][Math.floor(x / this.c.TILE_SIZE)] == 1
-            || this.map.map[Math.floor(y / this.c.TILE_SIZE)][Math.ceil(x / this.c.TILE_SIZE)] == 1
-            || this.map.map[Math.ceil(y / this.c.TILE_SIZE)][Math.floor(x / this.c.TILE_SIZE)] == 1
-            || this.map.map[Math.ceil(y / this.c.TILE_SIZE)][Math.ceil(x / this.c.TILE_SIZE)] == 1) {
-            return false;
-        } else {
+    myCheckCollision(shot:any, map:any){
+        if (shot.x-shot.old_x>0 && map[Math.floor(shot.y / this.c.TILE_SIZE)][Math.floor((shot.x+this.c.BULLET_RADIUS) / this.c.TILE_SIZE)] == 1){
+            shot.x = shot.old_x;
             return true;
         }
-    }
-
-    check(shot, column, row) {
-
-    }
-
-    checkCollision(shot: any) {
-
-        // console.log(this.map, shot);
-
-        shot.left   = shot.x - this.c.BULLET_RADIUS + shot.vX;
-        shot.right  = shot.x + this.c.BULLET_RADIUS + shot.vX;
-        shot.bottom = shot.y - this.c.BULLET_RADIUS + shot.vY;
-        shot.top    = shot.y + this.c.BULLET_RADIUS + shot.vY;
-        let index: any = {};
-        let values: any = {};
-        let value_at_index: any;
-        // sono le i di map[j][i]
-        index.left  = Math.floor(shot.left / this.c.TILE_SIZE);
-        index.right = Math.floor(shot.right / this.c.TILE_SIZE);
-        // sono le j di map[j][i] 
-        index.bottom = Math.floor(shot.bottom / this.c.TILE_SIZE);
-        index.top    = Math.floor(shot.top / this.c.TILE_SIZE);
-
-        values.left   = index.left * this.c.TILE_SIZE;
-        values.right  = index.right * this.c.TILE_SIZE;
-        values.bottom = index.bottom * this.c.TILE_SIZE;
-        values.top    = index.top * this.c.TILE_SIZE;
-        console.log(index, values);
-
-        if (shot.x - shot.old_x < 0) {// test collision on left side of player if moving left
-            value_at_index = this.map.map[index.bottom][index.left];
-            if (value_at_index != 0) {// Check the bottom left point
-                this.check(shot, values.bottom, values.left);
-            }
-            value_at_index = this.map.map[index.top][index.left];
-            if (value_at_index != 0) {// Check the top left point
-                this.check(shot, values.top, values.left);
-            }
-        } else if (shot.x - shot.old_x > 0) {// Is the player moving right?
-            value_at_index = this.map.map[index.bottom][index.right];
-            if (value_at_index != 0) {// Check the bottom right point
-                this.check(shot, values.bottom, values.right);
-            }
-            value_at_index = this.map.map[index.top][index.right];
-            if (value_at_index != 0) {// Check the top right point
-                this.check(shot, values.top, values.right);
-            }
+        if(shot.x-shot.old_x>0 && map[Math.floor(shot.y / this.c.TILE_SIZE)][Math.floor((shot.x - this.c.BULLET_RADIUS)/ this.c.TILE_SIZE)] == 1) {
+            shot.x = shot.old_x;
+            return true;
         }
-        if (shot.y - shot.old_y < 0) {
-            value_at_index = this.map.map[index.top][index.left];
-            if (value_at_index != 0) {// Check the top left point
-                this.check(shot, values.top, values.left);
-            }
-            value_at_index = this.map.map[index.top][index.right];
-            if (value_at_index != 0) {// Check the top right point
-                this.check(shot, values.top, values.right);
-            }
-        } else if (shot.y - shot.old_y > 0) {
-            value_at_index = this.map.map[index.bottom][index.left];
-            if (value_at_index != 0) {// Check the bottom left point
-                this.check(shot, values.bottom, values.left);
-            }
-            value_at_index = this.map.map[index.bottom][index.right];
-            if (value_at_index != 0) {// Check the bottom right point
-                this.check(shot, values.bottom, values.right);
-            }
-            return false;
+        if(shot.y+shot.old_y>0 && map[Math.floor((shot.y+this.c.BULLET_RADIUS) / this.c.TILE_SIZE)][Math.floor(shot.x / this.c.TILE_SIZE)] == 1){
+            shot.y = shot.old_y;
+            return true;
         }
+        if(shot.y+shot.old_y<0 && map[Math.floor((shot.y-this.c.BULLET_RADIUS) / this.c.TILE_SIZE)][Math.floor(shot.x / this.c.TILE_SIZE)] == 1){
+            shot.y = shot.old_y;
+            return true;
+        } 
+        return false;
     }
-
 
     update(progress: number) {
         let shot, i;
@@ -119,14 +56,8 @@ export class BulletHandler {
             shot.x += shot.vX;
             shot.y += shot.vY;
 
-
             // collisione con i muri
-            if (/* !this.checkmove(shot.x - this.c.BULLET_RADIUS, shot.y - this.c.BULLET_RADIUS) || */
-                 !this.checkmove(shot.x + this.c.BULLET_RADIUS, shot.y - this.c.BULLET_RADIUS) ||
-                !this.checkmove(shot.x - this.c.BULLET_RADIUS, shot.y + this.c.BULLET_RADIUS) /* ||  
-                !this.checkmove(shot.x + this.c.BULLET_RADIUS, shot.y + this.c.BULLET_RADIUS) */
-                /* this.checkCollision(shot) */) {
-
+            if (this.myCheckCollision(shot, this.map.map)) {
                 // TODO: la velocità deve invertire su un solo asse quella del bullet...
                 this.main.particelle.create(shot.x, shot.y, Math.random() *shot.vX/3.5, Math.random() * shot.vY/3.5, this.c.DEBRIS_RADIUS)
                 this.pool.push(shot);

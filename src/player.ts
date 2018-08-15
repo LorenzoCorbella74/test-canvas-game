@@ -22,6 +22,7 @@ export class Player {
 	damage:  number;		// 1 capacità di far danno 1 normale 4 quaddamage
 	attackCounter: number = 0;	// frequenza di sparo
 	alive: boolean;		// se il player è vivo o morto ()
+	index: number;		// è l'id
 
 	canvas:  any;
 	ctx:     any;
@@ -51,8 +52,12 @@ export class Player {
 
 	createPlayer(){
 		this.name = "Lorenzo";
+		this.index = 11;
+		this.alive = true;				// 
+		// const spawn = Helper.getSpawnPoint(this.main.data.spawn);
 		this.x     = 400;
 		this.y     = 300;
+		//this.camera.adjustCamera(this);
 		this.r     = this.c.PLAYER_RADIUS
 		this.speed = this.c.PLAYER_SPEED;	// è uguale in tutte le direzioni
 		this.damage = 1;	// è uguale in tutte le direzioni
@@ -60,7 +65,6 @@ export class Player {
 		this.hp    = this.c.PLAYER_HP;		// punti vita
 		this.ap    = this.c.PLAYER_AP;		// punti armatura
 		this.kills = 0;					// uccisioni
-		this.alive = true;				// 
 		this.numberOfDeaths = 0;	    // numero di volte in cui è stato ucciso
 		this.currentWeapon = this.c.PLAYER_STARTING_WEAPON;		// arma corrente
 	}
@@ -111,6 +115,7 @@ export class Player {
 
 	respawn(){
 			const spawn = Helper.getSpawnPoint(this.main.data.spawn);
+			this.index = 100;
 			this.x = spawn.x;
 			this.y = spawn.y;
 			this.camera.setCurrentPlayer(this);

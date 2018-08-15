@@ -1,49 +1,49 @@
-import {Helper} from'./helper';
+import { Helper } from './helper';
 
 export class BulletHandler {
 
-    list:    any[]  = [];
-    pool:    any[]  = []
+    list: any[] = [];
+    pool: any[] = []
 
-    main:       any;
-    c:          any;
-    player:     any;
-    enemy:      any;
-    map:        any;
+    main: any;
+    c: any;
+    player: any;
+    enemy: any;
+    map: any;
     particelle: any;
-    blood:      any;
+    blood: any;
 
 
     constructor() { }
 
-    init(main: any){
+    init(main: any) {
         this.list.length = 0;
-        this.main        = main;
-        this.c           = main.c; 
-        this.player      = main.player;
-        this.enemy       = main.enemy;
-        this.particelle  = main.particelle;
-        this.map         = main.currentMap;
-        this.blood       = main.blood;
+        this.main = main;
+        this.c = main.c;
+        this.player = main.player;
+        this.enemy = main.enemy;
+        this.particelle = main.particelle;
+        this.map = main.currentMap;
+        this.blood = main.blood;
     }
 
-    myCheckCollision(shot:any, map:any){
-        if (shot.x-shot.old_x>0 && map[Math.floor(shot.y / this.c.TILE_SIZE)][Math.floor((shot.x+this.c.BULLET_RADIUS) / this.c.TILE_SIZE)] == 1){
+    myCheckCollision(shot: any, map: any) {
+        if (shot.x - shot.old_x > 0 && map[Math.floor(shot.y / this.c.TILE_SIZE)][Math.floor((shot.x + this.c.BULLET_RADIUS) / this.c.TILE_SIZE)] == 1) {
             shot.x = shot.old_x;
             return true;
         }
-        if(shot.x-shot.old_x>0 && map[Math.floor(shot.y / this.c.TILE_SIZE)][Math.floor((shot.x - this.c.BULLET_RADIUS)/ this.c.TILE_SIZE)] == 1) {
+        if (shot.x - shot.old_x > 0 && map[Math.floor(shot.y / this.c.TILE_SIZE)][Math.floor((shot.x - this.c.BULLET_RADIUS) / this.c.TILE_SIZE)] == 1) {
             shot.x = shot.old_x;
             return true;
         }
-        if(shot.y+shot.old_y>0 && map[Math.floor((shot.y+this.c.BULLET_RADIUS) / this.c.TILE_SIZE)][Math.floor(shot.x / this.c.TILE_SIZE)] == 1){
+        if (shot.y + shot.old_y > 0 && map[Math.floor((shot.y + this.c.BULLET_RADIUS) / this.c.TILE_SIZE)][Math.floor(shot.x / this.c.TILE_SIZE)] == 1) {
             shot.y = shot.old_y;
             return true;
         }
-        if(shot.y+shot.old_y<0 && map[Math.floor((shot.y-this.c.BULLET_RADIUS) / this.c.TILE_SIZE)][Math.floor(shot.x / this.c.TILE_SIZE)] == 1){
+        if (shot.y + shot.old_y < 0 && map[Math.floor((shot.y - this.c.BULLET_RADIUS) / this.c.TILE_SIZE)][Math.floor(shot.x / this.c.TILE_SIZE)] == 1) {
             shot.y = shot.old_y;
             return true;
-        } 
+        }
         return false;
     }
 
@@ -59,26 +59,56 @@ export class BulletHandler {
             // collisione con i muri
             if (this.myCheckCollision(shot, this.map.map)) {
                 // TODO: la velocità deve invertire su un solo asse quella del bullet...
-                this.main.particelle.create(shot.x, shot.y, Math.random() *shot.vX/3.5, Math.random() * shot.vY/3.5, this.c.DEBRIS_RADIUS)
+                this.main.particelle.create(shot.x, shot.y, Math.random() * shot.vX / 3.5, Math.random() * shot.vY / 3.5, this.c.DEBRIS_RADIUS)
                 this.pool.push(shot);
                 this.list.splice(i, 1);
                 continue
             }
 
+            // bullet sparati da bot a bot
+            let chiSpara = this.enemy.list[shot.index];
+            if (chiSpara) {
+                let chiSparaTarget = chiSpara.target || {};
+                if (shot.index == chiSpara.index && chiSparaTarget.alive && Helper.circleCollision(shot, chiSparaTarget)) {
+                    chiSparaTarget.hp -= shot.damage;
+                    chiSparaTarget.vX = shot.vX * 0.03;
+                    chiSparaTarget.vY = shot.vY * 0.03;
+                    shot.hp = -99;
+                    this.blood.create(shot.x, shot.y, Math.random() * 2 - 2, Math.random() * 2 - 2, this.c.BLOOD_RADIUS) // crea il sangue
+                    this.pool.push(shot);
+                    this.list.splice(i, 1);
+                    if (chiSparaTarget.hp <= 0) {
+                        chiSparaTarget.alive = false;
+                        chiSparaTarget.numberOfDeaths++;
+                        for (let b = 0; b < 36; b++) {
+                            this.blood.create(shot.x, shot.y, Math.random() * 2 - 2 * i, Math.random() * 2 - 2 * i, this.c.BLOOD_RADIUS) // crea il sangue
+                        }
+                        this.enemy.list[shot.index].kills++;    // si aumenta lo score del bot che ha sparato il proiettile
+                        setTimeout(() => {
+                            this.enemy.respawn(chiSparaTarget);
+                        }, this.c.GAME_RESPAWN_TIME);
+                    }
+                    this.pool.push(shot);
+                    this.list.splice(i, 1);
+                    continue
+                }
+            }
+
+
             // si guarda se i proiettili di qualche nemico impattano il player
-            if (shot.firedBy=='enemy' && this.player.alive && Helper.circleCollision(shot, this.player)) {
+            if (shot.firedBy == 'enemy' && this.player.alive && Helper.circleCollision(shot, this.player)) {
                 this.player.hp -= shot.damage;
                 this.player.vX = shot.vX * 0.03;
                 this.player.vY = shot.vY * 0.03;
                 shot.hp = -99;
-                this.blood.create(shot.x, shot.y,  Math.random() * 2 - 2, Math.random() * 2 - 2, this.c.BLOOD_RADIUS) // crea il sangue
+                this.blood.create(shot.x, shot.y, Math.random() * 2 - 2, Math.random() * 2 - 2, this.c.BLOOD_RADIUS) // crea il sangue
                 this.pool.push(shot);
                 this.list.splice(i, 1);
-                if(this.player.hp<=0){
+                if (this.player.hp <= 0) {
                     this.player.alive = false;
                     this.player.numberOfDeaths++;
                     for (let b = 0; b < 36; b++) {
-                        this.blood.create(shot.x, shot.y,  Math.random() * 2 - 2*i, Math.random() * 2 - 2*i, this.c.BLOOD_RADIUS) // crea il sangue
+                        this.blood.create(shot.x, shot.y, Math.random() * 2 - 2 * i, Math.random() * 2 - 2 * i, this.c.BLOOD_RADIUS) // crea il sangue
                     }
                     this.enemy.list[shot.index].kills++;    // si aumenta lo score del bot che ha sparato il proiettile
                     let currentActorInCamera = this.enemy.list[shot.index];
@@ -86,7 +116,7 @@ export class BulletHandler {
                     this.main.camera.adjustCamera(currentActorInCamera);
                     setTimeout(() => {
                         this.player.respawn();
-                    }, this.c.GAME_RESPAWN_TIME); 
+                    }, this.c.GAME_RESPAWN_TIME);
                 }
                 this.pool.push(shot);
                 this.list.splice(i, 1);
@@ -95,23 +125,23 @@ export class BulletHandler {
 
             // si guarda se i proiettili del player impattano qualche nemico
             for (let i = this.enemy.list.length - 1; i >= 0; i--) {
-                const obj = this.enemy.list[i];
-                if (shot.firedBy == 'player' && obj.alive && Helper.circleCollision(shot, obj)) {
-                    obj.hp -= shot.damage;
-                    obj.vX = shot.vX * 0.03;
-                    obj.vY = shot.vY * 0.03;
+                const bot = this.enemy.list[i];
+                if (shot.firedBy == 'player' && bot.alive && Helper.circleCollision(shot, bot)) {
+                    bot.hp -= shot.damage;
+                    bot.vX = shot.vX * 0.03;
+                    bot.vY = shot.vY * 0.03;
                     shot.hp = -99;
                     this.blood.create(shot.x, shot.y, Math.random() * 2 - 2, Math.random() * 2 - 2, this.c.BLOOD_RADIUS) // crea il sangue
-                    if (obj.hp <= 0) {
-                        obj.alive = false;
+                    if (bot.hp <= 0) {
+                        bot.alive = false;
                         this.player.kills++;
-                        obj.numberOfDeaths++;
+                        bot.numberOfDeaths++;
                         for (let b = 0; b < 36; b++) {
-                            this.blood.create(shot.x, shot.y,  Math.random() * 2 - 2*i, Math.random() * 2 - 2*i, this.c.BLOOD_RADIUS) // crea il sangue
+                            this.blood.create(shot.x, shot.y, Math.random() * 2 - 2 * i, Math.random() * 2 - 2 * i, this.c.BLOOD_RADIUS) // crea il sangue
                         }
                         setTimeout(() => {
-                            this.enemy.respawn(obj);
-                        }, this.c.GAME_RESPAWN_TIME); 
+                            this.enemy.respawn(bot);
+                        }, this.c.GAME_RESPAWN_TIME);
                     }
                     this.pool.push(shot);
                     this.list.splice(i, 1);
@@ -142,19 +172,19 @@ export class BulletHandler {
         }
     }
 
-    create(x:number, y:number, vX:number, vY:number, firedBy:string, index:number, damage?:number) {
-        let shot     = this.pool.length > 0 ? this.pool.pop(): {};
+    create(x: number, y: number, vX: number, vY: number, firedBy: string, index: number, damage?: number) {
+        let shot = this.pool.length > 0 ? this.pool.pop() : {};
         shot.old_x = x;
-        shot.x     = x;
+        shot.x = x;
         shot.old_y = y;
-        shot.y     = y;
-        shot.vX    = vX;
-        shot.vY    = vY;
+        shot.y = y;
+        shot.vX = vX;
+        shot.vY = vY;
         shot.firedBy = firedBy; // indica da chi è sparato il colpo ( player, enemy )
-        shot.r       = this.c.BULLET_RADIUS;
-        shot.ttl     = this.c.BULLET_TTL;
-        shot.index   = index;   // è l'id del 
-        shot.damage  =damage? damage*this.c.BULLET_DAMAGE: this.c.BULLET_DAMAGE;
+        shot.r = this.c.BULLET_RADIUS;
+        shot.ttl = this.c.BULLET_TTL;
+        shot.index = index;   // è l'id del 
+        shot.damage = damage ? damage * this.c.BULLET_DAMAGE : this.c.BULLET_DAMAGE;
         this.list.push(shot);
     }
 

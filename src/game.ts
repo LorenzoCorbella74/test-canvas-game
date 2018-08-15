@@ -50,6 +50,8 @@ export default class Game {
     gameType:      string;           // TODO: sarà in seguito anche Team Deathmatch, Capture the flag, Skirmish
     data:          any;
 
+    actors:any[];
+
     // UI
     fontFamily:        string;
     paused:boolean = false;
@@ -89,7 +91,8 @@ export default class Game {
         this.numberOfBots        = this.c.GAME_BOTS_PER_MATCH;
         this.gameType            = 'Deathmatch'
         this.canvas.style.cursor = 'crosshair';
-        this.fontFamily          = this.c.FONT_FAMILY
+        this.fontFamily          = this.c.FONT_FAMILY;
+        this.actors = [];
         
         // bots names
         let botsArray = Array(this.numberOfBots).fill(null).map((e,i)=> i);
@@ -112,13 +115,16 @@ export default class Game {
             this.powerup.create(e.x, e.y, e.type); // si crea il powerup
         });
 
-        // si crea i nemici
+        // si crea i bots
         botsArray.forEach((elem:any, index:number) => {
             let e = this.data.spawn[index];
-            this.enemy.create(e.x,e.y, index); // si crea un nemico
+            let bot = this.enemy.create(e.x,e.y, index); // si crea un nemico
+            this.actors.push(bot);
         });
 
         this.player.createPlayer();      // si inizializza il player
+        this.actors.push(this.player);
+        
 
         requestAnimationFrame(this.gameLoop.bind(this));
     }
@@ -262,7 +268,7 @@ export default class Game {
         var dark = 'rgba(0,0,0)';
         var medium = 'rgba(0,0,0)';
         var light = 'rgba(0,0,0)';
-        this.textONCanvas(main.ctx, 'Corbe Shooter 2D',hW, hH - 100, 'normal 21px/1 ' + main.fontFamily, light);
+        this.textONCanvas(main.ctx, 'Corbe Shooter 2D',hW, hH - 150, 'normal 42px/1 ' + main.fontFamily, light);
         this.textONCanvas(main.ctx, 'Partita completata!', hW, hH - 70, 'normal 22px/1 ' + main.fontFamily, dark);
         this.textONCanvas(main.ctx, `${main.player.name} - ${main.player.kills} - ${main.player.numberOfDeaths}`, hW, hH - 30, 'normal 16px/1 ' + main.fontFamily, medium);
         for (let i = 0; i < this.enemy.list.length; i++) {

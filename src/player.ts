@@ -113,6 +113,7 @@ export class Player {
 			const spawn = Helper.getSpawnPoint(this.main.data.spawn);
 			this.x = spawn.x;
 			this.y = spawn.y;
+			this.camera.setCurrentPlayer(this);
 			this.camera.adjustCamera(this);
 			this.r     = this.c.PLAYER_RADIUS
 			this.speed = this.c.PLAYER_SPEED;	// è uguale in tutte le direzioni

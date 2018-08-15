@@ -49,28 +49,30 @@ export class Enemy {
         enemy.strategy = {};
         enemy.kills = 0;
         enemy.numberOfDeaths = 0;
+        enemy.target = null;
         this.list[this.list.length] = enemy
     };
 
-    respawn(bot:any){
+    respawn(bot: any) {
         const spawn = Helper.getSpawnPoint(this.main.data.spawn);
-        bot.x    = spawn.x;
-        bot.y    = spawn.y;
-        bot.r    = this.c.ENEMY_RADIUS;
+        bot.x = spawn.x;
+        bot.y = spawn.y;
+        bot.r = this.c.ENEMY_RADIUS;
         bot.velX = 0;
         bot.velY = 0;
         // bot.camera.adjustCamera(this);
         bot.speed = this.c.ENEMY_SPEED;	// è uguale in tutte le direzioni
         bot.damage = 1;					// è il moltiplicatore del danno (quad = 4)
         bot.angleWithTarget = 0;		// angolo tra asse x e precedente target
-        bot.hp    = this.c.PLAYER_HP;		// punti vita
-        bot.ap    = this.c.PLAYER_AP;		// punti armatura
-        bot.alive = true;					// il player è nuovamente presente in gioco
-        // this.kills = 0;					// si mantengono...
-        // this.numberOfDeaths = 0;	    	// si mantengono...
+        bot.hp = this.c.PLAYER_HP;		// punti vita
+        bot.ap = this.c.PLAYER_AP;		// punti armatura
+        bot.alive = true;			    // il bot è nuovamente presente in gioco
+        // this.kills = 0;				// si mantengono...
+        // this.numberOfDeaths = 0;	    // si mantengono...
+        bot.target = null;
         bot.attackCounter = 0;
         bot.currentWeapon = this.c.PLAYER_STARTING_WEAPON;		// arma corrente
-}
+    }
 
     render(progress: number) {
         for (let i = this.list.length - 1; i >= 0; i--) {

@@ -68,8 +68,8 @@ export class BulletHandler {
             // si guarda se i proiettili di qualche nemico impattano il player
             if (shot.firedBy=='enemy' && this.player.alive && Helper.circleCollision(shot, this.player)) {
                 this.player.hp -= shot.damage;
-                // this.player.vX = shot.vX * 0.03;
-                // this.player.vY = shot.vY * 0.03;
+                this.player.vX = shot.vX * 0.03;
+                this.player.vY = shot.vY * 0.03;
                 shot.hp = -99;
                 this.blood.create(shot.x, shot.y,  Math.random() * 2 - 2, Math.random() * 2 - 2, this.c.BLOOD_RADIUS) // crea il sangue
                 this.pool.push(shot);
@@ -77,29 +77,38 @@ export class BulletHandler {
                 if(this.player.hp<=0){
                     this.player.alive = false;
                     this.player.numberOfDeaths++;
+                    for (let b = 0; b < 36; b++) {
+                        this.blood.create(shot.x, shot.y,  Math.random() * 2 - 2*i, Math.random() * 2 - 2*i, this.c.BLOOD_RADIUS) // crea il sangue
+                    }
                     this.enemy.list[shot.index].kills++;    // si aumenta lo score del bot che ha sparato il proiettile
                     setTimeout(() => {
                         this.player.respawn();
                     }, this.c.GAME_RESPAWN_TIME); 
                 }
+                this.pool.push(shot);
+                this.list.splice(i, 1);
                 continue
             }
 
             // si guarda se i proiettili del player impattano qualche nemico
             for (let i = this.enemy.list.length - 1; i >= 0; i--) {
                 const obj = this.enemy.list[i];
-                if (shot.firedBy == 'player'&& Helper.circleCollision(shot, obj)) {
+                if (shot.firedBy == 'player' && obj.alive && Helper.circleCollision(shot, obj)) {
                     obj.hp -= shot.damage;
-                    // obj.vX = shot.vX * 0.03;
-                    // obj.vY = shot.vY * 0.03;
+                    obj.vX = shot.vX * 0.03;
+                    obj.vY = shot.vY * 0.03;
                     shot.hp = -99;
                     this.blood.create(shot.x, shot.y, Math.random() * 2 - 2, Math.random() * 2 - 2, this.c.BLOOD_RADIUS) // crea il sangue
                     if (obj.hp <= 0) {
+                        obj.alive = false;
                         this.player.kills++;
                         obj.numberOfDeaths++;
-                        // TODO: RESPAWN: al momento ora i nemici si tolgono dall'array...
-                         this.enemy.pool[this.enemy.pool.length] = shot;
-                         this.enemy.list.splice(i, 1);
+                        for (let b = 0; b < 36; b++) {
+                            this.blood.create(shot.x, shot.y,  Math.random() * 2 - 2*i, Math.random() * 2 - 2*i, this.c.BLOOD_RADIUS) // crea il sangue
+                        }
+                        setTimeout(() => {
+                            this.enemy.respawn(obj);
+                        }, this.c.GAME_RESPAWN_TIME); 
                     }
                     this.pool.push(shot);
                     this.list.splice(i, 1);
@@ -108,8 +117,8 @@ export class BulletHandler {
             }
 
             // decremento del proiettile
-            shot.r -= 0.035;
-            if (shot.r <= 1) {
+            shot.ttl -= progress;
+            if (shot.ttl <= 0) {
                 this.pool.push(shot);
                 this.list.splice(i, 1);
                 continue
@@ -117,7 +126,7 @@ export class BulletHandler {
         }
     }
 
-    render(progress:number) {
+    render(progress: number) {
         for (let j = this.list.length - 1; j >= 0; j--) {
             const obj = this.list[j];
             let x = obj.x - this.main.camera.x;
@@ -140,7 +149,8 @@ export class BulletHandler {
         shot.vY    = vY;
         shot.firedBy = firedBy; // indica da chi è sparato il colpo ( player, enemy )
         shot.r       = this.c.BULLET_RADIUS;
-        shot.index   = index;
+        shot.ttl     = this.c.BULLET_TTL;
+        shot.index   = index;   // è l'id del 
         shot.damage  =damage? damage*this.c.BULLET_DAMAGE: this.c.BULLET_DAMAGE;
         this.list.push(shot);
     }

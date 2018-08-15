@@ -33,8 +33,9 @@ export class Config {
     ENEMY_NAMES:string[] = ['Ranger','Phobos','Mynx','Orbb','Sarge','Grunt','Hunter','Klesk','Slash','Anarki','Razor','Visor','Bones','Doom','Major','Xaero'],
 
     // BULLETS
-    BULLET_RADIUS:number = 3;
+    BULLET_RADIUS:number = 2.5;
     BULLET_DAMAGE:number = 5;
+    BULLET_TTL:number = 1000;
     
     // DETRITI
     DEBRIS_COLOR:string[] = ['#800000','#812314','#823624','#814734','#7e5544','#796556','#727267']; // from maroon to #727267

@@ -212,7 +212,7 @@ export class Player {
 				vX /= dist;									// si normalizza
 				vY /= dist;
 				if (this.attackCounter > 200) {				// 200 è la frequenza di sparo = 5 colpi al sec
-					this.bullet.create(this.x, this.y, vX * 8, vY * 8, 'player', null ,this.damage);  // 8 è la velocità del proiettile
+					this.bullet.create(this.x, this.y, vX * 8, vY * 8, 'player', 100 ,this.damage);  // 8 è la velocità del proiettile
 					this.attackCounter = 0;
 				}
 			}

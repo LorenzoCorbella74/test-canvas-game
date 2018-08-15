@@ -50,6 +50,7 @@ export class Enemy {
         enemy.kills                 = 0;
         enemy.numberOfDeaths        = 0;
         enemy.target                = {};
+        enemy.targetItem            = {};
         this.list[this.list.length] = enemy;
         return enemy;
     };
@@ -71,9 +72,20 @@ export class Enemy {
         // this.kills = 0;				// si mantengono...
         // this.numberOfDeaths = 0;	    // si mantengono...
         bot.target                = {};
+        bot.targetItem            = {};
         bot.attackCounter = 0;
         bot.currentWeapon = this.c.PLAYER_STARTING_WEAPON;		// arma corrente
     }
+
+    private getBotColour(bot){
+		if(bot.speed>5){
+			return 'yellow';
+		}
+		if(bot.damage>1){
+			return 'violet';
+		}
+		return this.c.ENEMY_COLOUR_INSIDE;
+	}
 
     render(progress: number) {
         for (let i = this.list.length - 1; i >= 0; i--) {
@@ -82,7 +94,7 @@ export class Enemy {
                 // draw the colored region
                 this.ctx.beginPath();
                 this.ctx.arc(bot.x - this.camera.x, bot.y - this.camera.y, bot.r, 0, 2 * Math.PI, true);
-                this.ctx.fillStyle = this.c.ENEMY_COLOUR_INSIDE;
+                this.ctx.fillStyle = this.getBotColour(bot);;
                 this.ctx.fill();
 
                 // draw the stroke
@@ -106,8 +118,9 @@ export class Enemy {
                     this.ctx.fillStyle = 'white';
                     this.ctx.fillText(bot.hp.toString(), bot.x - this.camera.x - 5, bot.y - this.camera.y);
                     this.ctx.fillStyle = 'black';
-                    this.ctx.fillText(bot.index.toString(), bot.x - this.camera.x - 5, bot.y - this.camera.y -12);
-                    this.ctx.fillText(bot.target? bot.target.index.toString():'', bot.x - this.camera.x + 5, bot.y - this.camera.y -12);
+                    this.ctx.fillText(bot.index.toString(), bot.x - this.camera.x - 5, bot.y - this.camera.y -16);
+                    this.ctx.fillText(bot.target? bot.target.index.toString():'', bot.x - this.camera.x + 5, bot.y - this.camera.y -16);
+                    this.ctx.fillText(bot.targetItem && bot.targetItem.index? bot.targetItem.index.toString():'', bot.x - this.camera.x + 5, bot.y - this.camera.y +16);
                 //}
             }
         }
@@ -130,7 +143,9 @@ export class Enemy {
     // TODO: si deve filtrare su quelli VICINI e VISIBILI non su tutti !!!!
     getNearestPowerup(origin: any, data: any) {
         let output: any = { dist: 10000 }; // elemento + vicino ad origin
-        data.powerup.forEach((e: any) => {
+        data
+        .filter((elem:any)=> elem.visible==true) // si esclude quelli non visibili
+        .forEach((e: any) => {
             let distanza = Helper.calculateDistance(origin, e);
             if (output.dist > distanza && distanza < 350) {
                 output = { dist: distanza, elem: e };
@@ -150,6 +165,35 @@ export class Enemy {
             }
         });
         return output.elem;
+    }
+
+    collectPowerUps(bot: any){
+        bot.angleWithTarget = Helper.calculateAngle(bot.x - this.camera.x, bot.y - this.camera.y, bot.targetItem.x - this.camera.x, bot.targetItem.y - this.camera.y);
+        // We need to get the distance
+        var tx = bot.targetItem.x - bot.x,
+            ty = bot.targetItem.y - bot.y,
+            dist = Math.sqrt(tx * tx + ty * ty);
+        bot.velX = (tx / dist);
+        bot.velY = (ty / dist);
+
+        // si va verso il powerup 
+        if (dist > 0) {
+            if (bot.velX > 0) {
+                bot.strategy.d = true;
+                bot.strategy.a = false;
+            } else {
+                bot.strategy.a = true;
+                bot.strategy.d = false;
+            }
+            if (bot.velY > 0) {
+                bot.strategy.s = true;
+                bot.strategy.w = false;
+            } else {
+                bot.strategy.w = true;
+                bot.strategy.s = false;
+            }
+        } 
+        this.checkCollision(bot);
     }
 
     attackEnemy(bot: any, index:number, progress: number) {
@@ -197,6 +241,22 @@ export class Enemy {
             }
         }
 
+        this.checkCollision(bot);
+
+        if (dist < 300 && this.checkIfIsSeen(bot.target, bot)) {	// SE non troppo lontano e visibile SPARA!
+            let vX = (bot.target.x - this.camera.x) - (bot.x - this.camera.x);
+            let vY = (bot.target.y - this.camera.y) - (bot.y - this.camera.y);
+            let dist = Math.sqrt(vX * vX + vY * vY);	// si calcola la distanza
+            vX /= dist;									// si normalizza e si calcola la direzione
+            vY /= dist;
+            if (bot.attackCounter > 200) {									// frequenza di sparo
+                this.bullet.create(bot.x, bot.y, vX * 8, vY * 8, 'enemy', index, bot.damage);  // 8 è la velocità del proiettile
+                bot.attackCounter = 0;
+            }
+        }
+    }
+
+    checkCollision(bot:any){
         if (bot.strategy.w) { // W 
             if (this.checkmove(bot.x - bot.r, bot.y - bot.r - bot.speed)) {
                 bot.y -= bot.speed;
@@ -249,31 +309,21 @@ export class Enemy {
                 // }
             }
         }
-
-        if (dist < 300 && this.checkIfIsSeen(bot.target, bot)) {	// SE non troppo lontano e visibile SPARA!
-            let vX = (bot.target.x - this.camera.x) - (bot.x - this.camera.x);
-            let vY = (bot.target.y - this.camera.y) - (bot.y - this.camera.y);
-            let dist = Math.sqrt(vX * vX + vY * vY);	// si calcola la distanza
-            vX /= dist;									// si normalizza e si calcola la direzione
-            vY /= dist;
-            if (bot.attackCounter > 200) {									// frequenza di sparo
-                this.bullet.create(bot.x, bot.y, vX * 8, vY * 8, 'enemy', index, bot.damage);  // 8 è la velocità del proiettile
-                bot.attackCounter = 0;
-            }
-        }
     }
 
     update(progress: number) {
         for (let i = this.list.length - 1; i >= 0; i--) {
             const bot = this.list[i];
-
             bot.target =  /* this.player; //  */this.getNearestEnemy(bot, this.main.actors);
             if (bot.alive && bot.target && bot.target.alive) {
-                this.attackEnemy(bot, i, progress)
+                this.attackEnemy(bot, i, progress);
+            } else {
+                // se non si ha un target si va alla ricerca dei powerup
+                bot.targetItem = this.getNearestPowerup(bot, this.main.powerup.list);
+                if (bot.alive && bot.targetItem /* && bot.target.visibile */) {
+                    this.collectPowerUps(bot);
+                }
             }
-
-            // se non si ha un target si va alla ricerca dei powerup
-
         }
     }
 

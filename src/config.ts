@@ -7,7 +7,7 @@ export class Config {
     // GAME
     GAME_KILLS_TO_WIN:      number = 5;
     GAME_MATCH_DURATION:    number = 90000; // in ms 
-    GAME_BOTS_PER_MATCH:    number = 3;
+    GAME_BOTS_PER_MATCH:    number = 1;
     GAME_RESPAWN_TIME:      number = 3000;         // in ms
     
     // MAP

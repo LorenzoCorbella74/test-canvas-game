@@ -111,8 +111,12 @@ export default class Game {
         this.data = this.currentMap.loadSpawnPointsAndPowerUps();
 
          // POWERUP & WEAPONS
-         this.data.powerup.forEach((e:any) => {
-            this.powerup.create(e.x, e.y, e.type); // si crea il powerup
+         this.data.powerup
+         .map((e:any,i:number)=>{
+             e.index=i;
+            return e)  // si mette un indice
+         .forEach((e:any, index:number) => {
+            this.powerup.create(e.x, e.y, e.type, index); // si crea il powerup
         });
 
         // si crea i bots

@@ -3,7 +3,7 @@ import { Helper } from './helper';
 export const tipiPowerUp = {
     'health': { name: 'health', hp: 5, color: 'DodgerBlue', r: 5, spawnTime: 30000 },
     'megaHealth': { name: 'megaHealth', hp: 50, color: 'blue', r: 10, spawnTime: 30000 },
-    'armour': { name: 'armour', ap: 5, color: 'green', r: 5,, spawnTime: 30000 },
+    'armour': { name: 'armour', ap: 5, color: 'green', r: 5, spawnTime: 30000 },
     'megaArmour': { name: 'megaArmour', ap: 50, color: 'green', r: 10, spawnTime: 30000 },
     'quad': { name: 'quad', multiplier: 4, color: 'violet', r: 10, spawnTime: 30000, enterAfter: 1000, duration: 20000 },
     'speed': { name: 'speed', multiplier: 2, color: 'yellow', r: 10, spawnTime: 30000, enterAfter: 1000, duration: 20000 },
@@ -34,18 +34,20 @@ export class PowerUp {
         this.particelle = main.particelle;
     }
 
-    create(x: number, y: number, type: string) {
+    create(x: number, y: number, type: string, index:number) {
         let powerup        = this.pool.length > 0 ? this.pool.pop(): new Object();
         powerup.type       = tipiPowerUp[type];
-        powerup.x            = x;
-        powerup.y            = y;
-        powerup.reloadRate   = 0;
-        powerup.spawnTime   = powerup.type.spawnTime;   // tempo impiegato per respawn
+        powerup.index      = index;
+        powerup.x          = x;
+        powerup.y          = y;
+        powerup.reloadRate = 0;
+        powerup.spawnTime  = powerup.type.spawnTime;   // tempo impiegato per respawn
         if(powerup.type.name=='quad' || powerup.type.name=='speed'){
             powerup.visible = false;
             powerup.enterAfter = powerup.type.enterAfter;   // delay di entrata
             powerup.durationRate = 0;
             powerup.duration = powerup.type.duration;       // eventuale durata dell'effetto
+            powerup.takenBy = {};
         } else {
             powerup.enterAfter = 0;
             powerup.visible    = true;
@@ -62,6 +64,7 @@ export class PowerUp {
     };
 
     upgrade(powerup:any, who:any){
+        powerup.takenBy = who;
         if(powerup.type.name=='health'){
             who.hp += powerup.type.hp;
         } else if (powerup.type.name=='armour'){
@@ -77,13 +80,13 @@ export class PowerUp {
         }
     }
 
-    deupgrade(powerup:any, who:any){
+    deupgrade(powerup:any){
         if(powerup.type.name=='regeneration'){
            console.log('TO DO!');
         } else if (powerup.type.name=='speed'){
-            who.speed /= powerup.type.multiplier;
+            powerup.takenBy.speed /= powerup.type.multiplier;
         } else if (powerup.type.name=='quad'){
-            who.damage /= powerup.type.multiplier;
+            powerup.takenBy.damage /= powerup.type.multiplier;
         }
     }
 
@@ -138,10 +141,10 @@ export class PowerUp {
                 powerup.visible = true;
                 powerup.reloadRate = 0;
             }
-            
+                
             // FINE EFFETTO 
             if(powerup.durationRate> powerup.duration){
-                this.deupgrade(powerup, this.player);   // FIXME: per ora è solo per il player...
+                this.deupgrade(powerup);   // FIXME: per ora è solo per il player...
                 powerup.startDurationRate= false;
                 powerup.durationRate = 0;
             }
@@ -168,6 +171,11 @@ export class PowerUp {
                 this.ctx.strokeStyle = powerup.color;
                 this.ctx.lineWidth = 2.0;
                 this.ctx.stroke();
+                //if (this.main.debug) {
+                    this.ctx.font = 'bold 8px/1 Arial';
+                    this.ctx.fillStyle = 'black';
+                    this.ctx.fillText(powerup.index.toString(), powerup.x - this.main.camera.x - 6, powerup.y - this.main.camera.y -12);
+                //}
             }
 
         }

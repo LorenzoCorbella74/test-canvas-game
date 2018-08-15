@@ -152,122 +152,128 @@ export class Enemy {
         return output.elem;
     }
 
+    attackEnemy(bot: any, progress: number) {
+
+        // si calcola l'angolo rispetto allo stesso sistema di riferimento (camera)
+        bot.angleWithTarget = Helper.calculateAngle(bot.x - this.camera.x, bot.y - this.camera.y, bot.target.x - this.camera.x, bot.target.y - this.camera.y);
+
+        bot.attackCounter += progress;
+
+        // We need to get the distance
+        var tx = bot.target.x - bot.x,
+            ty = bot.target.y - bot.y,
+            dist = Math.sqrt(tx * tx + ty * ty);
+
+        /* 
+        * we calculate a velocity for our object this time around
+        * divide the target x and y by the distance and multiply it by our speed
+        * this gives us a constant movement speed.
+        */
+        bot.velX = (tx / dist);
+        bot.velY = (ty / dist);
+
+        // si va verso il player 
+        if (dist > 200) {
+            if (bot.velX > 0) {
+                bot.strategy.d = true;
+            } else {
+                bot.strategy.a = true;
+            }
+            if (bot.velY > 0) {
+                bot.strategy.s = true;
+            } else {
+                bot.strategy.w = true;
+            }
+        } else {
+            if (bot.velX > 0) {
+                bot.strategy.d = false;
+            } else {
+                bot.strategy.a = false;
+            }
+            if (bot.velY > 0) {
+                bot.strategy.s = false;
+            } else {
+                bot.strategy.w = false;
+            }
+        }
+
+        if (bot.strategy.w) { // W 
+            if (this.checkmove(bot.x - bot.r, bot.y - bot.r - bot.speed)) {
+                bot.y -= bot.speed;
+                if (bot.y - bot.r < this.camera.y) {
+                    bot.y = this.camera.y + bot.r;
+                }
+                // collisione con il player
+                // if (Helper.circleCollision(bot, bot.target)) {
+                //     bot.target.y -= 4 * bot.speed;
+                //     bot.y += 2 * bot.target.speed;
+                // }
+            }
+        }
+        if (bot.strategy.s) {	// S
+            if (this.checkmove(bot.x - bot.r, bot.y - bot.r + bot.speed)) {
+                bot.y += bot.speed;
+                if (bot.y + bot.r >= this.camera.y + this.camera.h) {
+                    bot.y = this.camera.y + this.camera.h - bot.r;
+                }
+                // collisione con il player
+                // if (Helper.circleCollision(bot, bot.target)) {
+                //     bot.target.y += 4 * bot.speed;
+                //     bot.y -= 2 * bot.target.speed;
+                // }
+            }
+        }
+        if (bot.strategy.a) {	// a
+            if (this.checkmove(bot.x - bot.r - bot.speed, bot.y - bot.r)) {
+                bot.x -= bot.speed;
+                if (bot.x - bot.r < this.camera.x) {
+                    bot.x = this.camera.x + bot.r;
+                }
+                // collisione con il player
+                // if (Helper.circleCollision(bot, bot.target)) {
+                //     bot.target.x -= 4 * bot.speed;
+                //     bot.x += 2 * bot.target.speed;
+                // }
+            }
+        }
+        if (bot.strategy.d) {	// d
+            if (this.checkmove(bot.x - bot.r + bot.speed, bot.y - bot.r)) {
+                bot.x += bot.speed;
+                if (bot.x + bot.r >= this.map.mapSize.w) {
+                    bot.x = this.camera.x + this.camera.w - bot.r;
+                }
+                // collisione con il player 
+                // if (Helper.circleCollision(bot, bot.target)) {
+                //     bot.target.x += 4 * bot.speed;
+                //     bot.x -= 2 * bot.target.speed;
+                // }
+            }
+        }
+
+        if (dist < 300 && this.checkIfIsSeen(bot.target, bot)) {	// SE non troppo lontano e visibile SPARA!
+            let vX = (bot.target.x - this.camera.x) - (bot.x - this.camera.x);
+            let vY = (bot.target.y - this.camera.y) - (bot.y - this.camera.y);
+            let dist = Math.sqrt(vX * vX + vY * vY);	// si calcola la distanza
+            vX /= dist;									// si normalizza e si calcola la direzione
+            vY /= dist;
+            if (bot.attackCounter > 200) {									// frequenza di sparo
+                this.bullet.create(bot.x, bot.y, vX * 8, vY * 8, 'enemy', i, bot.damage);  // 8 è la velocità del proiettile
+                bot.attackCounter = 0;
+            }
+        }
+    }
+
     update(progress: number) {
         for (let i = this.list.length - 1; i >= 0; i--) {
             const bot = this.list[i];
 
             bot.target =  /* this.player; //  */this.getNearestEnemy(bot, this.main.actors);
-
             if (bot.alive && bot.target && bot.target.alive) {
-                // si calcola l'angolo rispetto allo stesso sistema di riferimento (camera)
-                bot.angleWithTarget = Helper.calculateAngle(bot.x - this.camera.x, bot.y - this.camera.y, bot.target.x - this.camera.x, bot.target.y - this.camera.y);
-
-                bot.attackCounter += progress;
-
-                // TODO: const powerupVicino = this.getNearest(bot, this.main.data)
-
-                // get the target x and y
-                bot.strategy.targetX = bot.target.x;
-                bot.strategy.targetY = bot.target.y;
-
-                // We need to get the distance
-                var tx = bot.strategy.targetX - bot.x,
-                    ty = bot.strategy.targetY - bot.y,
-                    dist = Math.sqrt(tx * tx + ty * ty);
-
-                /* 
-                * we calculate a velocity for our object this time around
-                * divide the target x and y by the distance and multiply it by our speed
-                * this gives us a constant movement speed.
-                */
-
-                bot.velX = (tx / dist) * bot.speed;
-                bot.velY = (ty / dist) * bot.speed;
-
-                // si va verso il player 
-                if (dist > (125 - bot.target.r)) {
-                    // add our velocities
-                    if (bot.velX > 0) {
-                        bot.strategy.d = bot.velX;
-                    } else {
-                        bot.strategy.a = bot.velX;
-                    }
-                    if (bot.velY > 0) {
-                        bot.strategy.s = bot.velX;
-                    } else {
-                        bot.strategy.w = bot.velX;
-                    }
-
-                    if (bot.strategy.w) { // W 
-                        if (this.checkmove(bot.x - bot.r, bot.y - bot.r - bot.speed)) {
-                            bot.y -= bot.speed;
-                            if (bot.y - bot.r < this.camera.y) {
-                                bot.y = this.camera.y + bot.r;
-                            }
-                            // collisione con il player
-                            // if (Helper.circleCollision(bot, bot.target)) {
-                            //     bot.target.y -= 4 * bot.speed;
-                            //     bot.y += 2 * bot.target.speed;
-                            // }
-                        }
-                    }
-                    if (bot.strategy.s) {	// S
-                        if (this.checkmove(bot.x - bot.r, bot.y - bot.r + bot.speed)) {
-                            bot.y += bot.speed;
-                            if (bot.y + bot.r >= this.camera.y + this.camera.h) {
-                                bot.y = this.camera.y + this.camera.h - bot.r;
-                            }
-                            // collisione con il player
-                            // if (Helper.circleCollision(bot, bot.target)) {
-                            //     bot.target.y += 4 * bot.speed;
-                            //     bot.y -= 2 * bot.target.speed;
-                            // }
-                        }
-                    }
-                    if (bot.strategy.a) {	// a
-                        if (this.checkmove(bot.x - bot.r - bot.speed, bot.y - bot.r)) {
-                            bot.x -= bot.speed;
-                            if (bot.x - bot.r < this.camera.x) {
-                                bot.x = this.camera.x + bot.r;
-                            }
-                            // collisione con il player
-                            // if (Helper.circleCollision(bot, bot.target)) {
-                            //     bot.target.x -= 4 * bot.speed;
-                            //     bot.x += 2 * bot.target.speed;
-                            // }
-                        }
-                    }
-                    if (bot.strategy.d) {	// d
-                        if (this.checkmove(bot.x - bot.r + bot.speed, bot.y - bot.r)) {
-                            bot.x += bot.speed;
-                            if (bot.x + bot.r >= this.map.mapSize.w) {
-                                bot.x = this.camera.x + this.camera.w - bot.r;
-                            }
-                            // collisione con il player 
-                            // if (Helper.circleCollision(bot, bot.target)) {
-                            //     bot.target.x += 4 * bot.speed;
-                            //     bot.x -= 2 * bot.target.speed;
-                            // }
-                        }
-                    }
-                    if (dist < 300 && this.checkIfIsSeen( bot.target, bot)) {	// SE non troppo lontano e visibile SPARA!
-                        let vX = (bot.target.x - this.camera.x) - (bot.x - this.camera.x);
-                        let vY = (bot.target.y - this.camera.y) - (bot.y - this.camera.y);
-                        let dist = Math.sqrt(vX * vX + vY * vY);	// si calcola la distanza
-                        vX /= dist;									// si normalizza e si calcola la direzione
-                        vY /= dist;
-                        if (bot.attackCounter > 200) {									// frequenza di sparo
-                            this.bullet.create(bot.x, bot.y, vX * 8, vY * 8, 'enemy', i, bot.damage);  // 8 è la velocità del proiettile
-                            bot.attackCounter = 0;
-                        }
-
-                    }
-
-                } else {
-                    // si cerca il powerup + vicino
-                    // console.log('si rimane fermi...');
-                }
+                this.attackEnemy(bot, progress)
             }
+
+            // se non si ha un target si va alla ricerca dei powerup
+
         }
     }
 

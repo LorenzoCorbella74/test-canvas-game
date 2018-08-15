@@ -74,14 +74,14 @@ export class BulletHandler {
                     // chiSparaTarget.vX = shot.vX * 0.03;
                     // chiSparaTarget.vY = shot.vY * 0.03;
                     shot.hp = -99;
-                    this.blood.create(shot.x, shot.y, Math.random() * 2 - 2, Math.random() * 2 - 2, this.c.BLOOD_RADIUS) // crea il sangue
+                    this.blood.create(shot.x, shot.y, Math.random() * 4 - 4, Math.random() * 4 - 4, this.c.BLOOD_RADIUS) // crea il sangue
                     this.pool.push(shot);
                     this.list.splice(i, 1);
                     if (chiSparaTarget.hp <= 0) {
                         chiSparaTarget.alive = false;
                         chiSparaTarget.numberOfDeaths++;
                         for (let b = 0; b < 36; b++) {
-                            this.blood.create(shot.x, shot.y, Math.random() * 2 - 2 * i, Math.random() * 2 - 2 * i, this.c.BLOOD_RADIUS) // crea il sangue
+                            this.blood.create(shot.x, shot.y, Math.random() * 4 - 4 * i, Math.random() * 4 - 4 * i, this.c.BLOOD_RADIUS) // crea il sangue
                         }
                         this.enemy.list[shot.index].kills++;    // si aumenta lo score del bot che ha sparato il proiettile
                         console.log(`BOT ${chiSpara.index} killed BOT ${chiSparaTarget.index}`);
@@ -128,8 +128,8 @@ export class BulletHandler {
                 const bot = this.enemy.list[i];
                 if (shot.firedBy == 'player' && bot.alive && Helper.circleCollision(shot, bot)) {
                     bot.hp -= shot.damage;
-                    bot.vX = shot.vX * 0.03;
-                    bot.vY = shot.vY * 0.03;
+                    //bot.vX = shot.vX * 0.03;
+                    //bot.vY = shot.vY * 0.03;
                     shot.hp = -99;
                     this.blood.create(shot.x, shot.y, Math.random() * 2 - 2, Math.random() * 2 - 2, this.c.BLOOD_RADIUS) // crea il sangue
                     if (bot.hp <= 0) {

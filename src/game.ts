@@ -202,6 +202,17 @@ export default class Game {
         this.renderHUD(progress);   // HUD
     }
 
+    countDown(){
+        let minutes, seconds;
+        minutes = Math.floor(this.timeTillStop / 60);
+        seconds = Math.floor(this.timeTillStop % 60);
+        minutes = minutes < 10 ? "0" + minutes : minutes;
+        seconds = seconds < 10 ? "0" + seconds : seconds;
+        return  `${minutes}:${seconds}`;
+    }
+
+    
+
     private renderHUD(progress:number) {
         this.ctx.fillStyle = this.c.HUD_BACKGROUND;
         this.ctx.fillRect(0, 0, this.c.CANVAS_WIDTH, this.c.TILE_SIZE);
@@ -214,19 +225,22 @@ export default class Game {
         this.ctx.fillText(this.player.currentWeapon, 245, this.c.TILE_SIZE / 2);
         this.ctx.fillText('TIME ', 600, this.c.TILE_SIZE / 2);
         this.ctx.fillText('FPS ', 710, this.c.TILE_SIZE / 2);
-        if(!this.player.alive){
-            this.ctx.fillText('Respawn in ', 400, this.c.TILE_SIZE / 2);
-        }
         this.ctx.font = 'bold 14px/1 Arial';
         this.ctx.fillStyle = 'yellow';
         this.ctx.fillText(this.player.hp.toString(), 30, this.c.TILE_SIZE / 2);
         this.ctx.fillText(this.player.ap.toString(), 110, this.c.TILE_SIZE / 2);
         this.ctx.fillText(this.player.kills.toString(), 200, this.c.TILE_SIZE / 2);
-        this.ctx.fillText(this.timeTillStop.toString(), 640, this.c.TILE_SIZE / 2);
+        this.ctx.fillText(this.countDown(), 640, this.c.TILE_SIZE / 2);
         this.ctx.fillText(this.fps.toString(), 750, this.c.TILE_SIZE / 2);
-        if (!this.player.alive) {
-            this.ctx.fillText(Math.ceil((this.c.GAME_RESPAWN_TIME-this.player.respawnTime)/1000).toString(), 500, this.c.TILE_SIZE / 2);
+        //if (!this.player.alive) {
+        if(!this.player.alive){
+            this.ctx.fillStyle = '#565454';
+            this.ctx.font = 'bold 28px/1 Arial';
+            this.ctx.textAlign = 'center';
+            this.ctx.fillText(`Respawn in ${Math.ceil((this.c.GAME_RESPAWN_TIME-this.player.respawnTime)/1000).toString()}`, 400, 120);
         }
+        //    this.ctx.fillText(Math.ceil((this.c.GAME_RESPAWN_TIME-this.player.respawnTime)/1000).toString(), 500, this.c.TILE_SIZE / 2);
+        //}
     }
 
     textONCanvas(context, text, x, y, font, style, align?, baseline?) {

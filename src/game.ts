@@ -76,13 +76,13 @@ export default class Game {
     
     // fa partire il gameloop
     startGame() {
-        this.c = new Config();
-        this.canvas.height = this.c.CANVAS_HEIGHT; // window.innerHeight
-        this.canvas.width  = this.c.CANVAS_WIDTH; // window.innerWidth
+        this.c                   = new Config();
+        this.canvas.height       = this.c.CANVAS_HEIGHT; // window.innerHeight
+        this.canvas.width        = this.c.CANVAS_WIDTH; // window.innerWidth
         this.state               = 'game';
         this.start               = true;      // flags that you want the countdown to start
-        this.lastRender = 0;
-        this.fps = 0;
+        this.lastRender          = 0;         // ultimo timestamp
+        this.fps                 = 0;
         this.stopTime            = 0;         // used to hold the stop time
         this.stop                = false;     // flag to indicate that stop time has been reached
         this.timeTillStop        = 0;         // holds the display time
@@ -92,7 +92,7 @@ export default class Game {
         this.gameType            = 'Deathmatch'
         this.canvas.style.cursor = 'crosshair';
         this.fontFamily          = this.c.FONT_FAMILY;
-        this.actors = [];
+        this.actors              = [];
         
         // bots names
         let botsArray = Array(this.numberOfBots).fill(null).map((e,i)=> i);
@@ -114,13 +114,13 @@ export default class Game {
          this.data.powerup
          .map((e:any,i:number)=>{
              e.index=i;
-            return e)  // si mette un indice
+            return e;})  // si mette un indice
          .forEach((e:any, index:number) => {
-            this.powerup.create(e.x, e.y, e.type, index); // si crea il powerup
+            this.powerup.create(e.x, e.y, e.type, index); 
         });
 
-        
-        this.player.createPlayer();      // si inizializza il player
+        // si inizializza il player
+        this.player.createPlayer();      
         this.actors.push(this.player);
         
         // si crea i bots
@@ -213,7 +213,7 @@ export default class Game {
         this.ctx.fillText('Kills ', 165, this.c.TILE_SIZE / 2);
         this.ctx.fillText(this.player.currentWeapon, 245, this.c.TILE_SIZE / 2);
         this.ctx.fillText('TIME ', 600, this.c.TILE_SIZE / 2);
-        this.ctx.fillText('FPS ', 700, this.c.TILE_SIZE / 2);
+        this.ctx.fillText('FPS ', 710, this.c.TILE_SIZE / 2);
         if(!this.player.alive){
             this.ctx.fillText('Respawn in ', 400, this.c.TILE_SIZE / 2);
         }
@@ -223,16 +223,9 @@ export default class Game {
         this.ctx.fillText(this.player.ap.toString(), 110, this.c.TILE_SIZE / 2);
         this.ctx.fillText(this.player.kills.toString(), 200, this.c.TILE_SIZE / 2);
         this.ctx.fillText(this.timeTillStop.toString(), 640, this.c.TILE_SIZE / 2);
-        this.ctx.fillText(this.fps.toString(), 740, this.c.TILE_SIZE / 2);
+        this.ctx.fillText(this.fps.toString(), 750, this.c.TILE_SIZE / 2);
         if (!this.player.alive) {
-            this.timeleft = this.c.GAME_RESPAWN_TIME;
-            /* let countDownTimer = setInterval(() => {
-                this.timeleft--;
-                if (this.timeleft < 0){
-                    clearInterval(countDownTimer);
-                }
-            }, progress); */
-            this.ctx.fillText(Math.round(this.timeleft/1000).toString(), 500, this.c.TILE_SIZE / 2);
+            this.ctx.fillText(Math.ceil((this.c.GAME_RESPAWN_TIME-this.player.respawnTime)/1000).toString(), 500, this.c.TILE_SIZE / 2);
         }
     }
 

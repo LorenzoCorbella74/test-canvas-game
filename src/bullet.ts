@@ -5,26 +5,26 @@ export class BulletHandler {
     list: any[] = [];
     pool: any[] = []
 
-    main: any;
-    c: any;
-    player: any;
-    enemy: any;
-    map: any;
+    main:       any;
+    c:          any;
+    player:     any;
+    enemy:      any;
+    map:        any;
     particelle: any;
-    blood: any;
+    blood:      any;
 
 
     constructor() { }
 
     init(main: any) {
         this.list.length = 0;
-        this.main = main;
-        this.c = main.c;
-        this.player = main.player;
-        this.enemy = main.enemy;
-        this.particelle = main.particelle;
-        this.map = main.currentMap;
-        this.blood = main.blood;
+        this.main        = main;
+        this.c           = main.c;
+        this.player      = main.player;
+        this.enemy       = main.enemy;
+        this.particelle  = main.particelle;
+        this.map         = main.currentMap;
+        this.blood       = main.blood;
     }
 
     myCheckCollision(shot: any, map: any) {
@@ -71,8 +71,8 @@ export class BulletHandler {
                 let chiSparaTarget = chiSpara.target || {};
                 if (shot.index == chiSpara.index && chiSparaTarget.alive && chiSparaTarget.index!=100 && Helper.circleCollision(shot, chiSparaTarget)) {
                     chiSparaTarget.hp -= shot.damage;
-                    chiSparaTarget.vX = shot.vX * 0.03;
-                    chiSparaTarget.vY = shot.vY * 0.03;
+                    // chiSparaTarget.vX = shot.vX * 0.03;
+                    // chiSparaTarget.vY = shot.vY * 0.03;
                     shot.hp = -99;
                     this.blood.create(shot.x, shot.y, Math.random() * 2 - 2, Math.random() * 2 - 2, this.c.BLOOD_RADIUS) // crea il sangue
                     this.pool.push(shot);
@@ -99,8 +99,8 @@ export class BulletHandler {
             // si guarda se i proiettili di qualche nemico impattano il player
             if (shot.firedBy == 'enemy' && this.player.alive && Helper.circleCollision(shot, this.player)) {
                 this.player.hp -= shot.damage;
-                this.player.vX = shot.vX * 0.03;
-                this.player.vY = shot.vY * 0.03;
+                // this.player.vX = shot.vX * 0.03;
+                // this.player.vY = shot.vY * 0.03;
                 shot.hp = -99;
                 this.blood.create(shot.x, shot.y, Math.random() * 2 - 2, Math.random() * 2 - 2, this.c.BLOOD_RADIUS) // crea il sangue
                 this.pool.push(shot);
@@ -176,11 +176,11 @@ export class BulletHandler {
     create(x: number, y: number, vX: number, vY: number, firedBy: string, index: number, damage?: number) {
         let shot = this.pool.length > 0 ? this.pool.pop() : {};
         shot.old_x = x;
-        shot.x = x;
+        shot.x     = x;
         shot.old_y = y;
-        shot.y = y;
-        shot.vX = vX;
-        shot.vY = vY;
+        shot.y     = y;
+        shot.vX    = vX;
+        shot.vY    = vY;
         shot.firedBy = firedBy; // indica da chi è sparato il colpo ( player, enemy )
         shot.r = this.c.BULLET_RADIUS;
         shot.ttl = this.c.BULLET_TTL;

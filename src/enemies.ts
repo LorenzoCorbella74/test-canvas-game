@@ -216,8 +216,8 @@ export class Enemy {
         bot.velX = (tx / dist);
         bot.velY = (ty / dist);
 
-        // si va verso il player 
-        if (dist > 200) {
+        // si va verso il player fino a quando si è vicini
+        if (dist > 150) {
             if (bot.velX > 0) {
                 bot.strategy.d = true;
             } else {
@@ -229,7 +229,7 @@ export class Enemy {
                 bot.strategy.w = true;
             }
         } else {
-            if (bot.velX > 0) {
+            if (bot.velX > 0 ) {
                 bot.strategy.d = false;
             } else {
                 bot.strategy.a = false;
@@ -243,7 +243,7 @@ export class Enemy {
 
         this.checkCollision(bot);
 
-        if (dist < 300 && this.checkIfIsSeen(bot.target, bot)) {	// SE non troppo lontano e visibile SPARA!
+        if (dist < 400 && this.checkIfIsSeen(bot.target, bot)) {	// SE non troppo lontano e visibile SPARA!
             let vX = (bot.target.x - this.camera.x) - (bot.x - this.camera.x);
             let vY = (bot.target.y - this.camera.y) - (bot.y - this.camera.y);
             let dist = Math.sqrt(vX * vX + vY * vY);	// si calcola la distanza
@@ -318,9 +318,10 @@ export class Enemy {
             if (bot.alive && bot.target && bot.target.alive) {
                 this.attackEnemy(bot, i, progress);
             } else {
+                bot.attackCounter =0;
                 // se non si ha un target si va alla ricerca dei powerup
                 bot.targetItem = this.getNearestPowerup(bot, this.main.powerup.list);
-                if (bot.alive && bot.targetItem /* && bot.target.visibile */) {
+                if (bot.alive && bot.targetItem) {
                     this.collectPowerUps(bot);
                 }
             }
@@ -348,37 +349,39 @@ export class Enemy {
         return false;
     }
 
-    checkIfIsSeen(obj1: any, obj2: any) {
-
-        return true
-        /* let ray = new Object();
-        ray.x = obj1.x;
-        ray.y = obj1.y;
-        ray.r = 2;
-        let vX = (obj1.x) - (obj2.x);
-        let vY = (obj1.y) - (obj2.y);
-        let dist = Math.sqrt(vX * vX + vY * vY);	// si calcola la distanza 
-        vX /= dist;									// si normalizza e si calcola la direzione
-        vY /= dist;
-        ray.old_X = ray.x;
-        ray.old_Y = ray.y;
-        ray.x += vX;
-        ray.y += vY;
+    checkIfIsSeen(target: any, source: any) {
+        let ray = new Object();
+        let old_x = source.x;
+        let old_y = source.y ;
+        let x = source.x;
+        let y = source.y;
+        let tx = (target.x) - (source.x),
+            ty = (target.y) - (source.y),
+            dist = Math.sqrt(tx * tx + ty * ty);
+            console.log(dist);
+        ray.x = x;
+        ray.old_x = old_x;
+        ray.y = y;
+        ray.old_y = old_y;
+        ray.r = 1;
+        let velX = (tx / dist);
+        let velY = (ty / dist);
+        ray.x += velX;
+        ray.y += velY;
         //console.log(ray, dist);
         let output;
-        for (let i = 0; i < dist; i+=5) {
+        for (let i = 0; i < 300; i+=3) {
             output = this.myCheckCollision(ray, this.map.map);
             if (!output) {  // se non è avvenuta si aggiorna le coordinate del raggio
-                ray.old_X = ray.x;
-                ray.old_Y = ray.y;
-                ray.x += vX;
-                ray.y += vY;
-                
+                ray.old_x = ray.x;
+                ray.old_y = ray.y;
+                ray.x += velX;
+                ray.y += velY;
+            }else{
+                break;
             }
-            console.log(ray, output);
-            break;
         }
-        return output; */
+        return !output; 
     }
 
 }

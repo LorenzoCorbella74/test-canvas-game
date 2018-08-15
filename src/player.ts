@@ -161,7 +161,7 @@ export class Player {
 					// this.enemy.list.forEach((enemy:any) => {
 					// 	if(Helper.circleCollision(enemy, this)){
 					// 		this.y += 4*this.speed;
-					// 		enemy.y -= 2* this.speed;
+					// 		enemy.y -= 4* this.speed;
 					// 	}
 					// });
 				}
@@ -176,7 +176,7 @@ export class Player {
 					// this.enemy.list.forEach((enemy:any) => {
 					// 	if(Helper.circleCollision(enemy, this)){
 					// 		this.y -= 4*this.speed;
-					// 		enemy.y +=2*this.speed;
+					// 		enemy.y +=4*this.speed;
 					// 	}
 					// });
 				}
@@ -191,7 +191,7 @@ export class Player {
 					// this.enemy.list.forEach((enemy:any) => {
 					// 	if(Helper.circleCollision(enemy, this)){
 					// 		this.x += 4*this.speed;
-					// 		enemy.x -=2*this.speed;
+					// 		enemy.x -=4*this.speed;
 					// 	}
 					// });
 				}
@@ -206,7 +206,7 @@ export class Player {
 					// this.enemy.list.forEach((enemy:any) => {
 					// 	if(Helper.circleCollision(enemy, this)){
 					// 		this.y -= 4* this.speed;
-					// 		enemy.x +=2* this.speed;
+					// 		enemy.x +=4* this.speed;
 					// 	}
 					// });
 				}

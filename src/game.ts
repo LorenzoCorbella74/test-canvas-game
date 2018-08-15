@@ -286,7 +286,7 @@ export default class Game {
             const bot = this.enemy.list[i];
             this.textONCanvas(main.ctx, `${bot.name} - ${bot.kills} - ${bot.numberOfDeaths}`, hW, hH - 30 +(20*(i+1)), 'normal 16px/1 ' + main.fontFamily, medium);
         }
-        this.textONCanvas(main.ctx, 'Click to Restart', hW, main.canvas.height - 44, 'normal 17px/1 ' + main.fontFamily, dark);
+        this.textONCanvas(main.ctx, 'Click to Restart', hW, main.canvas.height - 120, 'normal 17px/1 ' + main.fontFamily, dark);
         this.textONCanvas(main.ctx, 'L.Corbella © 2018', 9, main.canvas.height - 14, 'normal 13px/1 ' + main.fontFamily, light, 'left')
     }
     

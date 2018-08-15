@@ -45,6 +45,7 @@ export class Enemy {
         enemy.hp                    = this.c.ENEMY_HP;
         enemy.ap                    = this.c.ENEMY_AP;
         enemy.attackCounter         = 0;
+        enemy.shootRate             = 200;
         enemy.damage                = 1;					// è per il moltiplicatore del danno (quad = 4)
         enemy.strategy              = {};                   // per il movimento del bot
         enemy.kills                 = 0;
@@ -202,7 +203,7 @@ export class Enemy {
         // si calcola l'angolo rispetto allo stesso sistema di riferimento (camera)
         bot.angleWithTarget = Helper.calculateAngle(bot.x - this.camera.x, bot.y - this.camera.y, bot.target.x - this.camera.x, bot.target.y - this.camera.y);
 
-        bot.attackCounter += progress;
+        // bot.attackCounter += progress;
 
         // We need to get the distance
         var tx = bot.target.x - bot.x,
@@ -245,15 +246,18 @@ export class Enemy {
         this.checkCollision(bot);
 
         if (dist < 400 && this.checkIfIsSeen(bot.target, bot)) {	// SE non troppo lontano e visibile SPARA!
+            let now = Date.now();
+            if (now - bot.attackCounter < bot.shootRate) return;
+            bot.attackCounter = now;
             let vX = (bot.target.x - this.camera.x) - (bot.x - this.camera.x);
             let vY = (bot.target.y - this.camera.y) - (bot.y - this.camera.y);
             let dist = Math.sqrt(vX * vX + vY * vY);	// si calcola la distanza
             vX /= dist;									// si normalizza e si calcola la direzione
             vY /= dist;
-            if (bot.attackCounter > 200) {									// frequenza di sparo
+            // if (bot.attackCounter > 200) {									// frequenza di sparo
                 this.bullet.create(bot.x, bot.y, vX * 8, vY * 8, 'enemy', index, bot.damage);  // 8 è la velocità del proiettile
-                bot.attackCounter = 0;
-            }
+                //bot.attackCounter = 0;
+            //}
         }
     }
 

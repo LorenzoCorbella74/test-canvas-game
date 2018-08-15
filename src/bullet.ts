@@ -73,7 +73,7 @@ export class BulletHandler {
                     chiSparaTarget.hp -= shot.damage;
                     // chiSparaTarget.vX = shot.vX * 0.03;
                     // chiSparaTarget.vY = shot.vY * 0.03;
-                    shot.hp = -99;
+                    //shot.hp = -99;
                     this.blood.create(shot.x, shot.y, Math.random() * 4 - 4, Math.random() * 4 - 4, this.c.BLOOD_RADIUS) // crea il sangue
                     this.pool.push(shot);
                     this.list.splice(i, 1);
@@ -101,7 +101,7 @@ export class BulletHandler {
                 this.player.hp -= shot.damage;
                 // this.player.vX = shot.vX * 0.03;
                 // this.player.vY = shot.vY * 0.03;
-                shot.hp = -99;
+                // shot.hp = -99;
                 this.blood.create(shot.x, shot.y, Math.random() * 2 - 2, Math.random() * 2 - 2, this.c.BLOOD_RADIUS) // crea il sangue
                 this.pool.push(shot);
                 this.list.splice(i, 1);
@@ -130,7 +130,7 @@ export class BulletHandler {
                     bot.hp -= shot.damage;
                     //bot.vX = shot.vX * 0.03;
                     //bot.vY = shot.vY * 0.03;
-                    shot.hp = -99;
+                    //shot.hp = -99;
                     this.blood.create(shot.x, shot.y, Math.random() * 2 - 2, Math.random() * 2 - 2, this.c.BLOOD_RADIUS) // crea il sangue
                     if (bot.hp <= 0) {
                         bot.alive = false;
@@ -174,17 +174,17 @@ export class BulletHandler {
     }
 
     create(x: number, y: number, vX: number, vY: number, firedBy: string, index: number, damage?: number) {
-        let shot = this.pool.length > 0 ? this.pool.pop() : {};
+        let shot = /* this.pool.length > 0 ? this.pool.pop() : */ {};
         shot.old_x = x;
         shot.x     = x;
         shot.old_y = y;
         shot.y     = y;
         shot.vX    = vX;
         shot.vY    = vY;
+        shot.index = index;   // è l'id del 
         shot.firedBy = firedBy; // indica da chi è sparato il colpo ( player, enemy )
         shot.r = this.c.BULLET_RADIUS;
         shot.ttl = this.c.BULLET_TTL;
-        shot.index = index;   // è l'id del 
         shot.damage = damage ? damage * this.c.BULLET_DAMAGE : this.c.BULLET_DAMAGE;
         this.list.push(shot);
     }

@@ -21,6 +21,7 @@ export class Player {
 	currentWeapon:  string;		// arma corrente
 	damage:  number;		// 1 capacità di far danno 1 normale 4 quaddamage
 	attackCounter: number = 0;	// frequenza di sparo
+	shootRate: number = 200;	// frequenza di sparo
 	alive: boolean;		// se il player è vivo o morto ()
 	index: number;		// è l'id
 	respawnTime:number =0;
@@ -218,26 +219,31 @@ export class Player {
 		}
 	}
 
+	shoot(progress: number){
+		// console.log(`X: ${this.control.mouseX} Y: ${this.control.mouseY}`);
+		let now = Date.now();
+            if (now - this.attackCounter < this.shootRate) return;
+            this.attackCounter = now;
+		let vX = (this.control.mouseX - (this.x - this.camera.x));
+		let vY = (this.control.mouseY - (this.y - this.camera.y));
+		let dist = Math.sqrt(vX * vX + vY * vY);	// si calcola la distanza
+		vX /= dist;									// si normalizza
+		vY /= dist;
+		//if (this.attackCounter > 150) {				// 150 è la frequenza di sparo = 6 colpi al sec
+		this.bullet.create(this.x, this.y, vX * 8, vY * 8, 'player', 100, this.damage);  // 8 è la velocità del proiettile
+		//this.attackCounter = 0;
+		//}
+	}
+
 	update(progress: number) {
 
-		this.attackCounter += progress;	// contatore frdequenza di sparo
-
 		if (this.alive) {
-			
-			//
+			// this.attackCounter += progress;	// contatore frdequenza di sparo
+
 			this.collisionDetection();
 
 			if (this.control.mouseLeft) {	// SE è PREMUTO IL btn del mouse
-				// console.log(`X: ${this.control.mouseX} Y: ${this.control.mouseY}`);
-				let vX = (this.control.mouseX - (this.x - this.camera.x));
-				let vY = (this.control.mouseY - (this.y - this.camera.y));
-				let dist = Math.sqrt(vX * vX + vY * vY);	// si calcola la distanza
-				vX /= dist;									// si normalizza
-				vY /= dist;
-				if (this.attackCounter > 200) {				// 200 è la frequenza di sparo = 5 colpi al sec
-					this.bullet.create(this.x, this.y, vX * 8, vY * 8, 'player', 100, this.damage);  // 8 è la velocità del proiettile
-					this.attackCounter = 0;
-				}
+				this.shoot(progress);
 			}
 		}
 

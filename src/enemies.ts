@@ -152,7 +152,7 @@ export class Enemy {
         return output.elem;
     }
 
-    attackEnemy(bot: any, progress: number) {
+    attackEnemy(bot: any, index:number, progress: number) {
 
         // si calcola l'angolo rispetto allo stesso sistema di riferimento (camera)
         bot.angleWithTarget = Helper.calculateAngle(bot.x - this.camera.x, bot.y - this.camera.y, bot.target.x - this.camera.x, bot.target.y - this.camera.y);
@@ -257,7 +257,7 @@ export class Enemy {
             vX /= dist;									// si normalizza e si calcola la direzione
             vY /= dist;
             if (bot.attackCounter > 200) {									// frequenza di sparo
-                this.bullet.create(bot.x, bot.y, vX * 8, vY * 8, 'enemy', i, bot.damage);  // 8 è la velocità del proiettile
+                this.bullet.create(bot.x, bot.y, vX * 8, vY * 8, 'enemy', index, bot.damage);  // 8 è la velocità del proiettile
                 bot.attackCounter = 0;
             }
         }
@@ -269,7 +269,7 @@ export class Enemy {
 
             bot.target =  /* this.player; //  */this.getNearestEnemy(bot, this.main.actors);
             if (bot.alive && bot.target && bot.target.alive) {
-                this.attackEnemy(bot, progress)
+                this.attackEnemy(bot, i, progress)
             }
 
             // se non si ha un target si va alla ricerca dei powerup

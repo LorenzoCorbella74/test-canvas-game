@@ -57,6 +57,7 @@ export class Enemy {
 
     respawn(bot: any) {
         const spawn = Helper.getSpawnPoint(this.main.data.spawn);
+        console.log(`BOT ${bot.index} is swawning at ${spawn.x-this.camera.x} - ${spawn.y-this.camera.y}`);
         bot.x = spawn.x;
         bot.y = spawn.y;
         bot.r = this.c.ENEMY_RADIUS;
@@ -358,7 +359,7 @@ export class Enemy {
         let tx = (target.x) - (source.x),
             ty = (target.y) - (source.y),
             dist = Math.sqrt(tx * tx + ty * ty);
-            console.log(dist);
+            // console.log(dist);
         ray.x = x;
         ray.old_x = old_x;
         ray.y = y;

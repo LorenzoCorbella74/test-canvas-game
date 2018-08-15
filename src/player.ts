@@ -23,6 +23,8 @@ export class Player {
 	attackCounter: number = 0;	// frequenza di sparo
 	alive: boolean;		// se il player è vivo o morto ()
 	index: number;		// è l'id
+	respawnTime:number =0;
+
 
 	canvas:  any;
 	ctx:     any;
@@ -52,7 +54,7 @@ export class Player {
 
 	createPlayer(){
 		this.name = "Lorenzo";
-		this.index = 11;
+		this.index = 100;
 		this.alive = true;				// 
 		// const spawn = Helper.getSpawnPoint(this.main.data.spawn);
 		this.x     = 400;
@@ -110,15 +112,23 @@ export class Player {
 				this.y - this.camera.y + pointerLength * Math.sin(this.angle)
 			);
 			this.ctx.stroke();
-		}
+
+			//if (this.main.debug) {
+				this.ctx.font = 'bold 8px/1 Arial';
+				this.ctx.fillStyle = 'black';
+				this.ctx.fillText(this.x.toString(), this.x - this.camera.x -5 , this.y - this.camera.y -15);
+				this.ctx.fillText(this.y.toString(), this.x - this.camera.x -5, this.y - this.camera.y+20);
+			//}
+		} 	
 	}
 
 	respawn(){
 			const spawn = Helper.getSpawnPoint(this.main.data.spawn);
+			console.log(`Player is swawning at ${spawn.x} - ${spawn.y}`);
 			this.index = 100;
 			this.x = spawn.x;
 			this.y = spawn.y;
-			this.camera.setCurrentPlayer(this);
+			//this.camera.setCurrentPlayer(this);
 			this.camera.adjustCamera(this);
 			this.r     = this.c.PLAYER_RADIUS
 			this.speed = this.c.PLAYER_SPEED;	// è uguale in tutte le direzioni
@@ -145,13 +155,13 @@ export class Player {
 		}
 	}
 
-	update(progress:number) {
+	update(progress: number) {
 
 		this.attackCounter += progress;	// contatore frequenza di sparo
 
-		if(this.alive){
+		if (this.alive) {
 			if (this.control.w) { // W 
-				
+
 				if (this.checkmove(this.x - this.r, this.y - this.r - this.speed)) {
 					this.y -= this.speed;
 					if (this.y - this.r < this.camera.y) {
@@ -218,9 +228,17 @@ export class Player {
 				vX /= dist;									// si normalizza
 				vY /= dist;
 				if (this.attackCounter > 200) {				// 200 è la frequenza di sparo = 5 colpi al sec
-					this.bullet.create(this.x, this.y, vX * 8, vY * 8, 'player', 100 ,this.damage);  // 8 è la velocità del proiettile
+					this.bullet.create(this.x, this.y, vX * 8, vY * 8, 'player', 100, this.damage);  // 8 è la velocità del proiettile
 					this.attackCounter = 0;
 				}
+			}
+		}
+
+		if (!this.alive) {
+			this.respawnTime += progress;
+			if (this.respawnTime > this.c.GAME_RESPAWN_TIME) {	// numero di cicli oltre il quale è nuovamente visibile
+				this.respawn();
+				this.respawnTime=0;
 			}
 		}
 	}

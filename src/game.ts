@@ -119,16 +119,16 @@ export default class Game {
             this.powerup.create(e.x, e.y, e.type, index); // si crea il powerup
         });
 
+        
+        this.player.createPlayer();      // si inizializza il player
+        this.actors.push(this.player);
+        
         // si crea i bots
         botsArray.forEach((elem:any, index:number) => {
             let e = this.data.spawn[index];
             let bot = this.enemy.create(e.x,e.y, index); // si crea un nemico
             this.actors.push(bot);
         });
-
-        this.player.createPlayer();      // si inizializza il player
-        this.actors.push(this.player);
-        
 
         requestAnimationFrame(this.gameLoop.bind(this));
     }
@@ -179,8 +179,8 @@ export default class Game {
 
     updateAll(progress:number) {
         this.player.update(progress);
-        this.camera.update(progress);
         this.enemy.update(progress);
+        this.camera.update(progress);
         this.bullet.update(progress); 
         this.powerup.update(progress);
         this.particelle.update(progress);

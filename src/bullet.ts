@@ -69,7 +69,7 @@ export class BulletHandler {
             let chiSpara = this.enemy.list[shot.index];
             if (chiSpara) {
                 let chiSparaTarget = chiSpara.target || {};
-                if (shot.index == chiSpara.index && chiSparaTarget.alive && Helper.circleCollision(shot, chiSparaTarget)) {
+                if (shot.index == chiSpara.index && chiSparaTarget.alive && chiSparaTarget.index!=100 && Helper.circleCollision(shot, chiSparaTarget)) {
                     chiSparaTarget.hp -= shot.damage;
                     chiSparaTarget.vX = shot.vX * 0.03;
                     chiSparaTarget.vY = shot.vY * 0.03;
@@ -84,6 +84,7 @@ export class BulletHandler {
                             this.blood.create(shot.x, shot.y, Math.random() * 2 - 2 * i, Math.random() * 2 - 2 * i, this.c.BLOOD_RADIUS) // crea il sangue
                         }
                         this.enemy.list[shot.index].kills++;    // si aumenta lo score del bot che ha sparato il proiettile
+                        console.log(`BOT ${chiSpara.index} killed BOT ${chiSparaTarget.index}`);
                         setTimeout(() => {
                             this.enemy.respawn(chiSparaTarget);
                         }, this.c.GAME_RESPAWN_TIME);
@@ -111,12 +112,11 @@ export class BulletHandler {
                         this.blood.create(shot.x, shot.y, Math.random() * 2 - 2 * i, Math.random() * 2 - 2 * i, this.c.BLOOD_RADIUS) // crea il sangue
                     }
                     this.enemy.list[shot.index].kills++;    // si aumenta lo score del bot che ha sparato il proiettile
-                    let currentActorInCamera = this.enemy.list[shot.index];
-                    this.main.camera.setCurrentPlayer(currentActorInCamera);
-                    this.main.camera.adjustCamera(currentActorInCamera);
-                    setTimeout(() => {
-                        this.player.respawn();
-                    }, this.c.GAME_RESPAWN_TIME);
+                    // let currentActorInCamera = this.enemy.list[shot.index];
+                    // this.main.camera.setCurrentPlayer(currentActorInCamera);
+                    // this.main.camera.adjustCamera(currentActorInCamera);
+                    // setTimeout(() =>this.player.respawn(), this.c.GAME_RESPAWN_TIME);
+                    console.log(`BOT ${shot.index} killed Player ${this.player.index}.`);
                 }
                 this.pool.push(shot);
                 this.list.splice(i, 1);
@@ -139,6 +139,7 @@ export class BulletHandler {
                         for (let b = 0; b < 36; b++) {
                             this.blood.create(shot.x, shot.y, Math.random() * 2 - 2 * i, Math.random() * 2 - 2 * i, this.c.BLOOD_RADIUS) // crea il sangue
                         }
+                        console.log(`PLayer killed BOT ${bot.index}.`);
                         setTimeout(() => {
                             this.enemy.respawn(bot);
                         }, this.c.GAME_RESPAWN_TIME);

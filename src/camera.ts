@@ -45,17 +45,22 @@ export class Camera {
     // adjust camera after respawn
     adjustCamera(actor:any){
 		if(actor.x > (this.map.mapSize.w - this.c.CANVAS_WIDTH)){
-			this.x = this.map.mapSize.w - this.c.CANVAS_WIDTH;
+            this.x = this.map.mapSize.w - this.c.CANVAS_WIDTH;
+            //this.x = this.currentPlayer.x - (this.w / 2);
 		}
 		if(actor.x < this.c.CANVAS_WIDTH){
-			this.x = 0;
+            this.x = 0;
+            //this.x = this.currentPlayer.x - (this.w / 2);
 		}
 		if(actor.y < this.c.CANVAS_HEIGHT){
+            //this.y = this.currentPlayer.y - (this.h / 2);
 			this.y = 0;
 		}
 		if(actor.y > (this.map.mapSize.h - this.c.CANVAS_HEIGHT)){
-			this.y = this.map.mapSize.h - this.c.CANVAS_HEIGHT;
-		}
+            this.y = this.map.mapSize.h - this.c.CANVAS_HEIGHT;
+            //this.y = this.currentPlayer.y - (this.h / 2);
+        }
+        //this.update(1);
 	}
 
 };

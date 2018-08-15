@@ -11,6 +11,7 @@ export class Helper {
         } else {
             this.spawnUsed++;
         }
+        console.log(`Used spawn point n° ${this.spawnUsed}`);
         return arr[_spawn]
     }
 

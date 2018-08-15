@@ -8,10 +8,11 @@ Esempio di shooter 2D realizzato per studiare il canvas e lo sviluppo di giochi 
 - [x] camera following different entities (player, bots) 
 - [x] collision system for all mouvable entities
 - [x] particles (debris, blood, explosion)
-- [ ] powerups system with different respawn time + counter
+- [x] powerups system with different respawn time + counter
 - [ ] different weapons
 - [ ] different game modes (deathmatch, team deathmach, capture the flag, skirmish)
-- [ ] bots AI
+- [x] bots AI
+- [ ] multiple maps
 - [ ] music and effects
 - [ ] multiplayer
 - [ ] movimenti in funzione del tempo: [source](https://www.viget.com/articles/time-based-animation/)
@@ -63,16 +64,3 @@ For bugs and feature requests, [please create an issue](https://github.com/Loren
 ## Author
 
 - [github/LorenzoCorbella74](https://github.com/LorenzoCorbella74)
-
-
-
-SyntaxError: Unexpected identifier at Particelle.render (http://localhost:1234/game.dc17dee5.js:1344:5) at Game.renderAll (http://localhost:1234/game.dc17dee5.js:1556:25) at Game.gameLoop (http://localhost:1234/game.dc17dee5.js:1529:18)
-message
-:
-"Unexpected identifier"
-stack
-:
-"SyntaxError: Unexpected identifier↵    at Particelle.render (http://localhost:1234/game.dc17dee5.js:1344:5)↵    at Game.renderAll (http://localhost:1234/game.dc17dee5.js:1556:25)↵    at Game.gameLoop (http://localhost:1234/game.dc17dee5.js:1529:18)"
-__proto__
-:
-Error

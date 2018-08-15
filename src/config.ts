@@ -5,10 +5,10 @@ export class Config {
     CANVAS_HEIGHT:          number = 600;
 
     // GAME
-    GAME_KILLS_TO_WIN:      number = 5;
-    GAME_MATCH_DURATION:    number = 180000; // in ms 
+    GAME_KILLS_TO_WIN:      number = 15;
+    GAME_MATCH_DURATION:    number = 300000; // in ms 
     GAME_BOTS_PER_MATCH:    number = 4;
-    GAME_RESPAWN_TIME:      number = 1000;         // in ms
+    GAME_RESPAWN_TIME:      number = 4000;         // in ms
     
     // MAP
     TILE_SIZE:              number = 25;

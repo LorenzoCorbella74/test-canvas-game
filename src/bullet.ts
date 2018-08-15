@@ -65,7 +65,7 @@ export class BulletHandler {
                 continue
             }
 
-            // bullet sparati da bot a bot
+            // bullet sparati da bot a bot (non il player... chiSparaTarget.index!=100 )
             let chiSpara = this.enemy.list[shot.index];
             if (chiSpara) {
                 let chiSparaTarget = chiSpara.target || {};
@@ -112,9 +112,9 @@ export class BulletHandler {
                         this.blood.create(shot.x, shot.y, Math.random() * 2 - 2 * i, Math.random() * 2 - 2 * i, this.c.BLOOD_RADIUS) // crea il sangue
                     }
                     this.enemy.list[shot.index].kills++;    // si aumenta lo score del bot che ha sparato il proiettile
-                    // let currentActorInCamera = this.enemy.list[shot.index];
-                    // this.main.camera.setCurrentPlayer(currentActorInCamera);
-                    // this.main.camera.adjustCamera(currentActorInCamera);
+                    let currentActorInCamera = this.enemy.list[shot.index];
+                    this.main.camera.setCurrentPlayer(currentActorInCamera);
+                    this.main.camera.adjustCamera(currentActorInCamera);
                     // setTimeout(() =>this.player.respawn(), this.c.GAME_RESPAWN_TIME);
                     console.log(`BOT ${shot.index} killed Player ${this.player.index}.`);
                 }

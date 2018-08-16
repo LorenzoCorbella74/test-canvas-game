@@ -244,18 +244,18 @@ export class Enemy {
             } else {
                 bot.strategy.w = true;
             }
-        } else {
+        } /* else {
             if (bot.velX > 0 ) {
-                bot.strategy.d = false;
+                bot.strategy.s = true;
             } else {
-                bot.strategy.a = false;
+                bot.strategy.d = true;
             }
             if (bot.velY > 0) {
-                bot.strategy.s = false;
+                bot.strategy.a = true;
             } else {
-                bot.strategy.w = false;
+                bot.strategy.w = true;
             }
-        }
+        } */
 
         this.checkCollision(bot, attackmode);
 

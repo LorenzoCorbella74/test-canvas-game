@@ -81,7 +81,7 @@ export class Player {
 	};
 
 	private getPlayerColour(){
-		if(this.speed>5){
+		if(this.speed>4/16){
 			return 'yellow';
 		}
 		if(this.damage>1){
@@ -156,63 +156,64 @@ export class Player {
 		}
 	}
 
-	collisionDetection(){
+	collisionDetection(progress:number){
+		let spostamento = this.speed*progress;
 		if (this.control.w) { // W 
-			if (this.checkmove(this.x - this.r, this.y - this.r - this.speed)) {
-				this.y -= this.speed;
+			if (this.checkmove(this.x - this.r, this.y - this.r - spostamento)) {
+				this.y -= spostamento;
 				if (this.y - this.r < this.camera.y) {
 					this.y = this.camera.y + this.r;
 				}
 				// collisione con nemici
 				// this.enemy.list.forEach((enemy:any) => {
 				// 	if(Helper.circleCollision(enemy, this)){
-				// 		this.y += 4*this.speed;
-				// 		enemy.y -= 4* this.speed;
+				// 		this.y += 4*spostamento;
+				// 		enemy.y -= 4* spostamento;
 				// 	}
 				// });
 			}
 		}
 		if (this.control.s) {	// S
-			if (this.checkmove(this.x - this.r, this.y - this.r + this.speed)) {
-				this.y += this.speed;
+			if (this.checkmove(this.x - this.r, this.y - this.r + spostamento)) {
+				this.y += spostamento;
 				if (this.y + this.r >= this.camera.y + this.camera.h) {
 					this.y = this.camera.y + this.camera.h - this.r;
 				}
 				// collisione con nemici
 				// this.enemy.list.forEach((enemy:any) => {
 				// 	if(Helper.circleCollision(enemy, this)){
-				// 		this.y -= 4*this.speed;
-				// 		enemy.y +=4*this.speed;
+				// 		this.y -= 4*spostamento;
+				// 		enemy.y +=4*spostamento;
 				// 	}
 				// });
 			}
 		}
 		if (this.control.a) {	// a
-			if (this.checkmove(this.x - this.r - this.speed, this.y - this.r)) {
-				this.x -= this.speed;
+			if (this.checkmove(this.x - this.r - spostamento, this.y - this.r)) {
+				this.x -= spostamento;
 				if (this.x - this.r < this.camera.x) {
 					this.x = this.camera.x + this.r;
 				}
 				// collisione con nemici
 				// this.enemy.list.forEach((enemy:any) => {
 				// 	if(Helper.circleCollision(enemy, this)){
-				// 		this.x += 4*this.speed;
-				// 		enemy.x -=4*this.speed;
+				// 		this.x += 4*spostamento;
+				// 		enemy.x -=4*spostamento;
 				// 	}
 				// });
 			}
 		}
 		if (this.control.d) {	// d
-			if (this.checkmove(this.x - this.r + this.speed, this.y - this.r)) {
-				this.x += this.speed;
+			if (this.checkmove(this.x - this.r + spostamento, this.y - this.r)) {
+				this.x += spostamento;
 				if (this.x + this.r >= this.map.mapSize.w) {
 					this.x = this.camera.x + this.camera.w - this.r;
 				}
 				// collisione con nemici
 				// this.enemy.list.forEach((enemy:any) => {
 				// 	if(Helper.circleCollision(enemy, this)){
-				// 		this.y -= 4* this.speed;
-				// 		enemy.x +=4* this.speed;
+				// 		this.y -= 4* spostamento;
+				// 		enemy.x +=4* spostamento;
 				// 	}
 				// });
 			}
@@ -240,7 +241,7 @@ export class Player {
 		if (this.alive) {
 			// this.attackCounter += progress;	// contatore frdequenza di sparo
 
-			this.collisionDetection();
+			this.collisionDetection(progress);
 
 			if (this.control.mouseLeft) {	// SE è PREMUTO IL btn del mouse
 				this.shoot(progress);

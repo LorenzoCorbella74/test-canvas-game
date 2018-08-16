@@ -14,7 +14,7 @@ export class Config {
     TILE_SIZE:              number = 25;
     
     // PLAYER
-    PLAYER_SPEED:           number = 3.5;
+    PLAYER_SPEED:           number = 3.5/16;
     PLAYER_RADIUS:          number = 12.5;
     PLAYER_HP:              number = 100;
     PLAYER_AP:              number = 100;

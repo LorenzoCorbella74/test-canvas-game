@@ -156,6 +156,18 @@ export class Enemy {
         })
         return output.elem;
     }
+    getNearestWaypoint(origin: any, data: any) {
+        let output: any = { dist: 10000 }; // elemento + vicino ad origin
+        data
+        .filter((elem:any)=> elem.index!==origin.index) // se non è lo stesso
+        .forEach((e: any) => {
+            let distanza = Helper.calculateDistance(origin, e);
+            if (output.dist > distanza && distanza < 600) {
+                output = { dist: distanza, elem: e };
+            }
+        })
+        return output.elem;
+    }
 
     getNearestEnemy(origin: any, actors: any) {
         let output: any = { dist: 10000 }; // elemento + vicino ad origin
@@ -331,7 +343,7 @@ export class Enemy {
                 bot.attackCounter =0;
                 bot.angleWithTarget =0;
                 // se non si ha un target si va alla ricerca dei powerup
-                bot.targetItem = this.getNearestPowerup(bot, this.main.powerup.list);
+                bot.targetItem = this.getNearestPowerup(bot, this.main.powerup.list) || this.getNearestWaypoint(bot, this.main.waypoints);
                 if (bot.alive && bot.targetItem) {
                     this.collectPowerUps(bot);
                 }
@@ -340,26 +352,6 @@ export class Enemy {
     }
 /* 
     // se true è avvenuta la collisione se false no...
-    myCheckCollision(shot: any, map: any) {
-        if (shot.x - shot.old_x > 0 && map[Math.floor(shot.y / this.c.TILE_SIZE)][Math.floor((shot.x + this.c.BULLET_RADIUS) / this.c.TILE_SIZE)] == 1) {
-            shot.x = shot.old_x;
-            return true;
-        }
-        if (shot.x - shot.old_x > 0 && map[Math.floor(shot.y / this.c.TILE_SIZE)][Math.floor((shot.x - this.c.BULLET_RADIUS) / this.c.TILE_SIZE)] == 1) {
-            shot.x = shot.old_x;
-            return true;
-        }
-        if (shot.y + shot.old_y > 0 && map[Math.floor((shot.y + this.c.BULLET_RADIUS) / this.c.TILE_SIZE)][Math.floor(shot.x / this.c.TILE_SIZE)] == 1) {
-            shot.y = shot.old_y;
-            return true;
-        }
-        if (shot.y + shot.old_y < 0 && map[Math.floor((shot.y - this.c.BULLET_RADIUS) / this.c.TILE_SIZE)][Math.floor(shot.x / this.c.TILE_SIZE)] == 1) {
-            shot.y = shot.old_y;
-            return true;
-        }
-        return false;
-    }
-
     checkIfIsSeen(target: any, source: any) {
         let ray = new Object();
         let old_x = source.x;

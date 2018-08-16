@@ -51,6 +51,7 @@ export default class Game {
     data:          any;
 
     actors:any[];
+    waypoints:any[];
 
     // UI
     fontFamily:        string;
@@ -93,6 +94,7 @@ export default class Game {
         this.canvas.style.cursor = 'crosshair';
         this.fontFamily          = this.c.FONT_FAMILY;
         this.actors              = [];
+        this.waypoints            = [];
         
         // bots names
         let botsArray = Array(this.numberOfBots).fill(null).map((e,i)=> i);
@@ -117,6 +119,15 @@ export default class Game {
             return e;})  // si mette un indice
          .forEach((e:any, index:number) => {
             this.powerup.create(e.x, e.y, e.type, index); 
+        });
+
+         // waypoint
+         this.data.waypoints
+         .map((e:any,i:number)=>{
+             e.index=i;
+            return e;})  // si mette un indice
+         .forEach((e:any, index:number) => {
+            this.waypoints.push({x:e.x, y:e.y, type:e.type, index:index}); 
         });
 
         // si inizializza il player

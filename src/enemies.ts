@@ -172,8 +172,8 @@ export class Enemy {
     getNearestEnemy(origin: any, actors: any) {
         let output: any = { dist: 10000 }; // elemento + vicino ad origin
         actors
-        .filter((elem:any)=> elem.index!==origin.index && elem.alive)
-        .filter((e:any)=>this.checkIfIsSeen2(origin, e))  // si esclude se stessi e quelli morti...
+        .filter((elem:any)=> elem.index!==origin.index && elem.alive)   // si esclude se stessi e quelli morti...
+        .filter((e:any)=>this.checkIfIsSeen2(origin, e))  
         .forEach((e: any) => {
             let distanza = Helper.calculateDistance(origin, e);
             if (output.dist > distanza && distanza < 350) {
@@ -212,7 +212,7 @@ export class Enemy {
         this.checkCollision(bot);
     }
 
-    attackEnemy(bot: any, index:number, progress: number) {
+    attackEnemy(bot: any, index:number, progress: number, attackmode:boolean) {
 
         // si calcola l'angolo rispetto allo stesso sistema di riferimento (camera)
         bot.angleWithTarget = Helper.calculateAngle(bot.x - this.camera.x, bot.y - this.camera.y, bot.target.x - this.camera.x, bot.target.y - this.camera.y);
@@ -257,7 +257,7 @@ export class Enemy {
             }
         }
 
-        this.checkCollision(bot);
+        this.checkCollision(bot, attackmode);
 
         // this.line(bot.target, bot);
         // this.walk_grid(bot.target, bot);
@@ -278,10 +278,14 @@ export class Enemy {
         }
     }
 
-    checkCollision(bot:any){
+    getRandomDirection(bot:any){
+        return Helper.randomElementInArray([bot.velX, bot.velY*bot.speed/* ,bot.velY, bot.velX*bot.speed */]);
+    }
+
+    checkCollision(bot:any, attackmode?:boolean){
         if (bot.strategy.w) { // W 
             if (this.checkmove(bot.x - bot.r, bot.y - bot.r - bot.speed)) {
-                bot.y -= bot.speed;
+                bot.y -= attackmode? this.getRandomDirection(bot):bot.speed;
                 if (bot.y - bot.r < this.camera.y) {
                     bot.y = this.camera.y + bot.r;
                 }
@@ -294,7 +298,7 @@ export class Enemy {
         }
         if (bot.strategy.s) {	// S
             if (this.checkmove(bot.x - bot.r, bot.y - bot.r + bot.speed)) {
-                bot.y += bot.speed;
+                bot.y += attackmode? this.getRandomDirection(bot) :bot.speed;
                 if (bot.y + bot.r >= this.camera.y + this.camera.h) {
                     bot.y = this.camera.y + this.camera.h - bot.r;
                 }
@@ -307,7 +311,7 @@ export class Enemy {
         }
         if (bot.strategy.a) {	// a
             if (this.checkmove(bot.x - bot.r - bot.speed, bot.y - bot.r)) {
-                bot.x -= bot.speed;
+                bot.x -= attackmode? this.getRandomDirection(bot):bot.speed;
                 if (bot.x - bot.r < this.camera.x) {
                     bot.x = this.camera.x + bot.r;
                 }
@@ -318,9 +322,9 @@ export class Enemy {
                 // }
             }
         }
-        if (bot.strategy.d) {	// d
+        if (bot.strategy.d) {	// d    
             if (this.checkmove(bot.x - bot.r + bot.speed, bot.y - bot.r)) {
-                bot.x += bot.speed;
+                bot.x += attackmode? this.getRandomDirection(bot):bot.speed;
                 if (bot.x + bot.r >= this.map.mapSize.w) {
                     bot.x = this.camera.x + this.camera.w - bot.r;
                 }
@@ -338,7 +342,7 @@ export class Enemy {
             const bot = this.list[i];
             bot.target =  /* this.player; //  */this.getNearestEnemy(bot, this.main.actors);
             if (bot.alive && bot.target && bot.target.alive) {
-                this.attackEnemy(bot, i, progress);
+                this.attackEnemy(bot, i, progress, true);
             } else {
                 bot.attackCounter =0;
                 bot.angleWithTarget =0;

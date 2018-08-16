@@ -272,12 +272,13 @@ export default class Game {
         var dark = 'rgba(0,0,0)';
         var medium = 'rgba(0,0,0)';
         var light = 'rgba(0,0,0)';
-        this.textONCanvas(main.ctx, 'Corbe Shooter 2D', hW, hH - 100, 'normal 32px/1 ' + main.fontFamily, light, );
+        this.textONCanvas(main.ctx, 'Arena Shooter 2D', hW, hH - 100, 'normal 32px/1 ' + main.fontFamily, light, );
         this.textONCanvas(main.ctx, 'Use "WASD" to move and "Left Click" to shoot.', hW, hH - 30, 'normal 15px/1 ' + main.fontFamily, medium);
         this.textONCanvas(main.ctx, 'Use mouse wheel to change weapons.', hW, hH - 10, 'normal 15px/1 ' + main.fontFamily, medium);
-        this.textONCanvas(main.ctx, 'Click to Start', hW, hH + 50, 'normal 17px/1 ' + main.fontFamily, dark);
+        this.textONCanvas(main.ctx, 'P or ESC for pause screen (i for debug).', hW, hH + 10, 'normal 15px/1 ' + main.fontFamily, medium);
+        this.textONCanvas(main.ctx, 'Click to Start', hW, hH + 80, 'normal 18px/1 ' + main.fontFamily, dark);
 
-        this.textONCanvas(main.ctx, 'L.Corbella © 2018', 9, main.canvas.height - 14, 'normal 13px/1 ' + main.fontFamily, light, 'left')
+        this.textONCanvas(main.ctx, 'L.Corbella © 2018', 9, main.canvas.height - 14, 'normal 12px/1 ' + main.fontFamily, light, 'left')
     }
 
     loadStatsScreen(main: any) {
@@ -297,8 +298,8 @@ export default class Game {
             const bot = this.enemy.list[i];
             this.textONCanvas(main.ctx, `${bot.name} - ${bot.kills} - ${bot.numberOfDeaths}`, hW, hH - 30 +(20*(i+1)), 'normal 16px/1 ' + main.fontFamily, medium);
         }
-        this.textONCanvas(main.ctx, 'Click to Restart', hW, main.canvas.height - 120, 'normal 17px/1 ' + main.fontFamily, dark);
-        this.textONCanvas(main.ctx, 'L.Corbella © 2018', 9, main.canvas.height - 14, 'normal 13px/1 ' + main.fontFamily, light, 'left')
+        this.textONCanvas(main.ctx, 'Click to Restart', hW, main.canvas.height - 120, 'normal 18px/1 ' + main.fontFamily, dark);
+        this.textONCanvas(main.ctx, 'L.Corbella © 2018', 9, main.canvas.height - 14, 'normal 12px/1 ' + main.fontFamily, light, 'left')
     }
     
     // screen di pausa
@@ -313,7 +314,12 @@ export default class Game {
         var dark = 'rgba(0,0,0,0.9)';
         var medium = 'rgba(0,0,0,0.5)';
         var light = 'rgba(0,0,0,0.3)';
-        this.textONCanvas(main.ctx, 'Paused', hW, hH - 15, 'normal 22px/1 ' + main.fontFamily, dark);
-        this.textONCanvas(main.ctx, 'Click to Continue', hW, hH + 15, 'normal 17px/1 ' + main.fontFamily, dark)
+        this.textONCanvas(main.ctx, 'Paused', hW, hH - 60, 'normal 22px/1 ' + main.fontFamily, dark);
+        this.textONCanvas(main.ctx, `${main.player.name} - ${main.player.kills} - ${main.player.numberOfDeaths}`, hW, hH - 30, 'normal 16px/1 ' + main.fontFamily, medium);
+        for (let i = 0; i < this.enemy.list.length; i++) {
+            const bot = this.enemy.list[i];
+            this.textONCanvas(main.ctx, `${bot.name} - ${bot.kills} - ${bot.numberOfDeaths}`, hW, hH - 30 +(20*(i+1)), 'normal 16px/1 ' + main.fontFamily, medium);
+        }
+        this.textONCanvas(main.ctx, 'Click to Continue', hW, hH + 150   , 'normal 17px/1 ' + main.fontFamily, dark)
     }
 }

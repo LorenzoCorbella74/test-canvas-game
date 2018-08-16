@@ -79,7 +79,7 @@ export class Enemy {
         bot.currentWeapon = this.c.PLAYER_STARTING_WEAPON;		// arma corrente
     }
 
-    private getBotColour(bot){
+    private getBotColour(bot:any){
 		if(bot.speed>5){
 			return 'yellow';
 		}
@@ -147,7 +147,7 @@ export class Enemy {
         let output: any = { dist: 10000 }; // elemento + vicino ad origin
         data
         .filter((elem:any)=> elem.visible==true) // si esclude quelli non visibili
-        // .filter((e:any)=>this.checkIfIsSeen2(origin, e))   // quelli non visibili // FIXME:quando si ha il pathfinding con A* si potrà togliere...
+        .filter((e:any)=>this.checkIfIsSeen2(origin, e))   // quelli non visibili // FIXME:quando si ha il pathfinding con A* si potrà togliere...
         .forEach((e: any) => {
             let distanza = Helper.calculateDistance(origin, e);
             if (output.dist > distanza && distanza < 350) {
@@ -160,7 +160,8 @@ export class Enemy {
     getNearestEnemy(origin: any, actors: any) {
         let output: any = { dist: 10000 }; // elemento + vicino ad origin
         actors
-        .filter((elem:any)=> elem.index!==origin.index) // si esclude se stessi
+        .filter((elem:any)=> elem.index!==origin.index && elem.alive)
+        .filter((e:any)=>this.checkIfIsSeen2(origin, e))  // si esclude se stessi e quelli morti...
         .forEach((e: any) => {
             let distanza = Helper.calculateDistance(origin, e);
             if (output.dist > distanza && distanza < 350) {
@@ -328,6 +329,7 @@ export class Enemy {
                 this.attackEnemy(bot, i, progress);
             } else {
                 bot.attackCounter =0;
+                bot.angleWithTarget =0;
                 // se non si ha un target si va alla ricerca dei powerup
                 bot.targetItem = this.getNearestPowerup(bot, this.main.powerup.list);
                 if (bot.alive && bot.targetItem) {

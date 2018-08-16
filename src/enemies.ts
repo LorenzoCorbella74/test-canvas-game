@@ -147,12 +147,13 @@ export class Enemy {
         let output: any = { dist: 10000 }; // elemento + vicino ad origin
         data
         .filter((elem:any)=> elem.visible==true) // si esclude quelli non visibili
+        // .filter((e:any)=>this.checkIfIsSeen2(origin, e))   // quelli non visibili // FIXME:quando si ha il pathfinding con A* si potrà togliere...
         .forEach((e: any) => {
             let distanza = Helper.calculateDistance(origin, e);
             if (output.dist > distanza && distanza < 350) {
                 output = { dist: distanza, elem: e };
             }
-        });
+        })
         return output.elem;
     }
 
@@ -245,7 +246,10 @@ export class Enemy {
 
         this.checkCollision(bot);
 
-        if (dist < 400 && this.checkIfIsSeen(bot.target, bot)) {	// SE non troppo lontano e visibile SPARA!
+        // this.line(bot.target, bot);
+        // this.walk_grid(bot.target, bot);
+
+        if (dist < 400 && this.checkIfIsSeen2(bot.target, bot)) {	// SE non troppo lontano e visibile SPARA!
             let now = Date.now();
             if (now - bot.attackCounter < bot.shootRate) return;
             bot.attackCounter = now;
@@ -332,7 +336,7 @@ export class Enemy {
             }
         }
     }
-
+/* 
     // se true è avvenuta la collisione se false no...
     myCheckCollision(shot: any, map: any) {
         if (shot.x - shot.old_x > 0 && map[Math.floor(shot.y / this.c.TILE_SIZE)][Math.floor((shot.x + this.c.BULLET_RADIUS) / this.c.TILE_SIZE)] == 1) {
@@ -387,6 +391,115 @@ export class Enemy {
             }
         }
         return !output; 
+    } */
+
+    /*
+
+     // torna true se non ci sono blocchi, false se si ha almeno una tile solida tra i due punti
+    canSeeTarget(source: any, destination: any): boolean {
+        let points = this.plot(source.x, source.y, destination.x, destination.y);
+        console.log(points);
+        let output = true;
+        for (let i = 0; i < points.length; i++) {
+            const ele = points[i];
+            if (this.map.map[Math.floor(ele.y / this.c.TILE_SIZE)][Math.floor(ele.x / this.c.TILE_SIZE)] == 1) {
+                output = false;
+                break;
+            }
+        }
+        return output;
+    }
+
+
+    private plot(x0, y0, x1, y1) {
+        let dots = [];
+        let dx = Math.abs(x1 - x0);
+        let dy = Math.abs(y1 - y0);
+        let sx = (x0 < x1) ? 1 : -1;
+        let sy = (y0 < y1) ? 1 : -1;
+        let err = dx - dy;
+        dots.push({ x: x0, y: y0 });
+        while(true){
+            dots.push({ x: x0, y: y0 });
+       
+            if (Math.abs(x0-x1)<0.0001 && Math.abs(y0-y1)<0.0001) break;
+            var e2 = 2*err;
+            if (e2 >-dy){ err -= dy; x0  += sx; }
+            if (e2 < dx){ err += dx; y0  += sy; }
+          }
+        return dots;
+    }
+
+    */
+
+    /*
+    // SOURCE: https://www.redblobgames.com/grids/line-drawing.html
+
+    // Linear interpolation (“lerp”) gives you a number between two other numbers. 
+    // When t = 0.0 you get the start point; when t = 1.0 you get the end point 
+    lerp(start, end, t) {
+        return start + t * (end-start);
+    }
+
+
+     lerp_point(p0:any, p1:any, t) {
+        return {x:this.lerp(p0.x, p1.x, t), y: this.lerp(p0.y, p1.y, t)};
+    }
+
+     diagonal_distance(p0:any, p1:any) {
+        var dx = p1.x - p0.x, dy = p1.y - p0.y;
+        return Math.max(Math.abs(dx), Math.abs(dy));
+    }
+    
+     round_point(p:any) {
+        return {x:Math.round(p.x), y:Math.round(p.y)};
+    }
+    
+     line(p0:any, p1:any) {
+        var points = [];
+        var N = this.diagonal_distance(p0, p1);
+        for (var step = 0; step <= N; step++) {
+            var t = N == 0? 0.0 : step / N; 
+            // console.log(t);
+            points.push(this.round_point(this.lerp_point(p0, p1, t)));
+        }
+        //console.log(points);
+        return points;
+    }
+    */
+
+
+    // SOURCE: https://www.redblobgames.com/grids/line-drawing.html (walk_grid ) 
+    checkIfIsSeen2(p0:any, p1:any) {
+        var dx = p1.x-p0.x, dy = p1.y-p0.y;
+        var nx = Math.abs(dx), 
+            ny = Math.abs(dy);
+        var sign_x = dx > 0? 1 : -1, sign_y = dy > 0? 1 : -1;
+        var p = {x: p0.x, y :p0.y};
+        var points = [{x:p.x, y: p.y}];
+        for (var ix = 0, iy = 0; ix < nx || iy < ny;) {
+            if ((0.5+ix) / nx < (0.5+iy) / ny) {
+                // next step is horizontal
+                p.x += sign_x;
+                ix++;
+            } else {
+                // next step is vertical
+                p.y += sign_y;
+                iy++;
+            }
+            points.push({x: p.x, y: p.y});
+        }
+        //console.log(points);
+        //return points;
+        let output = true;
+        for (let i = 0; i < points.length; i++) {
+            const ele = points[i];
+            if (this.map.map[Math.floor(ele.y / this.c.TILE_SIZE)][Math.floor(ele.x / this.c.TILE_SIZE)] == 1) {
+                output = false;
+                break;
+            }
+        }
+        return output;
     }
 
 }

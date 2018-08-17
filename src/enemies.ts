@@ -1,3 +1,4 @@
+import { BrainFSM } from './brain';
 import { Helper } from './helper';
 
 export class Enemy {
@@ -32,6 +33,7 @@ export class Enemy {
 
     create(x: number, y: number, num: number) {
         let enemy: any              = new Object();
+        enemy.brain                 = new BrainFSM();
         enemy.index                 = num;
         enemy.name                  = Helper.getBotsName(this.c.ENEMY_NAMES);
         enemy.x                     = x || 75;
@@ -53,6 +55,8 @@ export class Enemy {
         enemy.target                = {};
         enemy.targetItem            = {};
         this.list[this.list.length] = enemy;
+
+        enemy.brain.pushState(this.navigare.bind(this));
         return enemy;
     };
 
@@ -121,7 +125,7 @@ export class Enemy {
                     this.ctx.fillText(bot.hp.toString(), bot.x - this.camera.x - 5, bot.y - this.camera.y);
                     this.ctx.fillStyle = 'black';
                     this.ctx.fillText(bot.index.toString(), bot.x - this.camera.x - 5, bot.y - this.camera.y -16);
-                    this.ctx.fillText(bot.target? bot.target.index.toString():'', bot.x - this.camera.x + 5, bot.y - this.camera.y -16);
+                    this.ctx.fillText(bot.target && bot.target.index? bot.target.index.toString():'', bot.x - this.camera.x + 5, bot.y - this.camera.y -16);
                     this.ctx.fillText(bot.targetItem && bot.targetItem.index? bot.targetItem.index.toString():'', bot.x - this.camera.x + 5, bot.y - this.camera.y +16);
                 //}
             }
@@ -173,7 +177,7 @@ export class Enemy {
         let output: any = { dist: 10000 }; // elemento + vicino ad origin
         actors
         .filter((elem:any)=> elem.index!==origin.index && elem.alive)   // si esclude se stessi e quelli morti...
-        .filter((e:any)=>this.checkIfIsSeen2(origin, e))  
+        .filter((e:any)=>this.checkIfIsSeen2(origin, e))                // si esclude quelli non visibili
         .forEach((e: any) => {
             let distanza = Helper.calculateDistance(origin, e);
             if (output.dist > distanza && distanza < 350) {
@@ -212,7 +216,7 @@ export class Enemy {
         this.checkCollision(bot);
     }
 
-    attackEnemy(bot: any, index:number, progress: number, attackmode:boolean) {
+    attackEnemy(bot: any, progress: number) {
 
         // si calcola l'angolo rispetto allo stesso sistema di riferimento (camera)
         bot.angleWithTarget = Helper.calculateAngle(bot.x - this.camera.x, bot.y - this.camera.y, bot.target.x - this.camera.x, bot.target.y - this.camera.y);
@@ -257,7 +261,7 @@ export class Enemy {
             }
         } */
 
-        this.checkCollision(bot, attackmode);
+        this.checkCollision(bot, true); // il 2° parametro è il flag se siamo in attack mode
 
         // this.line(bot.target, bot);
         // this.walk_grid(bot.target, bot);
@@ -272,7 +276,7 @@ export class Enemy {
             vX /= dist;									// si normalizza e si calcola la direzione
             vY /= dist;
             // if (bot.attackCounter > 200) {									// frequenza di sparo
-                this.bullet.create(bot.x, bot.y, vX * 8, vY * 8, 'enemy', index, bot.damage);  // 8 è la velocità del proiettile
+                this.bullet.create(bot.x, bot.y, vX * 8, vY * 8, 'enemy', bot.index, bot.damage);  // 8 è la velocità del proiettile
                 //bot.attackCounter = 0;
             //}
         }
@@ -340,132 +344,9 @@ export class Enemy {
     update(progress: number) {
         for (let i = this.list.length - 1; i >= 0; i--) {
             const bot = this.list[i];
-            bot.target =  /* this.player; //  */this.getNearestEnemy(bot, this.main.actors);
-            if (bot.alive && bot.target && bot.target.alive) {
-                this.attackEnemy(bot, i, progress, true);
-            } else {
-                bot.attackCounter =0;
-                bot.angleWithTarget =0;
-                // se non si ha un target si va alla ricerca dei powerup
-                bot.targetItem = this.getNearestPowerup(bot, this.main.powerup.list) || this.getNearestWaypoint(bot, this.main.waypoints);
-                if (bot.alive && bot.targetItem) {
-                    this.collectPowerUps(bot);
-                }
-            }
+            bot.brain.update(bot, progress);
         }
     }
-/* 
-    // se true è avvenuta la collisione se false no...
-    checkIfIsSeen(target: any, source: any) {
-        let ray = new Object();
-        let old_x = source.x;
-        let old_y = source.y ;
-        let x = source.x;
-        let y = source.y;
-        let tx = (target.x) - (source.x),
-            ty = (target.y) - (source.y),
-            dist = Math.sqrt(tx * tx + ty * ty);
-            // console.log(dist);
-        ray.x = x;
-        ray.old_x = old_x;
-        ray.y = y;
-        ray.old_y = old_y;
-        ray.r = 1;
-        let velX = (tx / dist);
-        let velY = (ty / dist);
-        ray.x += velX;
-        ray.y += velY;
-        //console.log(ray, dist);
-        let output;
-        for (let i = 0; i < 300; i+=3) {
-            output = this.myCheckCollision(ray, this.map.map);
-            if (!output) {  // se non è avvenuta si aggiorna le coordinate del raggio
-                ray.old_x = ray.x;
-                ray.old_y = ray.y;
-                ray.x += velX;
-                ray.y += velY;
-            }else{
-                break;
-            }
-        }
-        return !output; 
-    } */
-
-    /*
-
-     // torna true se non ci sono blocchi, false se si ha almeno una tile solida tra i due punti
-    canSeeTarget(source: any, destination: any): boolean {
-        let points = this.plot(source.x, source.y, destination.x, destination.y);
-        console.log(points);
-        let output = true;
-        for (let i = 0; i < points.length; i++) {
-            const ele = points[i];
-            if (this.map.map[Math.floor(ele.y / this.c.TILE_SIZE)][Math.floor(ele.x / this.c.TILE_SIZE)] == 1) {
-                output = false;
-                break;
-            }
-        }
-        return output;
-    }
-
-
-    private plot(x0, y0, x1, y1) {
-        let dots = [];
-        let dx = Math.abs(x1 - x0);
-        let dy = Math.abs(y1 - y0);
-        let sx = (x0 < x1) ? 1 : -1;
-        let sy = (y0 < y1) ? 1 : -1;
-        let err = dx - dy;
-        dots.push({ x: x0, y: y0 });
-        while(true){
-            dots.push({ x: x0, y: y0 });
-       
-            if (Math.abs(x0-x1)<0.0001 && Math.abs(y0-y1)<0.0001) break;
-            var e2 = 2*err;
-            if (e2 >-dy){ err -= dy; x0  += sx; }
-            if (e2 < dx){ err += dx; y0  += sy; }
-          }
-        return dots;
-    }
-
-    */
-
-    /*
-    // SOURCE: https://www.redblobgames.com/grids/line-drawing.html
-
-    // Linear interpolation (“lerp”) gives you a number between two other numbers. 
-    // When t = 0.0 you get the start point; when t = 1.0 you get the end point 
-    lerp(start, end, t) {
-        return start + t * (end-start);
-    }
-
-
-     lerp_point(p0:any, p1:any, t) {
-        return {x:this.lerp(p0.x, p1.x, t), y: this.lerp(p0.y, p1.y, t)};
-    }
-
-     diagonal_distance(p0:any, p1:any) {
-        var dx = p1.x - p0.x, dy = p1.y - p0.y;
-        return Math.max(Math.abs(dx), Math.abs(dy));
-    }
-    
-     round_point(p:any) {
-        return {x:Math.round(p.x), y:Math.round(p.y)};
-    }
-    
-     line(p0:any, p1:any) {
-        var points = [];
-        var N = this.diagonal_distance(p0, p1);
-        for (var step = 0; step <= N; step++) {
-            var t = N == 0? 0.0 : step / N; 
-            // console.log(t);
-            points.push(this.round_point(this.lerp_point(p0, p1, t)));
-        }
-        //console.log(points);
-        return points;
-    }
-    */
-
 
     // SOURCE: https://www.redblobgames.com/grids/line-drawing.html (walk_grid ) 
     checkIfIsSeen2(p0:any, p1:any) {
@@ -498,6 +379,27 @@ export class Enemy {
             }
         }
         return output;
+    }
+
+    /* -------------------------------------------------------------------------------------- */
+
+    navigare(bot:any, progress:number){
+        bot.target =  this.getNearestEnemy(bot, this.main.actors);
+        if (bot.alive && bot.target && bot.target.alive) {
+            bot.brain.pushState(this.chaseTarget.bind(this));
+        } else {
+            bot.attackCounter =0;
+            bot.angleWithTarget =0;
+            // se non si ha un target si va alla ricerca dei powerup
+            bot.targetItem = this.getNearestPowerup(bot, this.main.powerup.list) || this.getNearestWaypoint(bot, this.main.waypoints);
+            if (bot.alive && bot.targetItem) {
+                this.collectPowerUps(bot);
+            }
+        }
+    }
+
+    chaseTarget(bot:any, progress:number){
+        this.attackEnemy(bot, progress);
     }
 
 }

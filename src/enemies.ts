@@ -32,32 +32,32 @@ export class Enemy {
     }
 
     create(x: number, y: number, num: number) {
-        let enemy: any              = new Object();
-        enemy.brain                 = new BrainFSM();
-        enemy.index                 = num;
-        enemy.name                  = Helper.getBotsName(this.c.ENEMY_NAMES);
-        enemy.x                     = x || 75;
-        enemy.y                     = y || 50;
-        enemy.r                     = this.c.ENEMY_RADIUS;
-        enemy.velX                  = 0;
-        enemy.velY                  = 0;
-        enemy.alive                 = true;
-        enemy.speed                 = this.c.ENEMY_SPEED;
-        enemy.angleWithTarget       = 0;
-        enemy.hp                    = this.c.ENEMY_HP;
-        enemy.ap                    = this.c.ENEMY_AP;
-        enemy.attackCounter         = 0;
-        enemy.shootRate             = 200;
-        enemy.damage                = 1;					// è per il moltiplicatore del danno (quad = 4)
-        enemy.strategy              = {};                   // per il movimento del bot
-        enemy.kills                 = 0;
-        enemy.numberOfDeaths        = 0;
-        enemy.target                = {};
-        enemy.targetItem            = {};
-        this.list[this.list.length] = enemy;
-
-        enemy.brain.pushState(this.navigare.bind(this));
-        return enemy;
+        let bot:any         = new Object();
+        bot.brain           = new BrainFSM();
+        bot.index           = num;
+        bot.name            = Helper.getBotsName(this.c.ENEMY_NAMES);
+        bot.x               = x || 75;
+        bot.y               = y || 50;
+        bot.r               = this.c.ENEMY_RADIUS;
+        bot.old_x           = x;
+        bot.old_y           = y;
+        bot.velX            = 0;
+        bot.velY            = 0;
+        bot.alive           = true;
+        bot.speed           = this.c.ENEMY_SPEED;
+        bot.angleWithTarget = 0;
+        bot.hp              = this.c.ENEMY_HP;
+        bot.ap              = this.c.ENEMY_AP;
+        bot.attackCounter   = 0;
+        bot.shootRate       = 200;
+        bot.damage          = 1;		// è per il moltiplicatore del danno (quad = 4)
+        bot.kills           = 0;
+        bot.numberOfDeaths  = 0;
+        bot.target          = {};
+        bot.targetItem      = {};
+        this.list[this.list.length] = bot;
+        bot.brain.pushState(this.patrol.bind(this));
+        return bot;
     };
 
     respawn(bot: any) {
@@ -81,6 +81,7 @@ export class Enemy {
         bot.targetItem            = {};
         bot.attackCounter = 0;
         bot.currentWeapon = this.c.PLAYER_STARTING_WEAPON;		// arma corrente
+        bot.brain.pushState(this.patrol.bind(this));
     }
 
     private getBotColour(bot:any){
@@ -195,25 +196,6 @@ export class Enemy {
             dist = Math.sqrt(tx * tx + ty * ty);
         bot.velX = (tx / dist);
         bot.velY = (ty / dist);
-
-        // si va verso il powerup 
-        if (dist > 0) {
-            if (bot.velX > 0) {
-                bot.strategy.d = true;
-                bot.strategy.a = false;
-            } else {
-                bot.strategy.a = true;
-                bot.strategy.d = false;
-            }
-            if (bot.velY > 0) {
-                bot.strategy.s = true;
-                bot.strategy.w = false;
-            } else {
-                bot.strategy.w = true;
-                bot.strategy.s = false;
-            }
-        } 
-        this.checkCollision(bot);
     }
 
     attackEnemy(bot: any, progress: number) {
@@ -221,51 +203,31 @@ export class Enemy {
         // si calcola l'angolo rispetto allo stesso sistema di riferimento (camera)
         bot.angleWithTarget = Helper.calculateAngle(bot.x - this.camera.x, bot.y - this.camera.y, bot.target.x - this.camera.x, bot.target.y - this.camera.y);
 
-        // bot.attackCounter += progress;
-
         // We need to get the distance
         var tx = bot.target.x - bot.x,
             ty = bot.target.y - bot.y,
             dist = Math.sqrt(tx * tx + ty * ty);
+  
+        // si va verso il player fino a quando si è lontanissimi
+        if (dist > 300) {
+            bot.velX = (tx / dist);
+            bot.velY = (ty / dist);
+        } else if(dist<250 && dist > 150){  
+            bot.velX = (tx / dist)*this.getRandomDirection(bot);
+            bot.velY = (ty / dist)*this.getRandomDirection(bot);
+        } else if (dist < 150){ // retreat
+            bot.velX = -(tx / dist);
+            bot.velY = -(ty / dist);
+        }
+        bot.old_x=bot.x;
+        bot.old_y=bot.y;
+        bot.x += bot.velX *bot.speed;
+        bot.y += bot.velY *bot.speed;
+        
+        this.shot(bot, dist);
+    }
 
-        /* 
-        * we calculate a velocity for our object this time around
-        * divide the target x and y by the distance and multiply it by our speed
-        * this gives us a constant movement speed.
-        */
-        bot.velX = (tx / dist);
-        bot.velY = (ty / dist);
-
-        // si va verso il player fino a quando si è vicini
-        if (dist > 150) {
-            if (bot.velX > 0) {
-                bot.strategy.d = true;
-            } else {
-                bot.strategy.a = true;
-            }
-            if (bot.velY > 0) {
-                bot.strategy.s = true;
-            } else {
-                bot.strategy.w = true;
-            }
-        } /* else {
-            if (bot.velX > 0 ) {
-                bot.strategy.s = true;
-            } else {
-                bot.strategy.d = true;
-            }
-            if (bot.velY > 0) {
-                bot.strategy.a = true;
-            } else {
-                bot.strategy.w = true;
-            }
-        } */
-
-        this.checkCollision(bot, true); // il 2° parametro è il flag se siamo in attack mode
-
-        // this.line(bot.target, bot);
-        // this.walk_grid(bot.target, bot);
-
+    shot(bot:any, dist:number){
         if (dist < 400 && this.checkIfIsSeen2(bot.target, bot)) {	// SE non troppo lontano e visibile SPARA!
             let now = Date.now();
             if (now - bot.attackCounter < bot.shootRate) return;
@@ -275,21 +237,18 @@ export class Enemy {
             let dist = Math.sqrt(vX * vX + vY * vY);	// si calcola la distanza
             vX /= dist;									// si normalizza e si calcola la direzione
             vY /= dist;
-            // if (bot.attackCounter > 200) {									// frequenza di sparo
-                this.bullet.create(bot.x, bot.y, vX * 8, vY * 8, 'enemy', bot.index, bot.damage);  // 8 è la velocità del proiettile
-                //bot.attackCounter = 0;
-            //}
+            this.bullet.create(bot.x, bot.y, vX * 8, vY * 8, 'enemy', bot.index, bot.damage);  // 8 è la velocità del proiettile
         }
     }
 
     getRandomDirection(bot:any){
-        return Helper.randomElementInArray([bot.velX, bot.velY*bot.speed/* ,bot.velY, bot.velX*bot.speed */]);
+        return Helper.randomElementInArray([bot.velX, bot.velY,bot.velY, bot.velX]);
     }
 
-    checkCollision(bot:any, attackmode?:boolean){
-        if (bot.strategy.w) { // W 
-            if (this.checkmove(bot.x - bot.r, bot.y - bot.r - bot.speed)) {
-                bot.y -= attackmode? this.getRandomDirection(bot):bot.speed;
+    checkCollision(bot:any){
+        if (bot.velY<0) { // W 
+            if (this.checkmove(bot.x - bot.r, bot.y - bot.r + bot.speed)|| Helper.circleCollision(bot, bot.target) {
+                //bot.y = bot.velY *bot.speed;
                 if (bot.y - bot.r < this.camera.y) {
                     bot.y = this.camera.y + bot.r;
                 }
@@ -298,11 +257,13 @@ export class Enemy {
                 //     bot.target.y -= 4 * bot.speed;
                 //     bot.y += 2 * bot.target.speed;
                 // }
+            } else {
+                bot.y =bot.old_y;
             }
         }
-        if (bot.strategy.s) {	// S
-            if (this.checkmove(bot.x - bot.r, bot.y - bot.r + bot.speed)) {
-                bot.y += attackmode? this.getRandomDirection(bot) :bot.speed;
+        if (bot.velY>0) {	// S
+            if (this.checkmove(bot.x - bot.r, bot.y - bot.r + bot.speed)|| Helper.circleCollision(bot, bot.target) {
+                //bot.y += bot.velY *bot.speed;
                 if (bot.y + bot.r >= this.camera.y + this.camera.h) {
                     bot.y = this.camera.y + this.camera.h - bot.r;
                 }
@@ -311,11 +272,13 @@ export class Enemy {
                 //     bot.target.y += 4 * bot.speed;
                 //     bot.y -= 2 * bot.target.speed;
                 // }
+            } else {
+                bot.y =bot.old_y;
             }
         }
-        if (bot.strategy.a) {	// a
-            if (this.checkmove(bot.x - bot.r - bot.speed, bot.y - bot.r)) {
-                bot.x -= attackmode? this.getRandomDirection(bot):bot.speed;
+        if (bot.velX<0) {	// a
+            if (this.checkmove(bot.x - bot.r - bot.speed, bot.y - bot.r) || Helper.circleCollision(bot, bot.target) {
+                //bot.x += bot.velX *bot.speed;
                 if (bot.x - bot.r < this.camera.x) {
                     bot.x = this.camera.x + bot.r;
                 }
@@ -324,11 +287,13 @@ export class Enemy {
                 //     bot.target.x -= 4 * bot.speed;
                 //     bot.x += 2 * bot.target.speed;
                 // }
+            } else {
+            bot.x =bot.old_x;
             }
         }
-        if (bot.strategy.d) {	// d    
-            if (this.checkmove(bot.x - bot.r + bot.speed, bot.y - bot.r)) {
-                bot.x += attackmode? this.getRandomDirection(bot):bot.speed;
+        if (bot.velX>0) {	// d    
+            if (this.checkmove(bot.x - bot.r + bot.speed, bot.y - bot.r)|| Helper.circleCollision(bot, bot.target) {
+                // bot.x += bot.velX *bot.speed;
                 if (bot.x + bot.r >= this.map.mapSize.w) {
                     bot.x = this.camera.x + this.camera.w - bot.r;
                 }
@@ -337,6 +302,8 @@ export class Enemy {
                 //     bot.target.x += 4 * bot.speed;
                 //     bot.x -= 2 * bot.target.speed;
                 // }
+            } else {
+                bot.x =bot.old_x;
             }
         }
     }
@@ -345,8 +312,10 @@ export class Enemy {
         for (let i = this.list.length - 1; i >= 0; i--) {
             const bot = this.list[i];
             bot.brain.update(bot, progress);
+            this.checkCollision(bot);
         }
     }
+
 
     // SOURCE: https://www.redblobgames.com/grids/line-drawing.html (walk_grid ) 
     checkIfIsSeen2(p0:any, p1:any) {
@@ -383,19 +352,21 @@ export class Enemy {
 
     /* -------------------------------------------------------------------------------------- */
 
-    navigare(bot:any, progress:number){
+    patrol(bot:any, progress:number){
         bot.target =  this.getNearestEnemy(bot, this.main.actors);
+        
         if (bot.alive && bot.target && bot.target.alive) {
             bot.brain.pushState(this.chaseTarget.bind(this));
         } else {
             bot.attackCounter =0;
             bot.angleWithTarget =0;
             // se non si ha un target si va alla ricerca dei powerup
-            bot.targetItem = this.getNearestPowerup(bot, this.main.powerup.list) || this.getNearestWaypoint(bot, this.main.waypoints);
+            bot.targetItem = this.getNearestPowerup(bot, this.main.powerup.list) || this.getNearestWaypoint(bot, this.main.waypoints); // il targetItem sono sia i powerUp che i waypoints
             if (bot.alive && bot.targetItem) {
                 this.collectPowerUps(bot);
             }
-        }
+        }    
+        
     }
 
     chaseTarget(bot:any, progress:number){

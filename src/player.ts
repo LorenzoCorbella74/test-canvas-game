@@ -90,7 +90,7 @@ export class Player {
 		return this.c.PLAYER_COLOUR_INSIDE;
 	}
 
-	render(progress:number) {
+	render(progress: number) {
 		if(this.alive){	// solo se il player è vivo!
 			// draw the colored region
 			this.ctx.beginPath();

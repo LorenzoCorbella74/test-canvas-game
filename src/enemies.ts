@@ -56,7 +56,7 @@ export class Enemy {
         bot.target          = {};
         bot.targetItem      = {};
         this.list[this.list.length] = bot;
-        bot.brain.pushState(this.patrol.bind(this));
+        bot.brain.pushState(this.spawn.bind(this));
         return bot;
     };
 
@@ -81,7 +81,7 @@ export class Enemy {
         bot.targetItem            = {};
         bot.attackCounter = 0;
         bot.currentWeapon = this.c.PLAYER_STARTING_WEAPON;		// arma corrente
-        bot.brain.pushState(this.patrol.bind(this));
+        bot.brain.pushState(this.spawn.bind(this));
     }
 
     private getBotColour(bot:any){
@@ -174,7 +174,7 @@ export class Enemy {
         return output.elem;
     }
 
-    getNearestEnemy(origin: any, actors: any) {
+    getNearestVisibleEnemy(origin: any, actors: any) {
         let output: any = { dist: 10000 }; // elemento + vicino ad origin
         actors
         .filter((elem:any)=> elem.index!==origin.index && elem.alive)   // si esclude se stessi e quelli morti...
@@ -185,7 +185,7 @@ export class Enemy {
                 output = { dist: distanza, elem: e };
             }
         });
-        return output.elem;
+        return output;
     }
 
     collectPowerUps(bot: any){
@@ -209,16 +209,18 @@ export class Enemy {
             dist = Math.sqrt(tx * tx + ty * ty);
   
         // si va verso il player fino a quando si è lontanissimi
-        if (dist > 300) {
+        if (dist > 200) {
             bot.velX = (tx / dist);
             bot.velY = (ty / dist);
-        } else if(dist<250 && dist > 150){  
-            bot.velX = (tx / dist)*this.getRandomDirection(bot);
-            bot.velY = (ty / dist)*this.getRandomDirection(bot);
-        } else if (dist < 150){ // retreat
+        } 
+        if (dist < 100){ // retreat
             bot.velX = -(tx / dist);
             bot.velY = -(ty / dist);
         }
+        if(dist<200 && dist > 100){  
+            bot.velX = (tx / dist)*this.getRandomDirection(bot);
+            bot.velY = (ty / dist)*this.getRandomDirection(bot);
+        } 
         bot.old_x=bot.x;
         bot.old_y=bot.y;
         bot.x += bot.velX *bot.speed;
@@ -239,10 +241,15 @@ export class Enemy {
             vY /= dist;
             this.bullet.create(bot.x, bot.y, vX * 8, vY * 8, 'enemy', bot.index, bot.damage);  // 8 è la velocità del proiettile
         }
+        else {
+            bot.angleWithTarget = 0;
+            // se non è visibile si va al patrol
+            bot.brain.pushState(this.patrol.bind(this));
+        }
     }
 
     getRandomDirection(bot:any){
-        return Helper.randomElementInArray([bot.velX, bot.velY,bot.velY, bot.velX]);
+        return Helper.randomElementInArray([bot.velX, -bot.velY,bot.velY, -bot.velX]);
     }
 
     checkCollision(bot:any){
@@ -311,8 +318,10 @@ export class Enemy {
     update(progress: number) {
         for (let i = this.list.length - 1; i >= 0; i--) {
             const bot = this.list[i];
-            bot.brain.update(bot, progress);
-            this.checkCollision(bot);
+            if(bot.alive){
+                bot.brain.update(bot, progress);
+                this.checkCollision(bot);
+            }
         }
     }
 
@@ -352,25 +361,40 @@ export class Enemy {
 
     /* -------------------------------------------------------------------------------------- */
 
-    patrol(bot:any, progress:number){
-        bot.target =  this.getNearestEnemy(bot, this.main.actors);
-        
-        if (bot.alive && bot.target && bot.target.alive) {
+    spawn(bot: any, progress: number) {
+        let opponentData = this.getNearestVisibleEnemy(bot, this.main.actors);
+        bot.target = opponentData.elem;
+        bot.distanceWIthTarget = opponentData.dist;
+
+        if (bot.target && bot.target.alive /* && bot.distanceWIthTarget < 350 */) {
             bot.brain.pushState(this.chaseTarget.bind(this));
         } else {
-            bot.attackCounter =0;
-            bot.angleWithTarget =0;
+            bot.brain.pushState(this.wander.bind(this));
+        }
+    }
+
+    chaseTarget(bot: any, progress: number) {
+        this.attackEnemy(bot, progress);
+    }
+
+    wander(bot: any, progress: number) {
+
+        let opponentData = this.getNearestVisibleEnemy(bot, this.main.actors);
+        bot.target = opponentData.elem;
+        bot.distanceWIthTarget = opponentData.dist;
+
+        if (bot.target && bot.target.alive /* && bot.distanceWIthTarget < 350 */) {
+            bot.brain.pushState(this.chaseTarget.bind(this));
+        } else {
+            bot.attackCounter = 0;
+            bot.angleWithTarget = 0;
             // se non si ha un target si va alla ricerca dei powerup
             bot.targetItem = this.getNearestPowerup(bot, this.main.powerup.list) || this.getNearestWaypoint(bot, this.main.waypoints); // il targetItem sono sia i powerUp che i waypoints
             if (bot.alive && bot.targetItem) {
                 this.collectPowerUps(bot);
             }
-        }    
+        }
         
-    }
-
-    chaseTarget(bot:any, progress:number){
-        this.attackEnemy(bot, progress);
     }
 
 }

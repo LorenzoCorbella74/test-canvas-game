@@ -6,7 +6,7 @@ export const tipiPowerUp = {
     'armour': { name: 'armour', ap: 5, color: 'green', r: 5, spawnTime: 30000 },
     'megaArmour': { name: 'megaArmour', ap: 50, color: 'green', r: 10, spawnTime: 30000 },
     'quad': { name: 'quad', multiplier: 4, color: 'violet', r: 10, spawnTime: 30000, enterAfter: 60000, duration: 10000 },
-    'speed': { name: 'speed', multiplier: 1.5, color: 'yellow', r: 10, spawnTime: 30000, enterAfter: 30000, duration: 10000 },
+    'speed': { name: 'speed', multiplier: 1.5, color: 'yellow', r: 10, spawnTime: 30000, enterAfter: 30000, duration: 10000 }
 }
 
 export class PowerUp {

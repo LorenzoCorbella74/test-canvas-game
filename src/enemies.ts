@@ -14,13 +14,11 @@ export class Enemy {
     bullet: any;
 
     list: any;
-    pool: any;
 
     constructor() { }
 
     init(main: any) {
         this.list   = [];
-        this.pool   = []
         this.main   = main;
         this.c      = main.c;
         this.player = main.player;
@@ -57,6 +55,7 @@ export class Enemy {
         bot.targetItem      = {};
         this.list[this.list.length] = bot;
         bot.brain.pushState(this.spawn.bind(this));
+        bot.status='spawn';
         return bot;
     };
 
@@ -68,7 +67,6 @@ export class Enemy {
         bot.r = this.c.ENEMY_RADIUS;
         bot.velX = 0;
         bot.velY = 0;
-        // bot.camera.adjustCamera(this);
         bot.speed = this.c.ENEMY_SPEED;	// è uguale in tutte le direzioni
         bot.damage = 1;					// è il moltiplicatore del danno (quad = 4)
         bot.angleWithTarget = 0;		// angolo tra asse x e precedente target
@@ -80,6 +78,7 @@ export class Enemy {
         bot.target                = {};
         bot.targetItem            = {};
         bot.attackCounter = 0;
+        bot.status='spawn';
         bot.currentWeapon = this.c.PLAYER_STARTING_WEAPON;		// arma corrente
         bot.brain.pushState(this.spawn.bind(this));
     }
@@ -125,9 +124,10 @@ export class Enemy {
                     this.ctx.fillStyle = 'white';
                     this.ctx.fillText(bot.hp.toString(), bot.x - this.camera.x - 5, bot.y - this.camera.y);
                     this.ctx.fillStyle = 'black';
-                    this.ctx.fillText(bot.index.toString(), bot.x - this.camera.x - 5, bot.y - this.camera.y -16);
-                    this.ctx.fillText(bot.target && bot.target.index? bot.target.index.toString():'', bot.x - this.camera.x + 5, bot.y - this.camera.y -16);
-                    this.ctx.fillText(bot.targetItem && bot.targetItem.index? bot.targetItem.index.toString():'', bot.x - this.camera.x + 5, bot.y - this.camera.y +16);
+                    this.ctx.fillText(bot.index.toString(), bot.x - this.camera.x - 25, bot.y - this.camera.y -16);
+                    this.ctx.fillText(bot.target && bot.target.index? bot.target.index.toString():'', bot.x - this.camera.x + 5, bot.y - this.camera.y +20);
+                    this.ctx.fillText(bot.targetItem && bot.targetItem.index? bot.targetItem.index.toString():'', bot.x - this.camera.x + 10, bot.y - this.camera.y -20);
+                    this.ctx.fillText(bot.status, bot.x - this.camera.x -25, bot.y - this.camera.y +20);
                 //}
             }
         }
@@ -146,107 +146,7 @@ export class Enemy {
         }
     }
 
-    // trova quello con la distanza minore
-    // TODO: si deve filtrare su quelli VICINI e VISIBILI non su tutti !!!!
-    getNearestPowerup(origin: any, data: any) {
-        let output: any = { dist: 10000 }; // elemento + vicino ad origin
-        data
-        .filter((elem:any)=> elem.visible==true) // si esclude quelli non visibili
-        .filter((e:any)=>this.checkIfIsSeen2(origin, e))   // quelli non visibili // FIXME:quando si ha il pathfinding con A* si potrà togliere...
-        .forEach((e: any) => {
-            let distanza = Helper.calculateDistance(origin, e);
-            if (output.dist > distanza && distanza < 350) {
-                output = { dist: distanza, elem: e };
-            }
-        })
-        return output.elem;
-    }
-    getNearestWaypoint(origin: any, data: any) {
-        let output: any = { dist: 10000 }; // elemento + vicino ad origin
-        data
-        .filter((elem:any)=> elem.index!==origin.index) // se non è lo stesso
-        .forEach((e: any) => {
-            let distanza = Helper.calculateDistance(origin, e);
-            if (output.dist > distanza && distanza < 600) {
-                output = { dist: distanza, elem: e };
-            }
-        })
-        return output.elem;
-    }
-
-    getNearestVisibleEnemy(origin: any, actors: any) {
-        let output: any = { dist: 10000 }; // elemento + vicino ad origin
-        actors
-        .filter((elem:any)=> elem.index!==origin.index && elem.alive)   // si esclude se stessi e quelli morti...
-        .filter((e:any)=>this.checkIfIsSeen2(origin, e))                // si esclude quelli non visibili
-        .forEach((e: any) => {
-            let distanza = Helper.calculateDistance(origin, e);
-            if (output.dist > distanza && distanza < 350) {
-                output = { dist: distanza, elem: e };
-            }
-        });
-        return output;
-    }
-
-    collectPowerUps(bot: any){
-        bot.angleWithTarget = Helper.calculateAngle(bot.x - this.camera.x, bot.y - this.camera.y, bot.targetItem.x - this.camera.x, bot.targetItem.y - this.camera.y);
-        // We need to get the distance
-        var tx = bot.targetItem.x - bot.x,
-            ty = bot.targetItem.y - bot.y,
-            dist = Math.sqrt(tx * tx + ty * ty);
-        bot.velX = (tx / dist);
-        bot.velY = (ty / dist);
-    }
-
-    attackEnemy(bot: any, progress: number) {
-
-        // si calcola l'angolo rispetto allo stesso sistema di riferimento (camera)
-        bot.angleWithTarget = Helper.calculateAngle(bot.x - this.camera.x, bot.y - this.camera.y, bot.target.x - this.camera.x, bot.target.y - this.camera.y);
-
-        // We need to get the distance
-        var tx = bot.target.x - bot.x,
-            ty = bot.target.y - bot.y,
-            dist = Math.sqrt(tx * tx + ty * ty);
-  
-        // si va verso il player fino a quando si è lontanissimi
-        if (dist > 200) {
-            bot.velX = (tx / dist);
-            bot.velY = (ty / dist);
-        } 
-        if (dist < 100){ // retreat
-            bot.velX = -(tx / dist);
-            bot.velY = -(ty / dist);
-        }
-        if(dist<200 && dist > 100){  
-            bot.velX = (tx / dist)*this.getRandomDirection(bot);
-            bot.velY = (ty / dist)*this.getRandomDirection(bot);
-        } 
-        bot.old_x=bot.x;
-        bot.old_y=bot.y;
-        bot.x += bot.velX *bot.speed;
-        bot.y += bot.velY *bot.speed;
-        
-        this.shot(bot, dist);
-    }
-
-    shot(bot:any, dist:number){
-        if (dist < 400 && this.checkIfIsSeen2(bot.target, bot)) {	// SE non troppo lontano e visibile SPARA!
-            let now = Date.now();
-            if (now - bot.attackCounter < bot.shootRate) return;
-            bot.attackCounter = now;
-            let vX = (bot.target.x - this.camera.x) - (bot.x - this.camera.x);
-            let vY = (bot.target.y - this.camera.y) - (bot.y - this.camera.y);
-            let dist = Math.sqrt(vX * vX + vY * vY);	// si calcola la distanza
-            vX /= dist;									// si normalizza e si calcola la direzione
-            vY /= dist;
-            this.bullet.create(bot.x, bot.y, vX * 8, vY * 8, 'enemy', bot.index, bot.damage);  // 8 è la velocità del proiettile
-        }
-        else {
-            bot.angleWithTarget = 0;
-            // se non è visibile si va al patrol
-            bot.brain.pushState(this.patrol.bind(this));
-        }
-    }
+    
 
     getRandomDirection(bot:any){
         return Helper.randomElementInArray([bot.velX, -bot.velY,bot.velY, -bot.velX]);
@@ -254,7 +154,7 @@ export class Enemy {
 
     checkCollision(bot:any){
         if (bot.velY<0) { // W 
-            if (this.checkmove(bot.x - bot.r, bot.y - bot.r + bot.speed)|| Helper.circleCollision(bot, bot.target) {
+            if (this.checkmove(bot.x - bot.r, bot.y - bot.r + bot.speed) ) {
                 //bot.y = bot.velY *bot.speed;
                 if (bot.y - bot.r < this.camera.y) {
                     bot.y = this.camera.y + bot.r;
@@ -269,7 +169,7 @@ export class Enemy {
             }
         }
         if (bot.velY>0) {	// S
-            if (this.checkmove(bot.x - bot.r, bot.y - bot.r + bot.speed)|| Helper.circleCollision(bot, bot.target) {
+            if (this.checkmove(bot.x - bot.r, bot.y - bot.r + bot.speed) ){
                 //bot.y += bot.velY *bot.speed;
                 if (bot.y + bot.r >= this.camera.y + this.camera.h) {
                     bot.y = this.camera.y + this.camera.h - bot.r;
@@ -284,7 +184,7 @@ export class Enemy {
             }
         }
         if (bot.velX<0) {	// a
-            if (this.checkmove(bot.x - bot.r - bot.speed, bot.y - bot.r) || Helper.circleCollision(bot, bot.target) {
+            if (this.checkmove(bot.x - bot.r - bot.speed, bot.y - bot.r)){
                 //bot.x += bot.velX *bot.speed;
                 if (bot.x - bot.r < this.camera.x) {
                     bot.x = this.camera.x + bot.r;
@@ -299,7 +199,7 @@ export class Enemy {
             }
         }
         if (bot.velX>0) {	// d    
-            if (this.checkmove(bot.x - bot.r + bot.speed, bot.y - bot.r)|| Helper.circleCollision(bot, bot.target) {
+            if (this.checkmove(bot.x - bot.r + bot.speed, bot.y - bot.r) ){
                 // bot.x += bot.velX *bot.speed;
                 if (bot.x + bot.r >= this.map.mapSize.w) {
                     bot.x = this.camera.x + this.camera.w - bot.r;
@@ -362,11 +262,12 @@ export class Enemy {
     /* -------------------------------------------------------------------------------------- */
 
     spawn(bot: any, progress: number) {
+        bot.status ='spawn';
         let opponentData = this.getNearestVisibleEnemy(bot, this.main.actors);
         bot.target = opponentData.elem;
         bot.distanceWIthTarget = opponentData.dist;
 
-        if (bot.target && bot.target.alive /* && bot.distanceWIthTarget < 350 */) {
+        if (bot.target && bot.target.alive && bot.distanceWIthTarget < 350) {
             bot.brain.pushState(this.chaseTarget.bind(this));
         } else {
             bot.brain.pushState(this.wander.bind(this));
@@ -374,14 +275,48 @@ export class Enemy {
     }
 
     chaseTarget(bot: any, progress: number) {
-        this.attackEnemy(bot, progress);
+        bot.status ='chasing';
+        let opponentData = this.getNearestVisibleEnemy(bot, this.main.actors);
+        bot.target = opponentData.elem;
+
+        if (bot.target && bot.target.alive) {
+            // si calcola l'angolo rispetto allo stesso sistema di riferimento (camera)
+            bot.angleWithTarget = Helper.calculateAngle(bot.x - this.camera.x, bot.y - this.camera.y, bot.target.x - this.camera.x, bot.target.y - this.camera.y);
+
+            // We need to get the distance
+            var tx = bot.target.x - bot.x,
+                ty = bot.target.y - bot.y,
+                dist = Math.sqrt(tx * tx + ty * ty);
+
+            // si va verso il player fino a quando si è lontanissimi
+            if (dist > 300) {
+                bot.velX = (tx / dist);
+                bot.velY = (ty / dist);
+            }
+            if (dist > 100 && dist < 200) {
+                bot.velX = (tx / dist) * this.getRandomDirection(bot);
+                bot.velY = (ty / dist) * this.getRandomDirection(bot);
+            }
+            if (dist < 100) { // retreat
+                bot.velX = -(tx / dist);
+                bot.velY = -(ty / dist);
+            }
+            bot.old_x = bot.x;
+            bot.old_y = bot.y;
+            bot.x += bot.velX * bot.speed;
+            bot.y += bot.velY * bot.speed;
+
+            this.shot(bot, dist);
+        } else{
+            bot.brain.pushState(this.wander.bind(this));
+        }
     }
 
     wander(bot: any, progress: number) {
 
+        bot.status ='wander';
         let opponentData = this.getNearestVisibleEnemy(bot, this.main.actors);
         bot.target = opponentData.elem;
-        bot.distanceWIthTarget = opponentData.dist;
 
         if (bot.target && bot.target.alive /* && bot.distanceWIthTarget < 350 */) {
             bot.brain.pushState(this.chaseTarget.bind(this));
@@ -389,12 +324,84 @@ export class Enemy {
             bot.attackCounter = 0;
             bot.angleWithTarget = 0;
             // se non si ha un target si va alla ricerca dei powerup
-            bot.targetItem = this.getNearestPowerup(bot, this.main.powerup.list) || this.getNearestWaypoint(bot, this.main.waypoints); // il targetItem sono sia i powerUp che i waypoints
+            bot.targetItem = this.getNearestPowerup(bot, this.main.powerup.list) || this.getNearestWaypoint(bot, this.main.waypoints.list); // il targetItem sono sia i powerUp che i waypoints
             if (bot.alive && bot.targetItem) {
                 this.collectPowerUps(bot);
             }
         }
-        
+    }
+
+    // trova quello con la distanza minore
+    // TODO: si deve filtrare su quelli VICINI e VISIBILI non su tutti !!!!
+    getNearestPowerup(origin: any, data: any) {
+        let output: any = { dist: 10000 }; // elemento + vicino ad origin
+        data
+        .filter((elem:any)=> elem.visible==true) // si esclude quelli non visibili
+        .filter((e:any)=>this.checkIfIsSeen2(origin, e))   // quelli non visibili // FIXME:quando si ha il pathfinding con A* si potrà togliere...
+        .forEach((e: any) => {
+            let distanza = Helper.calculateDistance(origin, e);
+            if (output.dist > distanza && distanza < 350) {
+                output = { dist: distanza, elem: e };
+            }
+        })
+        return output.elem;
+    }
+    getNearestWaypoint(bot: any, data: any) {
+        let output: any = { dist: 10000 }; // elemento + vicino ad bot
+        data
+        .filter((elem:any)=> elem[bot.index].visible==true) // solo quelli non ancora attraversati dallo specifico bot
+        .forEach((e: any) => {
+            let distanza = Helper.calculateDistance(bot, e);
+            if (output.dist > distanza && distanza < 600) {
+                output = { dist: distanza, elem: e };
+            }
+        })
+        return output.elem;
+    }
+
+    getNearestVisibleEnemy(origin: any, actors: any) {
+        let output: any = { dist: 10000 }; // elemento + vicino ad origin
+        actors
+        .filter((elem:any)=> elem.index!==origin.index && elem.alive)   // si esclude se stessi e quelli morti...
+        .filter((e:any)=>this.checkIfIsSeen2(origin, e))                // si esclude quelli non visibili
+        .forEach((e: any) => {
+            let distanza = Helper.calculateDistance(origin, e);
+            if (output.dist > distanza && distanza < 350) {
+                output = { dist: distanza, elem: e };
+            }
+        });
+        return output;
+    }
+
+    collectPowerUps(bot: any){
+        bot.angleWithTarget = Helper.calculateAngle(bot.x - this.camera.x, bot.y - this.camera.y, bot.targetItem.x - this.camera.x, bot.targetItem.y - this.camera.y);
+        // We need to get the distance
+        var tx = bot.targetItem.x - bot.x,
+            ty = bot.targetItem.y - bot.y,
+            dist = Math.sqrt(tx * tx + ty * ty);
+        bot.velX = (tx / dist);
+        bot.velY = (ty / dist);
+        bot.old_x = bot.x;
+        bot.old_y = bot.y;
+        bot.x += bot.velX * bot.speed;
+        bot.y += bot.velY * bot.speed;
+    }
+
+    shot(bot:any, dist:number){
+        if (dist < 400 && this.checkIfIsSeen2(bot.target, bot)) {	// SE non troppo lontano e visibile SPARA!
+            let now = Date.now();
+            if (now - bot.attackCounter < bot.shootRate) return;
+            bot.attackCounter = now;
+            let vX = (bot.target.x - this.camera.x) - (bot.x - this.camera.x);
+            let vY = (bot.target.y - this.camera.y) - (bot.y - this.camera.y);
+            let dist = Math.sqrt(vX * vX + vY * vY);	// si calcola la distanza
+            vX /= dist;									// si normalizza e si calcola la direzione
+            vY /= dist;
+            this.bullet.create(bot.x, bot.y, vX * 8, vY * 8, 'enemy', bot.index, bot.damage);  // 8 è la velocità del proiettile
+        }
+        else {
+            bot.brain.pushState(this.wander.bind(this));
+        }
     }
 
 }

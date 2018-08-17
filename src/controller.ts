@@ -66,8 +66,10 @@ export class ControlHandler {
             this.main.debug = false ;
         }else if (e.keyCode == 80) {
             if (!this.main.paused) {    // se non è già in pausa...
-                this.main.paused = true;
-                this.main.loadPauseScreen(this.main);
+                this.main.paused = !this.main.paused;
+                if(this.main.paused){
+                    this.main.loadPauseScreen(this.main);
+             }
             }
         } else if (this.mouseX > 0 && this.mouseX < this.canvas.width && this.mouseY > 0 && this.mouseY < this.canvas.height) {
             e.preventDefault();

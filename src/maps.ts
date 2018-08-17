@@ -125,9 +125,9 @@ export class Map {
             for (let l = onXTile - 17; l < onXTile + 17; l++) { // sono 32 colonne
                 if (j >= 0 && l >= 0 && j < this.map.length && l < this.map[j].length) {
 
-                    if (this.map[j][l] !== 1) {
-                        this.drawBorder(l * this.tileSize - this.camera.x, j * this.tileSize - this.camera.y, this.tileSize, this.tileSize);
-                    }
+                    //if (this.map[j][l] !== 1) {
+                    //    this.drawBorder(l * this.tileSize - this.camera.x, j * this.tileSize - this.camera.y, this.tileSize, this.tileSize);
+                    //}
                     // si renderizza relativamente alla camera !!!
                     this.ctx.fillStyle = this.map[j][l] == 1 ? '#868679' : '#ddd5d5';
                     this.ctx.fillRect(l * this.tileSize - this.camera.x, j * this.tileSize - this.camera.y, this.tileSize, this.tileSize);

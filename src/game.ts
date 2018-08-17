@@ -10,6 +10,7 @@ import { Map } from './maps';
 import {BulletHandler} from './bullet';
 import { Particelle } from './particelle';
 import { Blood } from './blood';
+import { Waypoints } from './waypoints';
 
 window.onload = function () {
     let app = new Game();
@@ -32,6 +33,7 @@ export default class Game {
     camera:     Camera;
     control:    ControlHandler;
     powerup:    PowerUp;
+    waypoints:  Waypoints;
     particelle: Particelle;
     blood:      Blood;
     currentMap: Map;
@@ -51,7 +53,6 @@ export default class Game {
     data:          any;
 
     actors:any[];
-    waypoints:any[];
 
     // UI
     fontFamily:        string;
@@ -71,6 +72,7 @@ export default class Game {
         this.currentMap    = new Map();
         this.particelle    = new Particelle();
         this.powerup       = new PowerUp();
+        this.waypoints     = new Waypoints();
         this.blood         = new Blood();
         this.state         = 'loading';
     }
@@ -94,7 +96,6 @@ export default class Game {
         this.canvas.style.cursor = 'crosshair';
         this.fontFamily          = this.c.FONT_FAMILY;
         this.actors              = [];
-        this.waypoints            = [];
         
         // bots names
         let botsArray = Array(this.numberOfBots).fill(null).map((e,i)=> i);
@@ -108,6 +109,7 @@ export default class Game {
         this.blood.init(this);
         this.particelle.init(this);
         this.powerup.init(this);
+        this.waypoints.init(this);
 
         // loading spawnPoint + powerups + weapons
         this.data = this.currentMap.loadSpawnPointsAndPowerUps();
@@ -127,7 +129,7 @@ export default class Game {
              e.index=i;
             return e;})  // si mette un indice
          .forEach((e:any, index:number) => {
-            this.waypoints.push({x:e.x, y:e.y, type:e.type, index:index}); 
+            this.waypoints.create(e.x, e.y, index); 
         });
 
         // si inizializza il player
@@ -140,6 +142,8 @@ export default class Game {
             let bot = this.enemy.create(e.x,e.y, index); // si crea un nemico
             this.actors.push(bot);
         });
+
+        this.waypoints.linkToActors();
 
         requestAnimationFrame(this.gameLoop.bind(this));
     }
@@ -194,6 +198,7 @@ export default class Game {
         this.camera.update(progress);
         this.bullet.update(progress); 
         this.powerup.update(progress);
+        this.waypoints.update(progress);    // waypoints
         this.particelle.update(progress);
         this.blood.update(progress);
         // particles:esplosioni
@@ -221,8 +226,6 @@ export default class Game {
         seconds = seconds < 10 ? "0" + seconds : seconds;
         return  `${minutes}:${seconds}`;
     }
-
-    
 
     private renderHUD(progress:number) {
         this.ctx.fillStyle = this.c.HUD_BACKGROUND;

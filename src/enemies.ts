@@ -195,7 +195,7 @@ export class Enemy {
                 //     bot.x += 2 * bot.target.speed;
                 // }
             } else {
-            bot.x =bot.old_x;
+            bot.x = bot.old_x;
             }
         }
         if (bot.velX>0) {	// d    
@@ -210,20 +210,12 @@ export class Enemy {
                 //     bot.x -= 2 * bot.target.speed;
                 // }
             } else {
-                bot.x =bot.old_x;
+                bot.x = bot.old_x;
             }
         }
     }
 
-    update(progress: number) {
-        for (let i = this.list.length - 1; i >= 0; i--) {
-            const bot = this.list[i];
-            if(bot.alive){
-                bot.brain.update(bot, progress);
-                this.checkCollision(bot);
-            }
-        }
-    }
+
 
 
     // SOURCE: https://www.redblobgames.com/grids/line-drawing.html (walk_grid ) 
@@ -261,6 +253,16 @@ export class Enemy {
 
     /* -------------------------------------------------------------------------------------- */
 
+    update(progress: number) {
+        for (let i = this.list.length - 1; i >= 0; i--) {
+            const bot = this.list[i];
+            if(bot.alive){
+                bot.brain.update(bot, progress);
+                this.checkCollision(bot);
+            }
+        }
+    }
+
     spawn(bot: any, progress: number) {
         bot.status ='spawn';
         let opponentData = this.getNearestVisibleEnemy(bot, this.main.actors);
@@ -276,8 +278,8 @@ export class Enemy {
 
     chaseTarget(bot: any, progress: number) {
         bot.status ='chasing';
-        let opponentData = this.getNearestVisibleEnemy(bot, this.main.actors);
-        bot.target = opponentData.elem;
+        // let opponentData = this.getNearestVisibleEnemy(bot, this.main.actors);
+        // bot.target = opponentData.elem;
 
         if (bot.target && bot.target.alive) {
             // si calcola l'angolo rispetto allo stesso sistema di riferimento (camera)
@@ -313,7 +315,9 @@ export class Enemy {
     }
 
     wander(bot: any, progress: number) {
-
+        if (bot.brain.first) {
+                console.log(`Passaggio di stato: ${bot.brain.state.name}`);
+        }
         bot.status ='wander';
         let opponentData = this.getNearestVisibleEnemy(bot, this.main.actors);
         bot.target = opponentData.elem;

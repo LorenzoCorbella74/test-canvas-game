@@ -114,12 +114,12 @@ export class Player {
 			);
 			this.ctx.stroke();
 
-			//if (this.main.debug) {
+			if (this.main.debug) {
 				this.ctx.font = 'bold 8px/1 Arial';
 				this.ctx.fillStyle = 'black';
-				this.ctx.fillText(this.x.toString(), this.x - this.camera.x -5 , this.y - this.camera.y -15);
-				this.ctx.fillText(this.y.toString(), this.x - this.camera.x -5, this.y - this.camera.y+20);
-			//}
+				this.ctx.fillText(this.x.toFixed(2).toString(), this.x - this.camera.x -5 , this.y - this.camera.y -15);
+				this.ctx.fillText(this.y.toFixed(2).toString(), this.x - this.camera.x -5, this.y - this.camera.y+20);
+			}
 		} 	
 	}
 

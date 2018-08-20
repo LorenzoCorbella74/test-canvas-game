@@ -26,6 +26,8 @@ export class Player {
 	index: number;		// è l'id
 	respawnTime:number =0;
 
+	godMode:boolean = false;
+
 
 	canvas:  any;
 	ctx:     any;

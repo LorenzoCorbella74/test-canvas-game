@@ -32,8 +32,13 @@ export class Helper {
         let theta = Math.atan2(dy, dx); // range (-PI, PI]
         // theta *= 180 / Math.PI; // rads to degs, range (-180, 180]
         // if (theta < 0) theta = 360 + theta; // range [0, 360)
-        // if (theta < 0) theta = Math.PI + theta; // range [0, 360)
+        //if (theta < 0) theta = Math.PI + theta; // range [0, 360)
         return theta;
+    }
+
+    // Returns a random integer between min (include) and max (include)
+    static randBetween(min:number, max:number){
+        return  Math.floor(Math.random() * (max - min + 1)) + min;
     }
 
     static calculateDistance(obj1: any, obj2: any) {
@@ -55,5 +60,6 @@ export class Helper {
     }
 
     // https://www.emanueleferonato.com/2007/04/28/create-a-flash-artillery-game-step-1/
+    // https://www.safaribooksonline.com/library/view/html5-canvas/9781449308032/ch05s03.html
 
 }

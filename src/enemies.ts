@@ -268,27 +268,31 @@ export class Enemy {
         let opponentData = this.getNearestVisibleEnemy(bot, this.main.actors);
         bot.target = opponentData.elem;
         bot.distanceWIthTarget = opponentData.dist;
-
         if (bot.target && bot.target.alive && bot.distanceWIthTarget < 350) {
+            
             bot.brain.pushState(this.chaseTarget.bind(this));
         } else {
             bot.brain.pushState(this.wander.bind(this));
         }
     }
-
+    
     chaseTarget(bot: any, progress: number) {
         bot.status ='chasing';
+        bot.angleWithTarget = Helper.calculateAngle(bot.x /* - this.camera.x */, bot.y /* - this.camera.y */, bot.target.x /* - this.camera.x */, bot.target.y /* - this.camera.y */);
         // let opponentData = this.getNearestVisibleEnemy(bot, this.main.actors);
         // bot.target = opponentData.elem;
 
         if (bot.target && bot.target.alive) {
             // si calcola l'angolo rispetto allo stesso sistema di riferimento (camera)
-            bot.angleWithTarget = Helper.calculateAngle(bot.x - this.camera.x, bot.y - this.camera.y, bot.target.x - this.camera.x, bot.target.y - this.camera.y);
+           // console.log(bot.angleWithTarget);
+            //bot.angleWithTarget2 = Helper.calculateAngle(bot.target.x - this.camera.x, bot.target.y - this.camera.y, bot.x - this.camera.x, bot.y - this.camera.y);
 
             // We need to get the distance
             var tx = bot.target.x - bot.x,
                 ty = bot.target.y - bot.y,
                 dist = Math.sqrt(tx * tx + ty * ty);
+                bot.old_x = bot.x;
+                bot.old_y = bot.y;
 
             // si va verso il player fino a quando si è lontanissimi
             if (dist > 250) {
@@ -303,16 +307,17 @@ export class Enemy {
                 bot.velX = -(tx / dist);
                 bot.velY = -(ty / dist);
             }
-            bot.old_x = bot.x;
-            bot.old_y = bot.y;
             bot.x += bot.velX * bot.speed;
             bot.y += bot.velY * bot.speed;
+            
 
             this.shot(bot, dist);
         } else{
             bot.brain.pushState(this.wander.bind(this));
         }
     }
+
+    // TODO: https://stackoverflow.com/questions/24378155/random-moving-position-for-sprite-image
 
     wander(bot: any, progress: number) {
         if (bot.brain.first) {
@@ -392,7 +397,7 @@ export class Enemy {
     }
 
     shot(bot:any, dist:number){
-        if (dist < 400 && this.checkIfIsSeen2(bot.target, bot)) {	// SE non troppo lontano e visibile SPARA!
+        if (dist < 350 && this.checkIfIsSeen2(bot.target, bot)) {	// SE non troppo lontano e visibile SPARA!
             let now = Date.now();
             if (now - bot.attackCounter < bot.shootRate) return;
             bot.attackCounter = now;

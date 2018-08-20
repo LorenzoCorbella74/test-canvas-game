@@ -149,7 +149,7 @@ export class Enemy {
     
 
     getRandomDirection(bot:any){
-        return Helper.randomElementInArray([bot.velX, -bot.velY,bot.velY, -bot.velX]);
+        return Helper.randomElementInArray([bot.velX, -bot.velY, bot.velY, -bot.velX]);
     }
 
     checkCollision(bot:any){
@@ -291,15 +291,15 @@ export class Enemy {
                 dist = Math.sqrt(tx * tx + ty * ty);
 
             // si va verso il player fino a quando si è lontanissimi
-            if (dist > 300) {
+            if (dist > 250) {
                 bot.velX = (tx / dist);
                 bot.velY = (ty / dist);
             }
-            if (dist > 100 && dist < 200) {
-                bot.velX = (tx / dist) * this.getRandomDirection(bot);
-                bot.velY = (ty / dist) * this.getRandomDirection(bot);
+            if (dist > 150 && dist < 250) {
+                bot.velX = (ty / dist) * Math.cos(bot.angleWithTarget)/dist;
+                bot.velY = (tx / dist) * Math.sin(bot.angleWithTarget)/dist;
             }
-            if (dist < 100) { // retreat
+            if (dist < 150) { // retreat
                 bot.velX = -(tx / dist);
                 bot.velY = -(ty / dist);
             }

@@ -40,7 +40,7 @@ export class Waypoints {
         waypoint.y          = y;
         waypoint.reloadRate = 0;
         waypoint.spawnTime  = 8000;   // tempo impiegato per essere nuovamente attraverabili da ogni bot
-        waypoint.r          = 2;  
+        waypoint.r          = 5;  
         waypoint.color      = 'orange';
         this.list.push(waypoint);
     };
@@ -70,6 +70,29 @@ export class Waypoints {
                     waypoint[actor.index].visible = true;
                     waypoint[actor.index].reloadRate = 0;
                 } 
+            }
+        }
+    }
+
+    render(progress: number) {
+        if (this.main.debug) {
+            for (let i = this.list.length - 1; i >= 0; i--) {
+                let waypoint = this.list[i];
+                //if (waypoint.visible) {
+                // centro pulsante
+                let x = waypoint.x - this.main.camera.x;
+                let y = waypoint.y - this.main.camera.y;
+                this.ctx.beginPath();
+                this.ctx.arc(x, y, waypoint.r, 0, 6.2832);
+                this.ctx.fillStyle = waypoint.color;
+                this.ctx.fill();
+                this.ctx.closePath()
+
+                this.ctx.font = 'bold 8px/1 Arial';
+                this.ctx.fillStyle = 'black';
+                this.ctx.fillText(waypoint.index.toString(), waypoint.x - this.main.camera.x - 6, waypoint.y - this.main.camera.y - 12);
+                //}
+
             }
         }
     }

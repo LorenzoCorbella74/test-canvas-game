@@ -97,6 +97,7 @@ export default class Game {
         this.fontFamily          = this.c.FONT_FAMILY;
         this.actors              = [];
         
+        
         // bots names
         let botsArray = Array(this.numberOfBots).fill(null).map((e,i)=> i);
         
@@ -143,7 +144,11 @@ export default class Game {
             this.actors.push(bot);
         });
 
+
+
         this.waypoints.linkToActors();
+
+        
 
         requestAnimationFrame(this.gameLoop.bind(this));
     }
@@ -211,6 +216,7 @@ export default class Game {
         this.enemy.render(progress);
         this.bullet.render(progress); 
         this.powerup.render(progress);
+        this.waypoints.render(progress);    // waypoints
         this.particelle.render(progress);
         this.blood.render(progress);
         // particles:esplosioni

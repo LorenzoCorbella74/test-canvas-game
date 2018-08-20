@@ -1,6 +1,9 @@
 import { BrainFSM } from './brain';
-import { Helper } from './helper';
+import { Helper } from './helper'
 
+import * as EasyStar from 'easystarjs'
+
+    
 export class Enemy {
 
     // entities
@@ -56,6 +59,7 @@ export class Enemy {
         this.list[this.list.length] = bot;
         bot.brain.pushState(this.spawn.bind(this));
         bot.status='spawn';
+        bot.path =[];
         return bot;
     };
 
@@ -154,8 +158,8 @@ export class Enemy {
 
     checkCollision(bot:any){
         if (bot.velY<0) { // W 
-            if (this.checkmove(bot.x - bot.r, bot.y - bot.r + bot.speed) ) {
-                //bot.y = bot.velY *bot.speed;
+            if (this.checkmove(bot.x - bot.r, bot.y - bot.r - bot.speed) ) {
+                //bot.y -= bot.speed;
                 if (bot.y - bot.r < this.camera.y) {
                     bot.y = this.camera.y + bot.r;
                 }
@@ -170,7 +174,7 @@ export class Enemy {
         }
         if (bot.velY>0) {	// S
             if (this.checkmove(bot.x - bot.r, bot.y - bot.r + bot.speed) ){
-                //bot.y += bot.velY *bot.speed;
+                //bot.y += bot.speed;
                 if (bot.y + bot.r >= this.camera.y + this.camera.h) {
                     bot.y = this.camera.y + this.camera.h - bot.r;
                 }
@@ -185,7 +189,7 @@ export class Enemy {
         }
         if (bot.velX<0) {	// a
             if (this.checkmove(bot.x - bot.r - bot.speed, bot.y - bot.r)){
-                //bot.x += bot.velX *bot.speed;
+               //bot.x -= bot.speed;
                 if (bot.x - bot.r < this.camera.x) {
                     bot.x = this.camera.x + bot.r;
                 }
@@ -200,7 +204,7 @@ export class Enemy {
         }
         if (bot.velX>0) {	// d    
             if (this.checkmove(bot.x - bot.r + bot.speed, bot.y - bot.r) ){
-                // bot.x += bot.velX *bot.speed;
+                //bot.x += bot.speed;
                 if (bot.x + bot.r >= this.map.mapSize.w) {
                     bot.x = this.camera.x + this.camera.w - bot.r;
                 }
@@ -279,13 +283,8 @@ export class Enemy {
     chaseTarget(bot: any, progress: number) {
         bot.status ='chasing';
         bot.angleWithTarget = Helper.calculateAngle(bot.x /* - this.camera.x */, bot.y /* - this.camera.y */, bot.target.x /* - this.camera.x */, bot.target.y /* - this.camera.y */);
-        // let opponentData = this.getNearestVisibleEnemy(bot, this.main.actors);
-        // bot.target = opponentData.elem;
 
         if (bot.target && bot.target.alive) {
-            // si calcola l'angolo rispetto allo stesso sistema di riferimento (camera)
-           // console.log(bot.angleWithTarget);
-            //bot.angleWithTarget2 = Helper.calculateAngle(bot.target.x - this.camera.x, bot.target.y - this.camera.y, bot.x - this.camera.x, bot.y - this.camera.y);
 
             // We need to get the distance
             var tx = bot.target.x - bot.x,
@@ -320,22 +319,32 @@ export class Enemy {
     // TODO: https://stackoverflow.com/questions/24378155/random-moving-position-for-sprite-image
 
     wander(bot: any, progress: number) {
-        if (bot.brain.first) {
-                console.log(`Passaggio di stato: ${bot.brain.state.name}`);
-        }
+        
         bot.status ='wander';
         let opponentData = this.getNearestVisibleEnemy(bot, this.main.actors);
         bot.target = opponentData.elem;
 
-        if (bot.target && bot.target.alive /* && bot.distanceWIthTarget < 350 */) {
+        if (bot.target && bot.target.alive /* && bot.target.dist < 250 */) {
             bot.brain.pushState(this.chaseTarget.bind(this));
         } else {
             bot.attackCounter = 0;
             bot.angleWithTarget = 0;
             // se non si ha un target si va alla ricerca dei powerup
             bot.targetItem = this.getNearestPowerup(bot, this.main.powerup.list) || this.getNearestWaypoint(bot, this.main.waypoints.list); // il targetItem sono sia i powerUp che i waypoints
+
+            // EASYSTAR*.js
             if (bot.alive && bot.targetItem) {
-                this.collectPowerUps(bot);
+
+                // Create a path finding thing
+                const easystar = new EasyStar.js();
+                easystar.setGrid(this.main.currentMap.map);
+
+                // Get the walkable tile indexes
+                easystar.setAcceptableTiles([0, 2, 10, 11, 12, 13, 14, 15, 16, 40]);
+                // easystar.enableDiagonals();
+                // easystar.enableCornerCutting();
+                bot.pathAStar = easystar;
+                this.collectPowerUps(bot, progress);
             }
         }
     }
@@ -346,7 +355,7 @@ export class Enemy {
         let output: any = { dist: 10000 }; // elemento + vicino ad origin
         data
         .filter((elem:any)=> elem.visible==true) // si esclude quelli non visibili
-        .filter((e:any)=>this.checkIfIsSeen2(origin, e))   // quelli non visibili // FIXME:quando si ha il pathfinding con A* si potrà togliere...
+        //.filter((e:any)=>this.checkIfIsSeen2(origin, e))   // quelli non visibili // FIXME:quando si ha il pathfinding con A* si potrà togliere...
         .forEach((e: any) => {
             let distanza = Helper.calculateDistance(origin, e);
             if (output.dist > distanza && distanza < 350) {
@@ -355,13 +364,14 @@ export class Enemy {
         })
         return output.elem;
     }
+
     getNearestWaypoint(bot: any, data: any) {
         let output: any = { dist: 10000 }; // elemento + vicino ad bot
         data
         .filter((elem:any)=> elem[bot.index].visible==true) // solo quelli non ancora attraversati dallo specifico bot
         .forEach((e: any) => {
             let distanza = Helper.calculateDistance(bot, e);
-            if (output.dist > distanza && distanza < 600) {
+            if (output.dist > distanza && distanza < 500) {
                 output = { dist: distanza, elem: e };
             }
         })
@@ -382,18 +392,71 @@ export class Enemy {
         return output;
     }
 
-    collectPowerUps(bot: any){
+    collectPowerUps(bot: any, dt:number){
         bot.angleWithTarget = Helper.calculateAngle(bot.x - this.camera.x, bot.y - this.camera.y, bot.targetItem.x - this.camera.x, bot.targetItem.y - this.camera.y);
+        if (bot.brain.first) {
+            console.log(`Passaggio di stato: ${bot.brain.state.name}`);
+            // al 1° giro si calcola il percorso
+            this.findPath(bot);
+        }else {
+            // dal 2° in poi si 
+            this.followPath(bot, dt);
+
+        }
+    }
+
+    findPath(bot:any) {
+        // Calculate the path-finding path
+        let map = this.main.currentMap;
+        const s = map.pixelToMapPos(bot);
+        const d = map.pixelToMapPos(bot.targetItem);
+        const start = performance.now();
+        //  const s2 = Date.now();
+        bot.pathAStar.findPath(s.x, s.y, d.x, d.y, (path:any) => {
+            if (path === null) {
+                console.log("Path was not found.");
+            } else {
+                console.log(`Path of bot ${bot.index} was found. First Point is ${path[0].x} ${path[0].y} `);
+                bot.path = path || [];
+                const end = performance.now();
+                // console.log(`Pathfinding took ${end - start} ms for bot ${bot.index}`, Date.now() - s2);
+                this.followPath(bot,16)
+            }
+        });
+        bot.pathAStar.calculate();
+      }
+    
+    followPath(bot: any, dt: number) {
+        let map = this.main.currentMap;
+        // Move along the path
+        if (!bot.path.length) {
+            return;
+        }
+        // bot.path.slice(2)
+        const cell = bot.path[0];
         // We need to get the distance
-        var tx = bot.targetItem.x - bot.x,
-            ty = bot.targetItem.y - bot.y,
+        var tx = (cell.x * map.tileSize/* +map.tileSize/2 */) - bot.x,
+            ty = (cell.y * map.tileSize/* +map.tileSize/2 */) - bot.y,
             dist = Math.sqrt(tx * tx + ty * ty);
         bot.velX = (tx / dist);
-        bot.velY = (ty / dist);
+        bot.velY = (ty / dist); 
         bot.old_x = bot.x;
         bot.old_y = bot.y;
-        bot.x += bot.velX * bot.speed;
-        bot.y += bot.velY * bot.speed;
+       // bot.x += bot.velX * bot.speed;
+       // bot.y += bot.velY * bot.speed;
+     const closeX = Math.abs(tx/* bot.velX */ ) <= 2;
+     const closeY = Math.abs( ty/* bot.velY */) <= 2;
+     if (!closeX) bot.x += Math.sign(tx/* bot.velX */ ) * bot.speed;
+     if (!closeY) bot.y += Math.sign( ty/* bot.velY */) * bot.speed;
+
+    // If you made it, move to the next path element
+        if (/* Helper.circleCollision(bot.targetItem, bot) */closeX || closeY) {
+            bot.path = bot.path.slice(1);
+            if (bot.path.length === 0) {
+                // this.findPath(bot);
+                bot.brain.pushState(this.wander.bind(this));
+            }
+        }
     }
 
     shot(bot:any, dist:number){

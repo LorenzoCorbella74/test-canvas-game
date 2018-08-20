@@ -42,8 +42,6 @@ export class ControlHandler {
             this.a = true
         } else if (e.keyCode == 68) {
             this.d = true
-        } else if(e.keyCode == 73){
-            this.main.debug = true;
         } else if ((e.keyCode >= 48 || e.keyCode <= 57) && this.main.state == 'game') {
             this.player.hotKey(e.keyCode)
         }
@@ -65,7 +63,7 @@ export class ControlHandler {
         } else if (e.keyCode == 71) {   // g
             this.main.player.godMode = !this.main.player.godMode;
         } else if(e.keyCode == 73){     // i per debug
-            this.main.debug = false ;
+            this.main.debug = !this.main.debug;
         }else if (e.keyCode == 80) {
             if (!this.main.paused) {    // se non è già in pausa...
                 this.main.paused = !this.main.paused;

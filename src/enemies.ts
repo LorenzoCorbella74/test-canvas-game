@@ -326,6 +326,8 @@ export class Enemy {
         }
     }
 
+    // TODO: https://stackoverflow.com/questions/24378155/random-moving-position-for-sprite-image
+
     wander(bot: any, progress: number) {
         if (bot.brain.first) {
                 console.log(`Passaggio di stato: ${bot.brain.state.name}`);

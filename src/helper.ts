@@ -36,6 +36,11 @@ export class Helper {
         return theta;
     }
 
+    // Returns a random integer between min (include) and max (include)
+    static randBetween(min:number, max:number){
+        return  Math.floor(Math.random() * (max - min + 1)) + min;
+    }
+
     static calculateDistance(obj1: any, obj2: any) {
         let tx = obj1.x - obj2.x,
             ty = obj1.y - obj2.y,
@@ -55,5 +60,6 @@ export class Helper {
     }
 
     // https://www.emanueleferonato.com/2007/04/28/create-a-flash-artillery-game-step-1/
+    // https://www.safaribooksonline.com/library/view/html5-canvas/9781449308032/ch05s03.html
 
 }

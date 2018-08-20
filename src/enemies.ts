@@ -268,23 +268,24 @@ export class Enemy {
         let opponentData = this.getNearestVisibleEnemy(bot, this.main.actors);
         bot.target = opponentData.elem;
         bot.distanceWIthTarget = opponentData.dist;
-
         if (bot.target && bot.target.alive && bot.distanceWIthTarget < 350) {
+            
             bot.brain.pushState(this.chaseTarget.bind(this));
         } else {
             bot.brain.pushState(this.wander.bind(this));
         }
     }
-
+    
     chaseTarget(bot: any, progress: number) {
         bot.status ='chasing';
+        bot.angleWithTarget = Helper.calculateAngle(bot.x /* - this.camera.x */, bot.y /* - this.camera.y */, bot.target.x /* - this.camera.x */, bot.target.y /* - this.camera.y */);
         // let opponentData = this.getNearestVisibleEnemy(bot, this.main.actors);
         // bot.target = opponentData.elem;
 
         if (bot.target && bot.target.alive) {
             // si calcola l'angolo rispetto allo stesso sistema di riferimento (camera)
-            bot.angleWithTarget = Helper.calculateAngle(bot.x - this.camera.x, bot.y - this.camera.y, bot.target.x - this.camera.x, bot.target.y - this.camera.y);
-            // bot.angleWithTarget2 = Helper.calculateAngle(bot.target.x - this.camera.x, bot.target.y - this.camera.y, bot.x - this.camera.x, bot.y - this.camera.y);
+           // console.log(bot.angleWithTarget);
+            //bot.angleWithTarget2 = Helper.calculateAngle(bot.target.x - this.camera.x, bot.target.y - this.camera.y, bot.x - this.camera.x, bot.y - this.camera.y);
 
             // We need to get the distance
             var tx = bot.target.x - bot.x,
@@ -294,25 +295,36 @@ export class Enemy {
                 bot.old_y = bot.y;
 
             // si va verso il player fino a quando si è lontanissimi
-            if (dist > 350) {
-                bot.velX = (tx / dist);
+            if (dist > 250) {
+                bot.velX = (tx/ dist);
                 bot.velY = (ty / dist);
                 bot.x += bot.velX * bot.speed;
                 bot.y += bot.velY * bot.speed;
             }
-            if (dist > 100 && dist < 250) {
 
-                // source: https://gamedev.stackexchange.com/questions/9607/moving-an-object-in-a-circular-path
+
+            if (dist > 150 && dist < 250) {
+
+                // https://stackoverflow.com/questions/10343448/javascript-atan2-function-not-giving-expected-results
+                if (bot.angleWithTarget < 0) bot.angleWithTarget = Math.PI + bot.angleWithTarget;
+                
                 let newX = (bot.target.x + Math.cos(bot.angleWithTarget) * dist) / dist;
                 let newY = (bot.target.y + Math.sin(bot.angleWithTarget) * dist) / dist;
+//
+console.log(newX, newY)
 
-                bot.velX = ((tx + 6.28 * newX) / dist) /* * this.getRandomDirection(bot) */;
-                bot.velY = ((ty + 6.28 * newY) / dist) /* * this.getRandomDirection(bot) */;
-
+                bot.velX = ((tx + 32 * newX/5) / dist) /* * this.getRandomDirection(bot) */;
+                bot.velY = ((ty + 32 * newY/3) / dist) /* * this.getRandomDirection(bot) */;
+                //bot.angleWithTarget +=5 /* * Math.PI / 180 */; // orario
+                //// il target è considerato il centro del cerchio e il radius la distanza tra bot e target
+                //bot.velX = (bot.target.x + Math.cos(bot.angleWithTarget) * dist) / dist;
+                //bot.velY = (bot.target.y + Math.sin(bot.angleWithTarget) * dist) / dist;
                 bot.x += bot.velX * bot.speed;
                 bot.y += bot.velY * bot.speed;
+                bot.angleWithTarget +=15;
+
             }
-            if (dist < 100) { // retreat
+            if (dist < 150) { // retreat
                 bot.velX = -(tx / dist);
                 bot.velY = -(ty / dist);
                 bot.x += bot.velX * bot.speed;

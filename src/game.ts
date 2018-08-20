@@ -239,6 +239,9 @@ export default class Game {
         this.ctx.fillText(this.player.currentWeapon, 245, this.c.TILE_SIZE / 2);
         this.ctx.fillText('TIME ', 600, this.c.TILE_SIZE / 2);
         this.ctx.fillText('FPS ', 710, this.c.TILE_SIZE / 2);
+        if(this.player.godMode){
+            this.ctx.fillText('god', 780, this.c.TILE_SIZE / 2);
+        }
         this.ctx.font = 'bold 14px/1 Arial';
         this.ctx.fillStyle = 'yellow';
         this.ctx.fillText(this.player.hp.toString(), 30, this.c.TILE_SIZE / 2);
@@ -247,12 +250,12 @@ export default class Game {
         this.ctx.fillText(this.countDown(), 640, this.c.TILE_SIZE / 2);
         this.ctx.fillText(this.fps.toString(), 750, this.c.TILE_SIZE / 2);
         //if (!this.player.alive) {
-        if(!this.player.alive){
-            this.ctx.fillStyle = '#565454';
-            this.ctx.font = 'bold 28px/1 Arial';
-            this.ctx.textAlign = 'center';
-            this.ctx.fillText(`Respawn in ${Math.ceil((this.c.GAME_RESPAWN_TIME-this.player.respawnTime)/1000).toString()}`, 400, 120);
-        }
+            if(!this.player.alive){
+                this.ctx.fillStyle = '#565454';
+                this.ctx.font = 'bold 28px/1 Arial';
+                this.ctx.textAlign = 'center';
+                this.ctx.fillText(`Respawn in ${Math.ceil((this.c.GAME_RESPAWN_TIME-this.player.respawnTime)/1000).toString()}`, 400, 120);
+            }
         //    this.ctx.fillText(Math.ceil((this.c.GAME_RESPAWN_TIME-this.player.respawnTime)/1000).toString(), 500, this.c.TILE_SIZE / 2);
         //}
     }

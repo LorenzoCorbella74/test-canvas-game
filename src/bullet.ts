@@ -98,7 +98,9 @@ export class BulletHandler {
 
             // si guarda se i proiettili di qualche nemico impattano il player
             if (shot.firedBy == 'enemy' && this.player.alive && Helper.circleCollision(shot, this.player)) {
-                this.player.hp -= shot.damage;
+                if(!this.player.godMode){
+                    this.player.hp -= shot.damage;
+                }
                 // this.player.vX = shot.vX * 0.03;
                 // this.player.vY = shot.vY * 0.03;
                 // shot.hp = -99;

@@ -284,29 +284,41 @@ export class Enemy {
         if (bot.target && bot.target.alive) {
             // si calcola l'angolo rispetto allo stesso sistema di riferimento (camera)
             bot.angleWithTarget = Helper.calculateAngle(bot.x - this.camera.x, bot.y - this.camera.y, bot.target.x - this.camera.x, bot.target.y - this.camera.y);
+            // bot.angleWithTarget2 = Helper.calculateAngle(bot.target.x - this.camera.x, bot.target.y - this.camera.y, bot.x - this.camera.x, bot.y - this.camera.y);
 
             // We need to get the distance
             var tx = bot.target.x - bot.x,
                 ty = bot.target.y - bot.y,
                 dist = Math.sqrt(tx * tx + ty * ty);
+                bot.old_x = bot.x;
+                bot.old_y = bot.y;
 
             // si va verso il player fino a quando si è lontanissimi
-            if (dist > 300) {
+            if (dist > 350) {
                 bot.velX = (tx / dist);
                 bot.velY = (ty / dist);
+                bot.x += bot.velX * bot.speed;
+                bot.y += bot.velY * bot.speed;
             }
-            if (dist > 100 && dist < 200) {
-                bot.velX = (tx / dist) * this.getRandomDirection(bot);
-                bot.velY = (ty / dist) * this.getRandomDirection(bot);
+            if (dist > 100 && dist < 250) {
+
+                // source: https://gamedev.stackexchange.com/questions/9607/moving-an-object-in-a-circular-path
+                let newX = (bot.target.x + Math.cos(bot.angleWithTarget) * dist) / dist;
+                let newY = (bot.target.y + Math.sin(bot.angleWithTarget) * dist) / dist;
+
+                bot.velX = ((tx + 6.28 * newX) / dist) /* * this.getRandomDirection(bot) */;
+                bot.velY = ((ty + 6.28 * newY) / dist) /* * this.getRandomDirection(bot) */;
+
+                bot.x += bot.velX * bot.speed;
+                bot.y += bot.velY * bot.speed;
             }
             if (dist < 100) { // retreat
                 bot.velX = -(tx / dist);
                 bot.velY = -(ty / dist);
+                bot.x += bot.velX * bot.speed;
+                bot.y += bot.velY * bot.speed;
             }
-            bot.old_x = bot.x;
-            bot.old_y = bot.y;
-            bot.x += bot.velX * bot.speed;
-            bot.y += bot.velY * bot.speed;
+            
 
             this.shot(bot, dist);
         } else{

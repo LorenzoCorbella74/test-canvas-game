@@ -62,7 +62,9 @@ export class ControlHandler {
             this.a = false
         } else if (e.keyCode == 68) {
             this.d = false
-        } else if(e.keyCode == 73){ // i per debug
+        } else if (e.keyCode == 71) {   // g
+            this.main.player.godMode = !this.main.player.godMode;
+        } else if(e.keyCode == 73){     // i per debug
             this.main.debug = false ;
         }else if (e.keyCode == 80) {
             if (!this.main.paused) {    // se non è già in pausa...

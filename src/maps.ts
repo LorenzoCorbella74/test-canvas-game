@@ -53,10 +53,8 @@ export class Map {
     c:                 any;
     ctx:               any;
     map:               any;
-    // currentVisibleMap: any = demoMap;
 
-    constructor() {
-    }
+    constructor() { }
 
     init(main: any){
         this.camera   = main.camera;
@@ -107,13 +105,14 @@ export class Map {
         }
     }
 
-    getColor(tile){
+    getColor(tile:   any){
         let color;
         switch (tile) {
-            case 0: color = '#ddd5d5';break;    // empty
-            case 1: color = '#868679';break;    // solid
-            case 3: color = 'red';break;    // lava
-            default: color = '#ddd5d5';break; 
+            case 0:  color = 'LightSteelBlue';break;    // empty
+            case 1:  color = 'SlateGray';break;    // solid
+            case 3:  color = 'red';break;        // lava
+            case 4:  color = 'green';break;      // toxic water
+            default: color = 'LightSteelBlue';break; 
         }
         return color;
     }
@@ -132,9 +131,7 @@ export class Map {
         };
       }
     
-      tileAtMapPos(mapPos) {
-        //return this.children[mapPos.y * this.mapW + mapPos.x];
-      }
+
 
     loadSpawnPointsAndPowerUps() {
         let output = {};

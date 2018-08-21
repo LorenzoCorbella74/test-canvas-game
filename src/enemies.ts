@@ -166,7 +166,10 @@ export class Enemy {
 			|| this.map.map[Math.ceil(y / this.c.TILE_SIZE)][Math.floor(x / this.c.TILE_SIZE)] == 4
 			|| this.map.map[Math.ceil(y / this.c.TILE_SIZE)][Math.ceil(x / this.c.TILE_SIZE)] == 4
 		) {
-			bot.hp -=0.5;
+            bot.hp -=0.5;
+            for (var j = 0; j < 24; j++) {
+				this.main.particelle.create(bot.x + Helper.randBetween(-bot.r,bot.r), bot.y + Helper.randBetween(-bot.r,bot.r), Math.random() * 2 - 2, Math.random() * 2 - 2, 2 , '#FFA500')
+			}
 		}
 	}
 
@@ -183,6 +186,7 @@ export class Enemy {
                 //     bot.y += 2 * bot.target.speed;
                 // }
             } else {
+                bot.target = null;
                 bot.y =bot.old_y;
             }
         }
@@ -198,6 +202,7 @@ export class Enemy {
                 //     bot.y -= 2 * bot.target.speed;
                 // }
             } else {
+                bot.target = null;
                 bot.y =bot.old_y;
             }
         }
@@ -213,6 +218,7 @@ export class Enemy {
                 //     bot.x += 2 * bot.target.speed;
                 // }
             } else {
+                bot.target = null;
             bot.x = bot.old_x;
             }
         }
@@ -228,6 +234,7 @@ export class Enemy {
                 //     bot.x -= 2 * bot.target.speed;
                 // }
             } else {
+                bot.target = null;
                 bot.x = bot.old_x;
             }
         }
@@ -276,8 +283,8 @@ export class Enemy {
             const bot = this.list[i];
             if(bot.alive){
                 bot.brain.update(bot, progress);
-                this.checkCollision(bot);
                 this.isLavaOrToxic(bot, bot.x, bot.y);
+                this.checkCollision(bot);
             }
         }
     }
@@ -314,8 +321,8 @@ export class Enemy {
                 bot.velY = (ty / dist);
             }
             if (dist > 150 && dist < 250) {
-                bot.velX = (ty / dist) * Math.cos(bot.angleWithTarget)/dist;
-                bot.velY = (tx / dist) * Math.sin(bot.angleWithTarget)/dist;
+                bot.velX = (ty / dist) * Math.cos(bot.angleWithTarget);
+                bot.velY = (tx / dist) * Math.sin(bot.angleWithTarget);
             }
             if (dist < 150) { // retreat
                 bot.velX = -(tx / dist);

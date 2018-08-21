@@ -169,6 +169,9 @@ export class Player {
 			|| this.map.map[Math.ceil(y / this.c.TILE_SIZE)][Math.ceil(x / this.c.TILE_SIZE)] == 4
 		) {
 			this.hp -=0.5;
+			for (var j = 0; j < 24; j++) {
+				this.main.particelle.create(this.x + Helper.randBetween(-this.r,this.r), this.y + Helper.randBetween(-this.r,this.r), Math.random() * 2 - 2, Math.random() * 2 - 2, 2 , '#FFA500')
+			}
 		}
 	}
 
@@ -257,8 +260,8 @@ export class Player {
 		if (this.alive) {
 			// this.attackCounter += progress;	// contatore frdequenza di sparo
 
-			this.collisionDetection(progress);
 			this.isLavaOrToxic(this.x,this.y);
+			this.collisionDetection(progress);
 
 			if (this.control.mouseLeft) {	// SE è PREMUTO IL btn del mouse
 				this.shoot(progress);

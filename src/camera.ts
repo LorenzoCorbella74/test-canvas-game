@@ -28,11 +28,7 @@ export class Camera {
         this.currentPlayer = player;
     }
 
-   /*  setCurrentMap(map:any){
-        this.map = map;
-    } */
-
-    update(progress:number) {
+    update(dt:number) {
         // si evita di aggiornare la camera quando si arriva al bordo della mappa
         if (this.currentPlayer.x > (this.w / 2) && this.currentPlayer.x < this.map.mapSize.w - (this.w / 2)) {
             this.x = this.currentPlayer.x - (this.w / 2);
@@ -46,21 +42,16 @@ export class Camera {
     adjustCamera(actor:any){
 		if(actor.x > (this.map.mapSize.w - this.c.CANVAS_WIDTH)){
             this.x = this.map.mapSize.w - this.c.CANVAS_WIDTH;
-            //this.x = this.currentPlayer.x - (this.w / 2);
 		}
 		if(actor.x < this.c.CANVAS_WIDTH){
             this.x = 0;
-            //this.x = this.currentPlayer.x - (this.w / 2);
 		}
 		if(actor.y < this.c.CANVAS_HEIGHT){
-            //this.y = this.currentPlayer.y - (this.h / 2);
 			this.y = 0;
 		}
 		if(actor.y > (this.map.mapSize.h - this.c.CANVAS_HEIGHT)){
             this.y = this.map.mapSize.h - this.c.CANVAS_HEIGHT;
-            //this.y = this.currentPlayer.y - (this.h / 2);
         }
-        //this.update(1);
 	}
 
 };

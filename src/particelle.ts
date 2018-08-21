@@ -38,7 +38,7 @@ export class Particelle {
         this.list.push(obj)
     };
 
-    update (progress:number) {
+    update (dt:number) {
         if (this.list.length > 0) {
             var obj;
             for (var i = this.list.length - 1; i >= 0; i--) {
@@ -57,7 +57,7 @@ export class Particelle {
         }
     }
 
-    render(progress:number){
+    render(dt:number){
         for (var i = this.list.length - 1; i >= 0; i--) {
             var detrito = this.list[i];
             let x = detrito.x - this.main.camera.x;

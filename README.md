@@ -1,14 +1,14 @@
-# Corbe 2D shooter!
+# Corbe Arena shooter 2D!
 
 ![arena](screen/arena.png)
 
-Esempio di shooter 2D realizzato per studiare il canvas e lo sviluppo di giochi con tecnologie web. Il gioco ricrea le meccaniche di arena shooter quali Quake 3 Arena, Unreal tournament, etc
+Esempio di shooter 2D realizzato per studiare il canvas e lo sviluppo di giochi con tecnologie web. Il gioco ricrea le meccaniche di arena shooter quali Quake 3 Arena, Unreal tournament, etc.
 
 ## Features
 - [x] map built with tiles 
-- [ ] different types of tiles 
+- [x] different types of tiles (lava, toxic water)
 - [x] camera following different entities (player, bots) 
-- [x] collision system for all mouvable entities
+- [x] collision system for all entities
 - [x] particles (debris, blood, explosion)
 - [x] powerups system with different respawn time + counter
 - [ ] different weapons
@@ -44,7 +44,7 @@ HTML5, CSS, Typescript, canvas, parcel
 
 ## Versioning
 
-Versione 0.0.5
+Versione 0.0.1
 
 ## License
 

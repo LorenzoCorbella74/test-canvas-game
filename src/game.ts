@@ -157,8 +157,8 @@ export default class Game {
 
         this.canvas.style.cursor='crosshair';
         
-        let progress = timestamp - this.lastRender;
-        this.fps = Math.floor(1000/progress);
+        let dt = timestamp - this.lastRender;
+        this.fps = Math.floor(1000/dt);
 
         if(this.start){                                     // do we need to start the timer
             this.stopTime = timestamp + this.matchDuration; // yes the set the stoptime
@@ -183,8 +183,8 @@ export default class Game {
         }
 
         if(!this.paused){
-            this.updateAll(progress);
-            this.renderAll(progress);
+            this.updateAll(dt);
+            this.renderAll(dt);
         }
         
         this.lastRender = timestamp;
@@ -197,31 +197,31 @@ export default class Game {
         }
     }
 
-    updateAll(progress:number) {
-        this.player.update(progress);
-        this.enemy.update(progress);
-        this.camera.update(progress);
-        this.bullet.update(progress); 
-        this.powerup.update(progress);
-        this.waypoints.update(progress);    // waypoints
-        this.particelle.update(progress);
-        this.blood.update(progress);
+    updateAll(dt:number) {
+        this.player.update(dt);
+        this.enemy.update(dt);
+        this.camera.update(dt);
+        this.bullet.update(dt); 
+        this.powerup.update(dt);
+        this.waypoints.update(dt);    // waypoints
+        this.particelle.update(dt);
+        this.blood.update(dt);
         // particles:esplosioni
     }
 
-    renderAll(progress:number): void {
+    renderAll(dt:number): void {
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);  // svuota il canvas
-        this.currentMap.render(progress);
-        this.player.render(progress);
-        this.enemy.render(progress);
-        this.bullet.render(progress); 
-        this.powerup.render(progress);
-        this.waypoints.render(progress);    // waypoints
-        this.particelle.render(progress);
-        this.blood.render(progress);
+        this.currentMap.render(dt);
+        this.player.render(dt);
+        this.enemy.render(dt);
+        this.bullet.render(dt); 
+        this.powerup.render(dt);
+        this.waypoints.render(dt);    // waypoints
+        this.particelle.render(dt);
+        this.blood.render(dt);
         // particles:esplosioni
 
-        this.renderHUD(progress);   // HUD
+        this.renderHUD(dt);   // HUD
     }
 
     countDown(){
@@ -233,7 +233,7 @@ export default class Game {
         return  `${minutes}:${seconds}`;
     }
 
-    private renderHUD(progress: number) {
+    private renderHUD(dt: number) {
         this.ctx.fillStyle = this.c.HUD_BACKGROUND;
         this.ctx.fillRect(0, 0, this.c.CANVAS_WIDTH, this.c.TILE_SIZE);
         this.ctx.textAlign = 'LEFT';
@@ -316,7 +316,7 @@ export default class Game {
         main.canvas.style.cursor='pointer';
         main.paused = true;
         main.control.mouseDown = false;
-        main.ctx.fillStyle = 'rgba(255,255,255,0.65)';
+        main.ctx.fillStyle = 'rgba(255,255,255,0.5)';
         main.ctx.fillRect(0, 0, main.canvas.width, main.canvas.height);
         var hW = main.canvas.width * 0.5;
         var hH = main.canvas.height * 0.5;

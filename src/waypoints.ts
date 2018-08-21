@@ -46,13 +46,13 @@ export class Waypoints {
     };
 
 
-    update(progress:number) {
+    update(dt:number) {
         for (var i = this.list.length - 1; i >= 0; i--) {
             var waypoint = this.list[i];
             for (let a = 0; a < this.bots.list.length; a++) {
                 const actor = this.bots.list[a];
                 if (!waypoint[actor.index].visible) {
-                    waypoint[actor.index].reloadRate+= progress;  // si inizia a contare se non visibile
+                    waypoint[actor.index].reloadRate+= dt;  // si inizia a contare se non visibile
                 }
             }
 
@@ -74,7 +74,7 @@ export class Waypoints {
         }
     }
 
-    render(progress: number) {
+    render(dt: number) {
         if (this.main.debug) {
             for (let i = this.list.length - 1; i >= 0; i--) {
                 let waypoint = this.list[i];

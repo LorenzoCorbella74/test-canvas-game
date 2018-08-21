@@ -97,7 +97,7 @@ export class Enemy {
 		return this.c.ENEMY_COLOUR_INSIDE;
 	}
 
-    render(progress: number) {
+    render(dt: number) {
         for (let i = this.list.length - 1; i >= 0; i--) {
             const bot = this.list[i];
             if (bot.alive) {
@@ -278,18 +278,18 @@ export class Enemy {
 
     /* -------------------------------------------------------------------------------------- */
 
-    update(progress: number) {
+    update(dt: number) {
         for (let i = this.list.length - 1; i >= 0; i--) {
             const bot = this.list[i];
             if(bot.alive){
-                bot.brain.update(bot, progress);
+                bot.brain.update(bot, dt);
                 this.isLavaOrToxic(bot, bot.x, bot.y);
                 this.checkCollision(bot);
             }
         }
     }
 
-    spawn(bot: any, progress: number) {
+    spawn(bot: any, dt: number) {
         bot.status ='spawn';
         let opponentData = this.getNearestVisibleEnemy(bot, this.main.actors);
         bot.target = opponentData.elem;
@@ -302,7 +302,7 @@ export class Enemy {
         }
     }
     
-    chaseTarget(bot: any, progress: number) {
+    chaseTarget(bot: any, dt: number) {
         bot.status ='chasing';
         bot.angleWithTarget = Helper.calculateAngle(bot.x /* - this.camera.x */, bot.y /* - this.camera.y */, bot.target.x /* - this.camera.x */, bot.target.y /* - this.camera.y */);
 
@@ -340,7 +340,7 @@ export class Enemy {
 
     // TODO: https://stackoverflow.com/questions/24378155/random-moving-position-for-sprite-image
 
-    wander(bot: any, progress: number) {
+    wander(bot: any, dt: number) {
         
         bot.status ='wander';
         let opponentData = this.getNearestVisibleEnemy(bot, this.main.actors);
@@ -366,7 +366,7 @@ export class Enemy {
                 easystar.enableDiagonals();
                 // easystar.enableCornerCutting();
                 bot.pathAStar = easystar;
-                this.collectPowerUps(bot, progress);
+                this.collectPowerUps(bot, dt);
             }
         }
     }

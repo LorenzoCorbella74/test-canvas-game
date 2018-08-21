@@ -90,23 +90,23 @@ export class PowerUp {
         }
     }
 
-    update(progress:number) {
+    update(dt:number) {
         for (var i = this.list.length - 1; i >= 0; i--) {
             var powerup = this.list[i];
 
-            powerup.currentAngle += progress * 0.004;       // animazione del cerchio esterno...
+            powerup.currentAngle += dt * 0.004;       // animazione del cerchio esterno...
             powerup.angleForDinamicRadius += 2*Math.PI/60;  // animazione del raggio dinamico di 6° a frame
 
             /// reset angle
             powerup.currentAngle %= 2 * Math.PI;
 
             if (!powerup.visible) {
-                powerup.reloadRate+= progress;  // si inizia a contare se non visibile
+                powerup.reloadRate+= dt;  // si inizia a contare se non visibile
             }
 
             // se non è visibile e ha una durata inizia a contare la durata dell'effetto (quad, speed, etc)
             if(!powerup.visible && powerup.duration && powerup.startDurationRate){
-                powerup.durationRate+= progress;
+                powerup.durationRate+= dt;
             }
 
             // si guarda se i powerup entrano in contatto con il player
@@ -151,7 +151,7 @@ export class PowerUp {
         }
     }
 
-    render(progress:number) {
+    render(dt:number) {
         for (let i = this.list.length - 1; i >= 0; i--) {
             let powerup = this.list[i];
             if (powerup.visible) {

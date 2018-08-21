@@ -13,12 +13,12 @@ export class BrainFSM {
 
     constructor() { }
 
-    public update(who: any, progress: number): void {
+    public update(who: any, dt: number): void {
         if (this.currentStateFunction != null) {
             this.first = this.justSetState;
-            this.time += this.first ? 0 : progress;
+            this.time += this.first ? 0 : dt;
             this.justSetState = false;
-            this.currentStateFunction(who, progress);
+            this.currentStateFunction(who, dt);
         }
     }
     

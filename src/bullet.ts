@@ -47,7 +47,7 @@ export class BulletHandler {
         return false;
     }
 
-    update(progress: number) {
+    update(dt: number) {
         let shot, i;
         for (i = this.list.length - 1; i >= 0; i--) {
             shot = this.list[i];
@@ -153,7 +153,7 @@ export class BulletHandler {
             }
 
             // decremento del proiettile
-            shot.ttl -= progress;
+            shot.ttl -= dt;
             if (shot.ttl <= 0) {
                 this.pool.push(shot);
                 this.list.splice(i, 1);
@@ -162,7 +162,7 @@ export class BulletHandler {
         }
     }
 
-    render(progress: number) {
+    render(dt: number) {
         for (let j = this.list.length - 1; j >= 0; j--) {
             const obj = this.list[j];
             let x = obj.x - this.main.camera.x;

@@ -92,7 +92,7 @@ export class Player {
 		return this.c.PLAYER_COLOUR_INSIDE;
 	}
 
-	render(progress: number) {
+	render(dt: number) {
 		if(this.alive){	// solo se il player è vivo!
 			// draw the colored region
 			this.ctx.beginPath();
@@ -175,8 +175,8 @@ export class Player {
 		}
 	}
 
-	collisionDetection(progress:number){
-		let spostamento = this.speed*progress;
+	collisionDetection(dt:number){
+		let spostamento = this.speed*dt;
 		if (this.control.w) { // W 
 			if (this.checkmove(this.x - this.r, this.y - this.r - spostamento)) {
 				this.y -= spostamento;
@@ -239,7 +239,7 @@ export class Player {
 		}
 	}
 
-	shoot(progress: number){
+	shoot(dt: number){
 		// console.log(`X: ${this.control.mouseX} Y: ${this.control.mouseY}`);
 		let now = Date.now();
             if (now - this.attackCounter < this.shootRate) return;
@@ -255,21 +255,21 @@ export class Player {
 		//}
 	}
 
-	update(progress: number) {
+	update(dt: number) {
 
 		if (this.alive) {
-			// this.attackCounter += progress;	// contatore frdequenza di sparo
+			// this.attackCounter += dt;	// contatore frdequenza di sparo
 
 			this.isLavaOrToxic(this.x,this.y);
-			this.collisionDetection(progress);
+			this.collisionDetection(dt);
 
 			if (this.control.mouseLeft) {	// SE è PREMUTO IL btn del mouse
-				this.shoot(progress);
+				this.shoot(dt);
 			}
 		}
 
 		if (!this.alive) {
-			this.respawnTime += progress;
+			this.respawnTime += dt;
 			if (this.respawnTime > this.c.GAME_RESPAWN_TIME) {	// numero di cicli oltre il quale è nuovamente visibile
 				this.respawn();
 				this.respawnTime=0;

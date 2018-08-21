@@ -156,6 +156,20 @@ export class Enemy {
         return Helper.randomElementInArray([bot.velX, -bot.velY, bot.velY, -bot.velX]);
     }
 
+    isLavaOrToxic(bot:any, x: number, y: number): void {
+		if (this.map.map[Math.floor(y / this.c.TILE_SIZE)][Math.floor(x / this.c.TILE_SIZE)] == 3
+			|| this.map.map[Math.floor(y / this.c.TILE_SIZE)][Math.ceil(x / this.c.TILE_SIZE)] == 3
+			|| this.map.map[Math.ceil(y / this.c.TILE_SIZE)][Math.floor(x / this.c.TILE_SIZE)] == 3
+			|| this.map.map[Math.ceil(y / this.c.TILE_SIZE)][Math.ceil(x / this.c.TILE_SIZE)] == 3
+			|| this.map.map[Math.floor(y / this.c.TILE_SIZE)][Math.floor(x / this.c.TILE_SIZE)] == 4
+			|| this.map.map[Math.floor(y / this.c.TILE_SIZE)][Math.ceil(x / this.c.TILE_SIZE)] == 4
+			|| this.map.map[Math.ceil(y / this.c.TILE_SIZE)][Math.floor(x / this.c.TILE_SIZE)] == 4
+			|| this.map.map[Math.ceil(y / this.c.TILE_SIZE)][Math.ceil(x / this.c.TILE_SIZE)] == 4
+		) {
+			bot.hp -=0.5;
+		}
+	}
+
     checkCollision(bot:any){
         if (bot.velY<0) { // W 
             if (this.checkmove(bot.x - bot.r, bot.y - bot.r - bot.speed) ) {
@@ -263,6 +277,7 @@ export class Enemy {
             if(bot.alive){
                 bot.brain.update(bot, progress);
                 this.checkCollision(bot);
+                this.isLavaOrToxic(bot, bot.x, bot.y);
             }
         }
     }
@@ -341,7 +356,7 @@ export class Enemy {
 
                 // Get the walkable tile indexes
                 easystar.setAcceptableTiles([0, 2, 10, 11, 12, 13, 14, 15, 16, 40]);
-                // easystar.enableDiagonals();
+                easystar.enableDiagonals();
                 // easystar.enableCornerCutting();
                 bot.pathAStar = easystar;
                 this.collectPowerUps(bot, progress);
@@ -358,7 +373,7 @@ export class Enemy {
         //.filter((e:any)=>this.checkIfIsSeen2(origin, e))   // quelli non visibili // FIXME:quando si ha il pathfinding con A* si potrà togliere...
         .forEach((e: any) => {
             let distanza = Helper.calculateDistance(origin, e);
-            if (output.dist > distanza && distanza < 350) {
+            if (output.dist > distanza && distanza < 400) {
                 output = { dist: distanza, elem: e };
             }
         })
@@ -369,6 +384,7 @@ export class Enemy {
         let output: any = { dist: 10000 }; // elemento + vicino ad bot
         data
         .filter((elem:any)=> elem[bot.index].visible==true) // solo quelli non ancora attraversati dallo specifico bot
+        .filter((e:any)=>this.checkIfIsSeen2(bot, e))
         .forEach((e: any) => {
             let distanza = Helper.calculateDistance(bot, e);
             if (output.dist > distanza && distanza < 500) {
@@ -435,26 +451,28 @@ export class Enemy {
         // bot.path.slice(2)
         const cell = bot.path[0];
         // We need to get the distance
-        var tx = (cell.x * map.tileSize/* +map.tileSize/2 */) - bot.x,
-            ty = (cell.y * map.tileSize/* +map.tileSize/2 */) - bot.y,
+        var tx = ((cell.x * map.tileSize) + map.tileSize/2) - bot.x,
+            ty = ((cell.y * map.tileSize) + map.tileSize/2) - bot.y,
             dist = Math.sqrt(tx * tx + ty * ty);
-        bot.velX = (tx / dist);
-        bot.velY = (ty / dist); 
-        bot.old_x = bot.x;
-        bot.old_y = bot.y;
-       // bot.x += bot.velX * bot.speed;
-       // bot.y += bot.velY * bot.speed;
-     const closeX = Math.abs(tx/* bot.velX */ ) <= 2;
-     const closeY = Math.abs( ty/* bot.velY */) <= 2;
-     if (!closeX) bot.x += Math.sign(tx/* bot.velX */ ) * bot.speed;
-     if (!closeY) bot.y += Math.sign( ty/* bot.velY */) * bot.speed;
+        if(dist!=0){
+            bot.velX = (tx / dist);
+            bot.velY = (ty / dist); 
+            bot.old_x = bot.x;
+            bot.old_y = bot.y;
+           // bot.x += bot.velX * bot.speed;
+           // bot.y += bot.velY * bot.speed;
+         //const closeX = Math.abs( bot.velX ) <= 1;
+         //const closeY = Math.abs( bot.velY) <= 1;
+         /* if (!closeX) */ bot.x +=  bot.velX * bot.speed;
+         /* if (!closeY) */ bot.y +=  bot.velY * bot.speed;
+        }
 
     // If you made it, move to the next path element
-        if (/* Helper.circleCollision(bot.targetItem, bot) */closeX || closeY) {
+        if (/* Helper.circleCollision(bot.targetItem, bot) *//* closeX || closeY */dist<2) {
             bot.path = bot.path.slice(1);
             if (bot.path.length === 0) {
-                // this.findPath(bot);
-                bot.brain.pushState(this.wander.bind(this));
+                this.findPath(bot);
+                // bot.brain.pushState(this.wander.bind(this));
             }
         }
     }

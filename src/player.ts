@@ -158,6 +158,20 @@ export class Player {
 		}
 	}
 
+	isLavaOrToxic(x: number, y: number): boolean {
+		if (this.map.map[Math.floor(y / this.c.TILE_SIZE)][Math.floor(x / this.c.TILE_SIZE)] == 3
+			|| this.map.map[Math.floor(y / this.c.TILE_SIZE)][Math.ceil(x / this.c.TILE_SIZE)] == 3
+			|| this.map.map[Math.ceil(y / this.c.TILE_SIZE)][Math.floor(x / this.c.TILE_SIZE)] == 3
+			|| this.map.map[Math.ceil(y / this.c.TILE_SIZE)][Math.ceil(x / this.c.TILE_SIZE)] == 3
+			|| this.map.map[Math.floor(y / this.c.TILE_SIZE)][Math.floor(x / this.c.TILE_SIZE)] == 4
+			|| this.map.map[Math.floor(y / this.c.TILE_SIZE)][Math.ceil(x / this.c.TILE_SIZE)] == 4
+			|| this.map.map[Math.ceil(y / this.c.TILE_SIZE)][Math.floor(x / this.c.TILE_SIZE)] == 4
+			|| this.map.map[Math.ceil(y / this.c.TILE_SIZE)][Math.ceil(x / this.c.TILE_SIZE)] == 4
+		) {
+			this.hp -=0.5;
+		}
+	}
+
 	collisionDetection(progress:number){
 		let spostamento = this.speed*progress;
 		if (this.control.w) { // W 
@@ -244,6 +258,7 @@ export class Player {
 			// this.attackCounter += progress;	// contatore frdequenza di sparo
 
 			this.collisionDetection(progress);
+			this.isLavaOrToxic(this.x,this.y);
 
 			if (this.control.mouseLeft) {	// SE è PREMUTO IL btn del mouse
 				this.shoot(progress);

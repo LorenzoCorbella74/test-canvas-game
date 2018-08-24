@@ -253,7 +253,7 @@ export class Player {
 			this.enemy.list.forEach((enemy:any) => {
 				if(Helper.circleCollision(enemy, this)){
 					this.x += 4*spostamento;
-					enemy.x -=4*spostamento;
+					//enemy.x -=4*spostamento;
 				}
 			});
 			if (this.checkmove(this.x - this.r - spostamento, this.y - this.r)) {
@@ -268,7 +268,7 @@ export class Player {
 			this.enemy.list.forEach((enemy:any) => {
 				if(Helper.circleCollision(enemy, this)){
 					this.y -= 4* spostamento;
-					enemy.x +=4* spostamento;
+					// enemy.x +=4* spostamento;
 				}
 			});
 			if (this.checkmove(this.x - this.r + spostamento, this.y - this.r)) {

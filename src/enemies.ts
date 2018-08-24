@@ -56,6 +56,7 @@ export class Enemy {
         bot.numberOfDeaths  = 0;
         bot.target          = {};
         bot.targetItem      = {};
+        bot.trails          = [];
         this.list[this.list.length] = bot;
         bot.brain.pushState(this.spawn.bind(this));
         bot.status='spawn';
@@ -81,6 +82,7 @@ export class Enemy {
         // this.numberOfDeaths = 0;	    // si mantengono...
         bot.target                = {};
         bot.targetItem            = {};
+        bot.trails          = [];
         bot.attackCounter = 0;
         bot.status='spawn';
         bot.currentWeapon = this.c.PLAYER_STARTING_WEAPON;		// arma corrente
@@ -101,6 +103,15 @@ export class Enemy {
         for (let i = this.list.length - 1; i >= 0; i--) {
             const bot = this.list[i];
             if (bot.alive) {
+                // trails
+                for (let i = 0; i < bot.trails.length; i++) {
+                    let ratio = (i + 1) / bot.trails.length;
+                    this.ctx.beginPath();
+                    this.ctx.arc(bot.trails[i].x - this.camera.x, bot.trails[i].y - this.camera.y, ratio * this.r *(3/ 5) + this.r *(2/ 5), 0, 2 * Math.PI, true);
+                    this.ctx.fillStyle = this.ctx.fillStyle = `rgb(127, 134, 135,${ratio/2})`;
+                    this.ctx.fill();
+                }
+
                 // draw the colored region
                 this.ctx.beginPath();
                 this.ctx.arc(bot.x - this.camera.x, bot.y - this.camera.y, bot.r, 0, 2 * Math.PI, true);
@@ -169,7 +180,27 @@ export class Enemy {
             bot.hp -=0.5;
             for (var j = 0; j < 24; j++) {
 				this.main.particelle.create(bot.x + Helper.randBetween(-bot.r,bot.r), bot.y + Helper.randBetween(-bot.r,bot.r), Math.random() * 2 - 2, Math.random() * 2 - 2, 2 , '#FFA500')
+            }
+            if (bot.hp <= 0) {
+				bot.alive = false;
+				bot.numberOfDeaths++;
+				for (let b = 0; b < 36; b++) {
+					this.main.blood.create(bot.x, bot.y, Math.random() * 2 - 2, Math.random() * 2 - 2, this.c.BLOOD_RADIUS) // crea il sangue
+				}
+                console.log(`Bot killed by lava.`);
+                setTimeout(() => {
+                    this.respawn(bot);
+                }, this.c.GAME_RESPAWN_TIME);
 			}
+		}
+    }
+    
+    storePosForTrail(bot:any) {
+		// push an item
+		bot.trails.push({ x:bot.x, y:bot.y });
+		//get rid of first item
+		if (bot.trails.length > this.c.MOTION_TRAILS_LENGTH) {
+			bot.trails.shift();
 		}
 	}
 
@@ -238,6 +269,7 @@ export class Enemy {
                 bot.x = bot.old_x;
             }
         }
+        this.storePosForTrail(bot);
     }
 
 
@@ -295,7 +327,6 @@ export class Enemy {
         bot.target = opponentData.elem;
         bot.distanceWIthTarget = opponentData.dist;
         if (bot.target && bot.target.alive /* && bot.distanceWIthTarget < 350 */) {
-            
             bot.brain.pushState(this.chaseTarget.bind(this));
         } else {
             bot.brain.pushState(this.wander.bind(this));
@@ -304,7 +335,7 @@ export class Enemy {
     
     chaseTarget(bot: any, dt: number) {
         bot.status ='chasing';
-        bot.angleWithTarget = Helper.calculateAngle(bot.x /* - this.camera.x */, bot.y /* - this.camera.y */, bot.target.x /* - this.camera.x */, bot.target.y /* - this.camera.y */);
+        bot.angleWithTarget = Helper.calculateAngle(bot.x, bot.y, bot.target.x, bot.target.y);
 
         if (bot.target && bot.target.alive) {
 
@@ -331,7 +362,6 @@ export class Enemy {
             bot.x += bot.velX * bot.speed;
             bot.y += bot.velY * bot.speed;
             
-
             this.shot(bot, dist);
         } else{
             bot.brain.pushState(this.wander.bind(this));

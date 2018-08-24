@@ -141,7 +141,6 @@ export class Player {
 			);
 			this.ctx.stroke();
 
-
 			if (this.main.debug) {
 				this.ctx.font = 'bold 8px/1 Arial';
 				this.ctx.fillStyle = 'black';
@@ -222,7 +221,6 @@ export class Player {
 			this.enemy.list.forEach((enemy:any) => {
 				if(Helper.circleCollision(enemy, this)){
 					this.y += 4*spostamento;
-					//enemy.y -= 4* spostamento;
 				}
 			});
 			if (this.checkmove(this.x - this.r, this.y - this.r - spostamento)) {
@@ -237,7 +235,6 @@ export class Player {
 			this.enemy.list.forEach((enemy:any) => {
 				if(Helper.circleCollision(enemy, this)){
 					this.y -= 4*spostamento;
-					// enemy.y +=4*spostamento;
 				}
 			});
 			if (this.checkmove(this.x - this.r, this.y - this.r + spostamento)) {
@@ -253,7 +250,6 @@ export class Player {
 			this.enemy.list.forEach((enemy:any) => {
 				if(Helper.circleCollision(enemy, this)){
 					this.x += 4*spostamento;
-					//enemy.x -=4*spostamento;
 				}
 			});
 			if (this.checkmove(this.x - this.r - spostamento, this.y - this.r)) {
@@ -268,7 +264,6 @@ export class Player {
 			this.enemy.list.forEach((enemy:any) => {
 				if(Helper.circleCollision(enemy, this)){
 					this.y -= 4* spostamento;
-					// enemy.x +=4* spostamento;
 				}
 			});
 			if (this.checkmove(this.x - this.r + spostamento, this.y - this.r)) {
@@ -280,9 +275,7 @@ export class Player {
 			}
 		}
 
-		 //if (this.x != this.old_x && this.y != this.old_y) {
-		 	this.storePosForTrail(this.x, this.y);
-		 //}
+		this.storePosForTrail(this.x, this.y);
 	}
 
 	shoot(dt: number) {

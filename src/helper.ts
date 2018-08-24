@@ -36,21 +36,38 @@ export class Helper {
         return theta;
     }
 
+    
+    static calculateDistance(obj1: any, obj2: any) {
+        let tx = obj1.x - obj2.x,
+        ty = obj1.y - obj2.y,
+        dist = Math.sqrt(tx * tx + ty * ty);
+        return dist;
+    }
+    
+    static randomElementInArray(items: any) {
+        return items[Math.floor(Math.random() * items.length)];
+    }
+
     // Returns a random integer between min (include) and max (include)
     static randBetween(min:number, max:number){
         return  Math.floor(Math.random() * (max - min + 1)) + min;
     }
 
-    static calculateDistance(obj1: any, obj2: any) {
-        let tx = obj1.x - obj2.x,
-            ty = obj1.y - obj2.y,
-            dist = Math.sqrt(tx * tx + ty * ty);
-        return dist;
+    static rand(min, max) {
+        return Math.floor(Helper.randf(min, max));
+      }
+      
+    static randf(min, max) {
+    if (max == null) {
+        max = min || 1;
+        min = 0;
     }
-
-    static randomElementInArray(items: any) {
-        return items[Math.floor(Math.random() * items.length)];
+    return Math.random() * (max - min) + min;
     }
+      
+      static randOneIn(max = 2) {
+        return Helper.rand(0, max) === 0;
+      }
 
     static circleCollision(circle1: any, circle2: any) {
         let x = circle1.x - circle2.x;

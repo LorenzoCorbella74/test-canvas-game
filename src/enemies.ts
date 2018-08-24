@@ -353,8 +353,8 @@ export class Enemy {
                 bot.velY = (ty / dist);
             }
             if (dist > 150 && dist < 250) {
-                bot.velX = (ty / dist) * Math.cos(bot.angleWithTarget);
-                bot.velY = (tx / dist) * Math.sin(bot.angleWithTarget);
+                bot.velX = Helper.randOneIn(800)? bot.velX: this.getRandomDirection(bot); //(ty / dist) *Math.cos(bot.angleWithTarget);
+                bot.velY = Helper.randOneIn(800)? bot.velY:this.getRandomDirection(bot); // Math.sin(bot.angleWithTarget);
             }
             if (dist < 150) { // retreat
                 bot.velX = -(tx / dist);

@@ -80,9 +80,10 @@ export class Enemy {
         bot.alive = true;			    // il bot è nuovamente presente in gioco
         // this.kills = 0;				// si mantengono...
         // this.numberOfDeaths = 0;	    // si mantengono...
-        bot.target                = {};
-        bot.targetItem            = {};
-        bot.trails          = [];
+        bot.target                  = {};
+        bot.targetItem              = {};
+        bot.trails                  = [];
+        bot.path                    = [];
         bot.attackCounter = 0;
         bot.status='spawn';
         bot.currentWeapon = this.c.PLAYER_STARTING_WEAPON;		// arma corrente
@@ -107,7 +108,7 @@ export class Enemy {
                 for (let i = 0; i < bot.trails.length; i++) {
                     let ratio = (i + 1) / bot.trails.length;
                     this.ctx.beginPath();
-                    this.ctx.arc(bot.trails[i].x - this.camera.x, bot.trails[i].y - this.camera.y, ratio * this.r *(3/ 5) + this.r *(2/ 5), 0, 2 * Math.PI, true);
+                    this.ctx.arc(bot.trails[i].x - this.camera.x, bot.trails[i].y - this.camera.y, ratio * bot.r *(3/ 5) + bot.r *(2/ 5), 0, 2 * Math.PI, true);
                     this.ctx.fillStyle = this.ctx.fillStyle = `rgb(127, 134, 135,${ratio/2})`;
                     this.ctx.fill();
                 }

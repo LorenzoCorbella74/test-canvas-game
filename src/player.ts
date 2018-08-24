@@ -11,37 +11,37 @@ export class Player {
 	old_y: number;
 	r: number
 	speed: number;
-	angle: number;
+	angle: number;				// angolo con il mirino (dove punta l'arma)
 
 	name: string;
-	hp: number;		// punti vita
-	ap: number;		// punti armatura
-	kills: number;		// nemici uccisi
-	score: number = 0;	// numero di uccisioni
+	hp: number;					// punti vita
+	ap: number;					// punti armatura
+	kills: number;				// nemici uccisi
+	score: number = 0;			// numero di uccisioni
 	numberOfDeaths: number;		// numero di volte in vui è stato ucciso
 
 	trails: any[] = [];
 
 	currentWeapon: string;		// arma corrente
-	damage: number;		// 1 capacità di far danno 1 normale 4 quaddamage
+	damage: number;				// 1 capacità di far danno 1 normale 4 quaddamage
 	attackCounter: number = 0;	// frequenza di sparo
 	shootRate: number = 200;	// frequenza di sparo
-	alive: boolean;		// se il player è vivo o morto ()
-	index: number;		// è l'id
+	alive: boolean;				// se il player è vivo o morto ()
+	index: number;				// è l'id del giocatore
 	respawnTime: number = 0;
 
 	godMode: boolean = false;
 
 
-	canvas: any;
-	ctx: any;
-	camera: any;
-	main: any
-	enemy: any
-	c: any
-	map: any
+	canvas:  any;
+	ctx:     any;
+	camera:  any;
+	main:    any
+	enemy:   any
+	c:       any
+	map:     any
 	control: any;
-	bullet: any;
+	bullet:  any;
 
 
 	constructor() {

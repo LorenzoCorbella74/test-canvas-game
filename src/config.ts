@@ -7,8 +7,11 @@ export class Config {
     // GAME
     GAME_KILLS_TO_WIN:      number = 15;
     GAME_MATCH_DURATION:    number = 300000; // in ms 
-    GAME_BOTS_PER_MATCH:    number = 5;
+    GAME_BOTS_PER_MATCH:    number = 1;
     GAME_RESPAWN_TIME:      number = 5000;   // in ms
+
+    //
+    MOTION_TRAILS_LENGTH:   number = 7;
     
     // MAP
     TILE_SIZE:              number = 25;

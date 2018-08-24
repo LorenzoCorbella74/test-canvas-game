@@ -186,7 +186,7 @@ export class Enemy {
                 //     bot.y += 2 * bot.target.speed;
                 // }
             } else {
-                bot.target = null;
+                //bot.target = null;
                 bot.y =bot.old_y;
             }
         }
@@ -202,7 +202,7 @@ export class Enemy {
                 //     bot.y -= 2 * bot.target.speed;
                 // }
             } else {
-                bot.target = null;
+                //bot.target = null;
                 bot.y =bot.old_y;
             }
         }
@@ -218,7 +218,7 @@ export class Enemy {
                 //     bot.x += 2 * bot.target.speed;
                 // }
             } else {
-                bot.target = null;
+                //bot.target = null;
             bot.x = bot.old_x;
             }
         }
@@ -234,7 +234,7 @@ export class Enemy {
                 //     bot.x -= 2 * bot.target.speed;
                 // }
             } else {
-                bot.target = null;
+               // bot.target = null;
                 bot.x = bot.old_x;
             }
         }
@@ -294,7 +294,7 @@ export class Enemy {
         let opponentData = this.getNearestVisibleEnemy(bot, this.main.actors);
         bot.target = opponentData.elem;
         bot.distanceWIthTarget = opponentData.dist;
-        if (bot.target && bot.target.alive && bot.distanceWIthTarget < 350) {
+        if (bot.target && bot.target.alive /* && bot.distanceWIthTarget < 350 */) {
             
             bot.brain.pushState(this.chaseTarget.bind(this));
         } else {

@@ -68,8 +68,8 @@ export class Enemy {
 
         // Get the walkable tile indexes
         bot.easystar.setAcceptableTiles([0, 2, 10, 11, 12, 13, 14, 15, 16, 40]);
-        // easystar.enableDiagonals();
-        // easystar.enableCornerCutting();
+        bot.easystar.enableDiagonals();
+        bot.easystar.enableCornerCutting();
         bot.pathAStar = bot.easystar;
         return bot;
     };
@@ -147,7 +147,7 @@ export class Enemy {
                 );
                 this.ctx.stroke();
 
-                //if (this.main.debug) {
+                if (this.main.debug) {
                     this.ctx.font = 'bold 8px/1 Arial';
                     this.ctx.fillStyle = 'white';
                     this.ctx.fillText(bot.hp.toString(), bot.x - this.camera.x - 5, bot.y - this.camera.y);
@@ -158,25 +158,10 @@ export class Enemy {
                     this.ctx.fillText(bot && bot.aggression? bot.aggression.toFixed(2).toString():'', bot.x - this.camera.x + 22, bot.y - this.camera.y +20);
                     this.ctx.fillText(bot.targetItem && bot.targetItem.index? bot.targetItem.index.toString():'', bot.x - this.camera.x + 10, bot.y - this.camera.y -20);
                     this.ctx.fillText(bot.status, bot.x - this.camera.x -25, bot.y - this.camera.y +20);
-                //}
+                }
             }
         }
     }
-
-    // collisione tra elementi della stessa dimensione (tile e player)
-    // SOURCE: https://codereview.stackexchange.com/questions/60439/2d-tilemap-collision-method
-    checkmove(x: number, y: number): boolean {
-        if (this.map.map[Math.floor(y / this.c.TILE_SIZE)][Math.floor(x / this.c.TILE_SIZE)] == 1
-            || this.map.map[Math.floor(y / this.c.TILE_SIZE)][Math.ceil(x / this.c.TILE_SIZE)] == 1
-            || this.map.map[Math.ceil(y / this.c.TILE_SIZE)][Math.floor(x / this.c.TILE_SIZE)] == 1 
-            || this.map.map[Math.ceil(y / this.c.TILE_SIZE)][Math.ceil(x / this.c.TILE_SIZE)] == 1) {
-            return false;
-        } else {
-            return true;
-        }
-    }
-
-    
 
     getRandomDirection(bot:any){
         return Helper.randomElementInArray([bot.velX, -bot.velY, bot.velY, -bot.velX]);
@@ -209,8 +194,6 @@ export class Enemy {
 			}
 		}
     }
-
-
     
     storePosForTrail(bot:any) {
 		// push an item
@@ -243,76 +226,6 @@ export class Enemy {
             this.storePosForTrail(bot)
     }
 
-    checkCollisionOld(bot:any){
-        if (bot.velY<0) { // W 
-            if (this.checkmove(bot.x - bot.r, bot.y - bot.r - bot.speed) ) {
-                //bot.y -= bot.speed;
-                if (bot.y - bot.r < this.camera.y) {
-                    bot.y = this.camera.y + bot.r;
-                }
-                // collisione con il player
-                // if (Helper.circleCollision(bot, bot.target)) {
-                //     bot.target.y -= 4 * bot.speed;
-                //     bot.y += 2 * bot.target.speed;
-                // }
-            } else {
-                //bot.target = null;
-                bot.y =bot.old_y +0.01;
-            }
-        }
-        if (bot.velY>0) {	// S
-            if (this.checkmove(bot.x - bot.r, bot.y - bot.r + bot.speed) ){
-                //bot.y += bot.speed;
-                if (bot.y + bot.r >= this.camera.y + this.camera.h) {
-                    bot.y = this.camera.y + this.camera.h - bot.r;
-                }
-                // collisione con il player
-                // if (Helper.circleCollision(bot, bot.target)) {
-                //     bot.target.y += 4 * bot.speed;
-                //     bot.y -= 2 * bot.target.speed;
-                // }
-            } else {
-                //bot.target = null;
-                bot.y =bot.old_y -0.01;
-            }
-        }
-        if (bot.velX<0) {	// a
-            if (this.checkmove(bot.x - bot.r - bot.speed, bot.y - bot.r)){
-               //bot.x -= bot.speed;
-                if (bot.x - bot.r < this.camera.x) {
-                    bot.x = this.camera.x + bot.r;
-                }
-                // collisione con il player
-                // if (Helper.circleCollision(bot, bot.target)) {
-                //     bot.target.x -= 4 * bot.speed;
-                //     bot.x += 2 * bot.target.speed;
-                // }
-            } else {
-                //bot.target = null;
-            bot.x = bot.old_x +0.01;
-            }
-        }
-        if (bot.velX>0) {	// d    
-            if (this.checkmove(bot.x - bot.r + bot.speed, bot.y - bot.r) ){
-                //bot.x += bot.speed;
-                if (bot.x + bot.r >= this.map.mapSize.w) {
-                    bot.x = this.camera.x + this.camera.w - bot.r;
-                }
-                // collisione con il player 
-                // if (Helper.circleCollision(bot, bot.target)) {
-                //     bot.target.x += 4 * bot.speed;
-                //     bot.x -= 2 * bot.target.speed;
-                // }
-            } else {
-               // bot.target = null;
-                bot.x = bot.old_x -0.01;
-            }
-        }
-         ;
-    }
-
-
-
 
     // SOURCE: https://www.redblobgames.com/grids/line-drawing.html (walk_grid ) 
     checkIfIsSeen2(p0:any, p1:any) {
@@ -335,7 +248,6 @@ export class Enemy {
             points.push({x: p.x, y: p.y});
         }
         //console.log(points);
-        //return points;
         let output = true;
         for (let i = 0; i < points.length; i+=2) {  // STEP DI 2 PER RIDURRE I CICLI...
             const ele = points[i];
@@ -363,12 +275,14 @@ export class Enemy {
     spawn(bot: any, dt: number) {
         bot.status ='spawn';
         let opponentData = this.getNearestVisibleEnemy(bot, this.main.actors);
-        bot.targetItem = this.getNearestPowerup(bot, this.main.powerup.list) || this.getNearestWaypoint(bot, this.main.waypoints.list); // il targetItem sono sia i powerUp che i waypoints
+        const power_best = this.getNearestPowerup(bot, this.main.powerup.list);
+        const waypoint_best = this.getNearestWaypoint(bot, this.main.waypoints.list);
+        bot.targetItem =  power_best || waypoint_best;
         bot.target = opponentData.elem;
         bot.distanceWIthTarget = opponentData.dist;
-        if (bot.target && bot.target.alive /* && bot.distanceWIthTarget < 350 */) {
+        if (bot.target && bot.target.alive) {
             bot.brain.pushState(this.chaseTarget.bind(this));
-        } else if( bot.targetItem /* && bot.targetItem[bot.index].visible */) {
+        } else if( bot.targetItem) {
             bot.brain.pushState(this.wander.bind(this));
         }
     }
@@ -378,8 +292,6 @@ export class Enemy {
         bot.angleWithTarget = Helper.calculateAngle(bot.x, bot.y, bot.target.x, bot.target.y);
 
         if (bot.target && bot.target.alive) {
-
-            // We need to get the distance
             var tx = bot.target.x - bot.x,
                 ty = bot.target.y - bot.y,
                 dist = Math.sqrt(tx * tx + ty * ty);
@@ -487,7 +399,7 @@ export class Enemy {
     collectPowerUps(bot: any, dt:number){
         bot.angleWithTarget = Helper.calculateAngle(bot.x/*  - this.camera.x */, bot.y /* - this.camera.y */, bot.targetItem.x/*  - this.camera.x */, bot.targetItem.y /* - this.camera.y */);
         if (bot.brain.first) {
-            console.log(`Passaggio di stato: ${bot.brain.state.name}`);
+            console.log(`Si calcola il path per: ${bot.index}`);
             // al 1° giro si calcola il percorso
             this.findPath(bot);
         }else {
@@ -511,7 +423,7 @@ export class Enemy {
                 console.log(`Path of bot ${bot.index} was found. First Point is ${path[0].x} ${path[0].y} `);
                 bot.path = path || [];
                 const end = performance.now();
-                // console.log(`Pathfinding took ${end - start} ms for bot ${bot.index}`, Date.now() - s2);
+                console.log(`Pathfinding took ${end - start} ms for bot ${bot.index}`);
                 this.followPath(bot,16)
             }
         });
@@ -535,16 +447,12 @@ export class Enemy {
             bot.velY = (ty / dist); 
             bot.old_x = bot.x;
             bot.old_y = bot.y;
-           // bot.x += bot.velX * bot.speed;
-           // bot.y += bot.velY * bot.speed;
-         //const closeX = Math.abs( bot.velX ) <= 1;
-         //const closeY = Math.abs( bot.velY) <= 1;
-         /* if (!closeX) */ bot.x +=  bot.velX * bot.speed;
-         /* if (!closeY) */ bot.y +=  bot.velY * bot.speed;
+            bot.x +=  bot.velX * bot.speed;
+            bot.y +=  bot.velY * bot.speed;
         }
 
-    // If you made it, move to the next path element
-        if (/* Helper.circleCollision(bot.targetItem, bot) *//* closeX || closeY */dist<2) {
+        // if finished move to the next path element
+        if (dist<2) {
             bot.path = bot.path.slice(1);
             if (bot.path.length === 0) {
                 this.findPath(bot);
@@ -558,8 +466,8 @@ export class Enemy {
             let now = Date.now();
             if (now - bot.attackCounter < bot.shootRate) return;
             bot.attackCounter = now;
-            let vX = (bot.target.x/*  - this.camera.x */) - (bot.x/*  - this.camera.x */);
-            let vY = (bot.target.y/*  - this.camera.y */) - (bot.y/*  - this.camera.y */);
+            let vX = (bot.target.x - bot.x);
+            let vY = (bot.target.y - bot.y);
             let dist = Math.sqrt(vX * vX + vY * vY);	// si calcola la distanza
             vX /= dist;									// si normalizza e si calcola la direzione
             vY /= dist;

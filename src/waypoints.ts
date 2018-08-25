@@ -39,7 +39,7 @@ export class Waypoints {
         waypoint.x          = x;
         waypoint.y          = y;
         waypoint.reloadRate = 0;
-        waypoint.spawnTime  = 8000;   // tempo impiegato per essere nuovamente attraverabili da ogni bot
+        waypoint.spawnTime  = this.c.WAYPOINTS_TIMING;   // tempo necessario per essere nuovamente attraverabili da ogni bot
         waypoint.r          = 3;  
         waypoint.color      = 'orange';
         this.list.push(waypoint);

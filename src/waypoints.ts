@@ -40,7 +40,7 @@ export class Waypoints {
         waypoint.y          = y;
         waypoint.reloadRate = 0;
         waypoint.spawnTime  = 8000;   // tempo impiegato per essere nuovamente attraverabili da ogni bot
-        waypoint.r          = 5;  
+        waypoint.r          = 3;  
         waypoint.color      = 'orange';
         this.list.push(waypoint);
     };
@@ -49,13 +49,7 @@ export class Waypoints {
     update(dt:number) {
         for (var i = this.list.length - 1; i >= 0; i--) {
             var waypoint = this.list[i];
-            for (let a = 0; a < this.bots.list.length; a++) {
-                const actor = this.bots.list[a];
-                if (!waypoint[actor.index].visible) {
-                    waypoint[actor.index].reloadRate+= dt;  // si inizia a contare se non visibile
-                }
-            }
-
+            
             // si guarda se i waypoint entrano in contatto con qualche nemico
             for (let i = this.bots.list.length - 1; i >= 0; i--) {
                 const bot = this.bots.list[i];
@@ -63,6 +57,15 @@ export class Waypoints {
                     waypoint[bot.index].visible = false;
                 }
             }
+
+            // contatori di visibilità
+            for (let a = 0; a < this.bots.list.length; a++) {
+                const actor = this.bots.list[a];
+                if (!waypoint[actor.index].visible) {
+                    waypoint[actor.index].reloadRate+= dt;  // si inizia a contare se non visibile
+                }
+            }
+
             // RESPAWN
             for (let a = 0; a < this.bots.list.length; a++) {
                 const actor = this.bots.list[a];
@@ -92,7 +95,6 @@ export class Waypoints {
                 this.ctx.fillStyle = 'black';
                 this.ctx.fillText(waypoint.index.toString(), waypoint.x - this.main.camera.x - 6, waypoint.y - this.main.camera.y - 12);
                 //}
-
             }
         }
     }

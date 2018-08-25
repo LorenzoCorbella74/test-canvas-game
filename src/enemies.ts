@@ -55,6 +55,7 @@ export class Enemy {
         bot.kills           = 0;
         bot.numberOfDeaths  = 0;
         bot.target          = {};
+        bot.aggression      = Math.random()*1/3 +2/3;
         bot.targetItem      = {};
         bot.trails          = [];
         this.list[this.list.length] = bot;
@@ -141,7 +142,9 @@ export class Enemy {
                     this.ctx.fillText(bot.hp.toString(), bot.x - this.camera.x - 5, bot.y - this.camera.y);
                     this.ctx.fillStyle = 'black';
                     this.ctx.fillText(bot.index.toString(), bot.x - this.camera.x - 25, bot.y - this.camera.y -16);
-                    this.ctx.fillText(bot.target && bot.target.index? bot.target.index.toString():'', bot.x - this.camera.x + 5, bot.y - this.camera.y +20);
+                    this.ctx.fillText(bot.target && bot.target.index? bot.target.index.toString():'', bot.x - this.camera.x + 6, bot.y - this.camera.y +20);
+                    this.ctx.fillText(bot.target && bot.target.dist? bot.target.dist.toString():'', bot.x - this.camera.x + 22, bot.y - this.camera.y +36);
+                    this.ctx.fillText(bot && bot.aggression? bot.aggression.toFixed(2).toString():'', bot.x - this.camera.x + 22, bot.y - this.camera.y +20);
                     this.ctx.fillText(bot.targetItem && bot.targetItem.index? bot.targetItem.index.toString():'', bot.x - this.camera.x + 10, bot.y - this.camera.y -20);
                     this.ctx.fillText(bot.status, bot.x - this.camera.x -25, bot.y - this.camera.y +20);
                 //}
@@ -219,7 +222,7 @@ export class Enemy {
                 // }
             } else {
                 //bot.target = null;
-                bot.y =bot.old_y;
+                bot.y =bot.old_y +0.01;
             }
         }
         if (bot.velY>0) {	// S
@@ -235,7 +238,7 @@ export class Enemy {
                 // }
             } else {
                 //bot.target = null;
-                bot.y =bot.old_y;
+                bot.y =bot.old_y -0.01;
             }
         }
         if (bot.velX<0) {	// a
@@ -251,7 +254,7 @@ export class Enemy {
                 // }
             } else {
                 //bot.target = null;
-            bot.x = bot.old_x;
+            bot.x = bot.old_x +0.01;
             }
         }
         if (bot.velX>0) {	// d    
@@ -267,10 +270,10 @@ export class Enemy {
                 // }
             } else {
                // bot.target = null;
-                bot.x = bot.old_x;
+                bot.x = bot.old_x -0.01;
             }
         }
-        this.storePosForTrail(bot);
+         this.storePosForTrail(bot);
     }
 
 
@@ -347,18 +350,21 @@ export class Enemy {
                 bot.old_x = bot.x;
                 bot.old_y = bot.y;
 
-            // si va verso il player fino a quando si è lontanissimi
-            if (dist > 250) {
+            // da 350 a 225 ci si avvicina al target
+            if (dist > 225 /* && bot.aggression>0.55 || dist > 225 && bot.hp>40 */) {
                 bot.velX = (tx / dist);
                 bot.velY = (ty / dist);
             }
-            if (dist > 150 && dist < 250) {
-                bot.velX = Helper.randOneIn(800)? bot.velX: this.getRandomDirection(bot); //(ty / dist) *Math.cos(bot.angleWithTarget);
-                bot.velY = Helper.randOneIn(800)? bot.velY:this.getRandomDirection(bot); // Math.sin(bot.angleWithTarget);
+            if (dist > 125 && dist < 225) { // comportamento random
+                bot.velX = Math.random()<0.95? bot.velX: this.getRandomDirection(bot); //(ty / dist) *Math.cos(bot.angleWithTarget);
+                bot.velY = Math.random()<0.95? bot.velY:this.getRandomDirection(bot); // Math.sin(bot.angleWithTarget);
             }
-            if (dist < 150) { // retreat
+            if (dist < 125 && bot.aggression<0.90) { // retreat
                 bot.velX = -(tx / dist);
                 bot.velY = -(ty / dist);
+            }else{
+                bot.velX = Math.random()<0.5? bot.velX: this.getRandomDirection(bot); //(ty / dist) *Math.cos(bot.angleWithTarget);
+                bot.velY = Math.random()<0.5? bot.velY:this.getRandomDirection(bot); // Math.sin(bot.angleWithTarget);
             }
             bot.x += bot.velX * bot.speed;
             bot.y += bot.velY * bot.speed;
@@ -372,16 +378,18 @@ export class Enemy {
     // TODO: https://stackoverflow.com/questions/24378155/random-moving-position-for-sprite-image
 
     wander(bot: any, dt: number) {
-        
-        bot.status ='wander';
+
+        bot.status = 'wander';
         let opponentData = this.getNearestVisibleEnemy(bot, this.main.actors);
         bot.target = opponentData.elem;
+        bot.distanceWIthTarget = opponentData.dist;
 
-        if (bot.target && bot.target.alive /* && bot.target.dist < 250 */) {
+        if (bot.target && bot.target.alive /* && bot.distanceWIthTarget < 350 */) {
             bot.brain.pushState(this.chaseTarget.bind(this));
         } else {
             bot.attackCounter = 0;
             bot.angleWithTarget = 0;
+
             // se non si ha un target si va alla ricerca dei powerup
             bot.targetItem = this.getNearestPowerup(bot, this.main.powerup.list) || this.getNearestWaypoint(bot, this.main.waypoints.list); // il targetItem sono sia i powerUp che i waypoints
 
@@ -407,8 +415,8 @@ export class Enemy {
     getNearestPowerup(origin: any, data: any) {
         let output: any = { dist: 10000 }; // elemento + vicino ad origin
         data
-        .filter((elem:any)=> elem.visible==true) // si esclude quelli non visibili
-        //.filter((e:any)=>this.checkIfIsSeen2(origin, e))   // quelli non visibili // FIXME:quando si ha il pathfinding con A* si potrà togliere...
+        .filter((elem:any)=> elem.visible==true)            // si esclude quelli non visibili
+        // .filter((e:any)=>this.checkIfIsSeen2(origin, e))   // se non sono visibili si va con i waypoint...
         .forEach((e: any) => {
             let distanza = Helper.calculateDistance(origin, e);
             if (output.dist > distanza && distanza < 400) {
@@ -447,7 +455,7 @@ export class Enemy {
     }
 
     collectPowerUps(bot: any, dt:number){
-        bot.angleWithTarget = Helper.calculateAngle(bot.x - this.camera.x, bot.y - this.camera.y, bot.targetItem.x - this.camera.x, bot.targetItem.y - this.camera.y);
+        bot.angleWithTarget = Helper.calculateAngle(bot.x/*  - this.camera.x */, bot.y /* - this.camera.y */, bot.targetItem.x/*  - this.camera.x */, bot.targetItem.y /* - this.camera.y */);
         if (bot.brain.first) {
             console.log(`Passaggio di stato: ${bot.brain.state.name}`);
             // al 1° giro si calcola il percorso
@@ -506,11 +514,11 @@ export class Enemy {
         }
 
     // If you made it, move to the next path element
-        if (/* Helper.circleCollision(bot.targetItem, bot) *//* closeX || closeY */dist<2) {
+        if (/* Helper.circleCollision(bot.targetItem, bot) *//* closeX || closeY */dist<3) {
             bot.path = bot.path.slice(1);
             if (bot.path.length === 0) {
                 this.findPath(bot);
-                // bot.brain.pushState(this.wander.bind(this));
+                //bot.brain.pushState(this.wander.bind(this));
             }
         }
     }
@@ -520,8 +528,8 @@ export class Enemy {
             let now = Date.now();
             if (now - bot.attackCounter < bot.shootRate) return;
             bot.attackCounter = now;
-            let vX = (bot.target.x - this.camera.x) - (bot.x - this.camera.x);
-            let vY = (bot.target.y - this.camera.y) - (bot.y - this.camera.y);
+            let vX = (bot.target.x/*  - this.camera.x */) - (bot.x/*  - this.camera.x */);
+            let vY = (bot.target.y/*  - this.camera.y */) - (bot.y/*  - this.camera.y */);
             let dist = Math.sqrt(vX * vX + vY * vY);	// si calcola la distanza
             vX /= dist;									// si normalizza e si calcola la direzione
             vY /= dist;

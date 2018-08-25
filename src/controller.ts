@@ -58,7 +58,9 @@ export class ControlHandler {
             this.s = false
         } else if (e.keyCode == 65) {
             this.a = false
-        } else if (e.keyCode == 68) {
+        } else if (e.keyCode == 66) {
+            this.followBot();
+        }else if (e.keyCode == 68) {
             this.d = false
         } else if (e.keyCode == 71) {   // g
             this.main.player.godMode = !this.main.player.godMode;
@@ -75,6 +77,14 @@ export class ControlHandler {
             e.preventDefault();
             return false
         }
+    }
+
+    followBot(){
+        let currentActorInCamera = this.main.enemy.list[
+            Helper.randomElementInArray([0]); // TODO:
+        ];
+		this.main.camera.setCurrentPlayer(currentActorInCamera);
+		this.main.camera.adjustCamera(currentActorInCamera);
     }
     
     mouseDownEvent(e:any) {

@@ -62,6 +62,15 @@ export class Enemy {
         bot.brain.pushState(this.spawn.bind(this));
         bot.status='spawn';
         bot.path =[];
+        // Create a path finding thing
+        bot.easystar = new EasyStar.js();
+        bot.easystar.setGrid(this.main.currentMap.map);
+
+        // Get the walkable tile indexes
+        bot.easystar.setAcceptableTiles([0, 2, 10, 11, 12, 13, 14, 15, 16, 40]);
+        // easystar.enableDiagonals();
+        // easystar.enableCornerCutting();
+        bot.pathAStar = bot.easystar;
         return bot;
     };
 
@@ -70,6 +79,8 @@ export class Enemy {
         console.log(`BOT ${bot.index} is swawning at ${spawn.x-this.camera.x} - ${spawn.y-this.camera.y}`);
         bot.x = spawn.x;
         bot.y = spawn.y;
+        bot.old_x = spawn.x;
+        bot.old_y  = spawn.y;
         bot.r = this.c.ENEMY_RADIUS;
         bot.velX = 0;
         bot.velY = 0;
@@ -211,6 +222,7 @@ export class Enemy {
     }
     
     checkCollision(bot:any){
+            // collisione con i muri
             if (bot.x - bot.old_x > 0 && this.main.currentMap.map[Math.floor(bot.y / this.c.TILE_SIZE)][Math.floor((bot.x + bot.r) / this.c.TILE_SIZE)] == 1) {
                 bot.x = bot.old_x;
             }
@@ -223,6 +235,11 @@ export class Enemy {
             if (bot.y- bot.old_y < 0 && this.main.currentMap.map[Math.floor((bot.y - bot.r) / this.c.TILE_SIZE)][Math.floor(bot.x / this.c.TILE_SIZE)] == 1) {
                 bot.y = bot.old_y;
             }
+            // Collisione con il target
+            /* if (bot.target && Helper.circleCollision(bot, bot.target)) {
+                bot.y += bot.old_y;
+                bot.x += bot.old_x;
+            } */
             this.storePosForTrail(bot)
     }
 
@@ -405,31 +422,18 @@ export class Enemy {
 
          if (bot.target && bot.target.alive /* && bot.distanceWIthTarget < 350 */) {
              bot.brain.pushState(this.chaseTarget.bind(this));
+        // se non si ha un target si va alla ricerca dei powerup
          } else {
 
             const power_best = this.getNearestPowerup(bot, this.main.powerup.list);
             const waypoint_best = this.getNearestWaypoint(bot, this.main.waypoints.list);
-
             bot.targetItem =  power_best || waypoint_best;
 
             bot.attackCounter = 0;
             bot.angleWithTarget = 0;
 
-            // se non si ha un target si va alla ricerca dei powerup
-
-
             // EASYSTAR*.js
             if (bot.alive && bot.targetItem /* && bot.targetItem[bot.index].visible */) {
-
-                // Create a path finding thing
-                const easystar = new EasyStar.js();
-                easystar.setGrid(this.main.currentMap.map);
-
-                // Get the walkable tile indexes
-                easystar.setAcceptableTiles([0, 2, 10, 11, 12, 13, 14, 15, 16, 40]);
-                // easystar.enableDiagonals();
-                 easystar.enableCornerCutting();
-                bot.pathAStar = easystar;
                 this.collectPowerUps(bot, dt);
             } else{
                 bot.brain.pushState(this.spawn.bind(this)); 
@@ -540,7 +544,7 @@ export class Enemy {
         }
 
     // If you made it, move to the next path element
-        if (/* Helper.circleCollision(bot.targetItem, bot) *//* closeX || closeY */dist<3) {
+        if (/* Helper.circleCollision(bot.targetItem, bot) *//* closeX || closeY */dist<2) {
             bot.path = bot.path.slice(1);
             if (bot.path.length === 0) {
                 this.findPath(bot);

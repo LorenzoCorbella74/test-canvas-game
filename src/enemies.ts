@@ -302,7 +302,7 @@ export class Enemy {
         //console.log(points);
         //return points;
         let output = true;
-        for (let i = 0; i < points.length; i++) {
+        for (let i = 0; i < points.length; i+=2) {  // STEP DI 2 PER RIDURRE I CICLI...
             const ele = points[i];
             if (this.map.map[Math.floor(ele.y / this.c.TILE_SIZE)][Math.floor(ele.x / this.c.TILE_SIZE)] == 1) {
                 output = false;
@@ -372,7 +372,7 @@ export class Enemy {
             
             this.shot(bot, dist);
         } else{
-            bot.brain.pushState(this.wander.bind(this));
+            bot.brain.pushState(this.spawn.bind(this));
         }
     }
 
@@ -392,7 +392,7 @@ export class Enemy {
             const power_best = this.getNearestPowerup(bot, this.main.powerup.list);
             const waypoint_best = this.getNearestWaypoint(bot, this.main.waypoints.list);
 
-            bot.targetItem =  power_best /* || waypoint_best */;
+            bot.targetItem =  power_best || waypoint_best;
 
             bot.attackCounter = 0;
             bot.angleWithTarget = 0;
@@ -413,9 +413,9 @@ export class Enemy {
                 // easystar.enableCornerCutting();
                 bot.pathAStar = easystar;
                 this.collectPowerUps(bot, dt);
-            } /* else{
+            } else{
                 bot.brain.pushState(this.spawn.bind(this)); 
-            } */
+            }
         }
     }
 
@@ -423,10 +423,9 @@ export class Enemy {
     // TODO: si deve filtrare su quelli VICINI e VISIBILI non su tutti !!!!
     getNearestPowerup(origin: any, data: any) {
         let output: any = { dist: 10000 }; // elemento + vicino ad origin
-        data
-        .filter((elem:any)=> elem.visible==true)            // si esclude quelli non visibili
-        // .filter((e:any)=>this.checkIfIsSeen2(origin, e))   // se non sono visibili si va con i waypoint...
-        .forEach((e: any) => {
+        data = data.filter((elem:any)=> elem.visible==true);           // si esclude quelli non visibili
+        // data = data.filter((e:any)=>this.checkIfIsSeen2(origin, e))   // se non sono visibili si va con i waypoint...
+        data = data.forEach((e: any) => {
             let distanza = Helper.calculateDistance(origin, e);
             if (output.dist > distanza && distanza < 600) {
                 output = { dist: distanza, elem: e };

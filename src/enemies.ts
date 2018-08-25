@@ -213,21 +213,17 @@ export class Enemy {
     checkCollision(bot:any){
             if (bot.x - bot.old_x > 0 && this.main.currentMap.map[Math.floor(bot.y / this.c.TILE_SIZE)][Math.floor((bot.x + bot.r) / this.c.TILE_SIZE)] == 1) {
                 bot.x = bot.old_x;
-                return true;
             }
             if (bot.x - bot.old_x < 0 && this.main.currentMap.map[Math.floor(bot.y / this.c.TILE_SIZE)][Math.floor((bot.x - bot.r) / this.c.TILE_SIZE)] == 1) {
                 bot.x = bot.old_x;
-                return true;
             }
             if (bot.y - bot.old_y > 0 && this.main.currentMap.map[Math.floor((bot.y + bot.r) / this.c.TILE_SIZE)][Math.floor(bot.x / this.c.TILE_SIZE)] == 1) {
                 bot.y = bot.old_y;
-                return true;
             }
             if (bot.y- bot.old_y < 0 && this.main.currentMap.map[Math.floor((bot.y - bot.r) / this.c.TILE_SIZE)][Math.floor(bot.x / this.c.TILE_SIZE)] == 1) {
                 bot.y = bot.old_y;
-                return true;
             }
-            return false;
+            this.storePosForTrail(bot)
     }
 
     checkCollisionOld(bot:any){
@@ -295,7 +291,7 @@ export class Enemy {
                 bot.x = bot.old_x -0.01;
             }
         }
-         this.storePosForTrail(bot);
+         ;
     }
 
 
@@ -379,16 +375,16 @@ export class Enemy {
                 bot.velY = (ty / dist);
             }
             if (dist > 100 && dist < 225) { // comportamento random
-                bot.velX = Math.random()<0.75? bot.velX: this.getRandomDirection(bot); //(ty / dist) *Math.cos(bot.angleWithTarget);
-                bot.velY = Math.random()<0.75? bot.velY:this.getRandomDirection(bot); // Math.sin(bot.angleWithTarget);
+                bot.velX = Math.random()<0.95? bot.velX: this.getRandomDirection(bot); //(ty / dist) *Math.cos(bot.angleWithTarget);
+                bot.velY = Math.random()<0.95? bot.velY:this.getRandomDirection(bot); // Math.sin(bot.angleWithTarget);
             }
-            if (dist < 100/*  && bot.aggression<0.90 */) { // retreat
+            if (dist < 100 && bot.aggression<0.90) { // retreat
                 bot.velX = -(tx / dist);
                 bot.velY = -(ty / dist);
-            }/* else{
+            }else{
                 bot.velX = Math.random()<0.5? bot.velX: -bot.velX; //(ty / dist) *Math.cos(bot.angleWithTarget);
                 bot.velY = Math.random()<0.5? bot.velY: -bot.velY ; // Math.sin(bot.angleWithTarget);
-            } */
+            }
             bot.x += bot.velX * bot.speed;
             bot.y += bot.velY * bot.speed;
             

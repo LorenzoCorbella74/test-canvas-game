@@ -215,15 +215,15 @@ export class Enemy {
                 bot.x = bot.old_x;
                 return true;
             }
-            if (bot.x - bot.old_x > 0 && this.main.currentMap.map[Math.floor(bot.y / this.c.TILE_SIZE)][Math.floor((bot.x - bot.r) / this.c.TILE_SIZE)] == 1) {
+            if (bot.x - bot.old_x < 0 && this.main.currentMap.map[Math.floor(bot.y / this.c.TILE_SIZE)][Math.floor((bot.x - bot.r) / this.c.TILE_SIZE)] == 1) {
                 bot.x = bot.old_x;
                 return true;
             }
-            if (bot.y + bot.old_y > 0 && this.main.currentMap.map[Math.floor((bot.y + bot.r) / this.c.TILE_SIZE)][Math.floor(bot.x / this.c.TILE_SIZE)] == 1) {
+            if (bot.y - bot.old_y > 0 && this.main.currentMap.map[Math.floor((bot.y + bot.r) / this.c.TILE_SIZE)][Math.floor(bot.x / this.c.TILE_SIZE)] == 1) {
                 bot.y = bot.old_y;
                 return true;
             }
-            if (bot.y + bot.old_y < 0 && this.main.currentMap.map[Math.floor((bot.y - bot.r) / this.c.TILE_SIZE)][Math.floor(bot.x / this.c.TILE_SIZE)] == 1) {
+            if (bot.y- bot.old_y < 0 && this.main.currentMap.map[Math.floor((bot.y - bot.r) / this.c.TILE_SIZE)][Math.floor(bot.x / this.c.TILE_SIZE)] == 1) {
                 bot.y = bot.old_y;
                 return true;
             }
@@ -379,8 +379,8 @@ export class Enemy {
                 bot.velY = (ty / dist);
             }
             if (dist > 100 && dist < 225) { // comportamento random
-                bot.velX = Math.random()<0.95? bot.velX: this.getRandomDirection(bot); //(ty / dist) *Math.cos(bot.angleWithTarget);
-                bot.velY = Math.random()<0.95? bot.velY:this.getRandomDirection(bot); // Math.sin(bot.angleWithTarget);
+                bot.velX = Math.random()<0.75? bot.velX: this.getRandomDirection(bot); //(ty / dist) *Math.cos(bot.angleWithTarget);
+                bot.velY = Math.random()<0.75? bot.velY:this.getRandomDirection(bot); // Math.sin(bot.angleWithTarget);
             }
             if (dist < 100/*  && bot.aggression<0.90 */) { // retreat
                 bot.velX = -(tx / dist);

@@ -198,6 +198,8 @@ export class Enemy {
 			}
 		}
     }
+
+
     
     storePosForTrail(bot:any) {
 		// push an item
@@ -206,9 +208,29 @@ export class Enemy {
 		if (bot.trails.length > this.c.MOTION_TRAILS_LENGTH) {
 			bot.trails.shift();
 		}
-	}
-
+    }
+    
     checkCollision(bot:any){
+            if (bot.x - bot.old_x > 0 && this.main.currentMap.map[Math.floor(bot.y / this.c.TILE_SIZE)][Math.floor((bot.x + bot.r) / this.c.TILE_SIZE)] == 1) {
+                bot.x = bot.old_x;
+                return true;
+            }
+            if (bot.x - bot.old_x > 0 && this.main.currentMap.map[Math.floor(bot.y / this.c.TILE_SIZE)][Math.floor((bot.x - bot.r) / this.c.TILE_SIZE)] == 1) {
+                bot.x = bot.old_x;
+                return true;
+            }
+            if (bot.y + bot.old_y > 0 && this.main.currentMap.map[Math.floor((bot.y + bot.r) / this.c.TILE_SIZE)][Math.floor(bot.x / this.c.TILE_SIZE)] == 1) {
+                bot.y = bot.old_y;
+                return true;
+            }
+            if (bot.y + bot.old_y < 0 && this.main.currentMap.map[Math.floor((bot.y - bot.r) / this.c.TILE_SIZE)][Math.floor(bot.x / this.c.TILE_SIZE)] == 1) {
+                bot.y = bot.old_y;
+                return true;
+            }
+            return false;
+    }
+
+    checkCollisionOld(bot:any){
         if (bot.velY<0) { // W 
             if (this.checkmove(bot.x - bot.r, bot.y - bot.r - bot.speed) ) {
                 //bot.y -= bot.speed;
@@ -356,17 +378,17 @@ export class Enemy {
                 bot.velX = (tx / dist);
                 bot.velY = (ty / dist);
             }
-            if (dist > 125 && dist < 225) { // comportamento random
+            if (dist > 100 && dist < 225) { // comportamento random
                 bot.velX = Math.random()<0.95? bot.velX: this.getRandomDirection(bot); //(ty / dist) *Math.cos(bot.angleWithTarget);
                 bot.velY = Math.random()<0.95? bot.velY:this.getRandomDirection(bot); // Math.sin(bot.angleWithTarget);
             }
-            if (dist < 125 && bot.aggression<0.90) { // retreat
+            if (dist < 100/*  && bot.aggression<0.90 */) { // retreat
                 bot.velX = -(tx / dist);
                 bot.velY = -(ty / dist);
-            }else{
-                bot.velX = Math.random()<0.5? bot.velX: this.getRandomDirection(bot); //(ty / dist) *Math.cos(bot.angleWithTarget);
-                bot.velY = Math.random()<0.5? bot.velY:this.getRandomDirection(bot); // Math.sin(bot.angleWithTarget);
-            }
+            }/* else{
+                bot.velX = Math.random()<0.5? bot.velX: -bot.velX; //(ty / dist) *Math.cos(bot.angleWithTarget);
+                bot.velY = Math.random()<0.5? bot.velY: -bot.velY ; // Math.sin(bot.angleWithTarget);
+            } */
             bot.x += bot.velX * bot.speed;
             bot.y += bot.velY * bot.speed;
             
@@ -410,7 +432,7 @@ export class Enemy {
                 // Get the walkable tile indexes
                 easystar.setAcceptableTiles([0, 2, 10, 11, 12, 13, 14, 15, 16, 40]);
                 // easystar.enableDiagonals();
-                // easystar.enableCornerCutting();
+                 easystar.enableCornerCutting();
                 bot.pathAStar = easystar;
                 this.collectPowerUps(bot, dt);
             } else{
@@ -438,7 +460,7 @@ export class Enemy {
         let output: any = { dist: 10000 }; // elemento + vicino ad bot
         data
         .filter((elem:any)=> elem[bot.index].visible==true) // solo quelli non ancora attraversati dallo specifico bot
-        .filter((e:any)=>this.checkIfIsSeen2(bot, e))       // può essere anche più vicino ma se è dall'altra parte del muro ?!?!
+        //.filter((e:any)=>this.checkIfIsSeen2(bot, e))       // può essere anche più vicino ma se è dall'altra parte del muro ?!?!
         .forEach((e: any) => {
             let distanza = Helper.calculateDistance(bot, e);
             if (output.dist > distanza && distanza < 500) {

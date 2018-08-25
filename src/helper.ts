@@ -76,6 +76,29 @@ export class Helper {
         return (distance < circle1.r + circle2.r) ? true : false;
     }
 
+
+    // https://yal.cc/rectangle-circle-intersection-test/
+    // https://gist.github.com/vonWolfehaus/5023015
+    static circleRectangleCollision(circle:any, rectangle:any){
+        // limits value to the range min..max
+        function clamp(val:number, min:number, max:number) {
+            return Math.max(min, Math.min(max, val))
+        }
+
+        // Find the closest point to the circle within the rectangle
+        // Assumes axis alignment! ie rect must not be rotated
+        var closestX = clamp(circle.x, rectangle.x, rectangle.x + rectangle.width);
+        var closestY = clamp(circle.y, rectangle.y, rectangle.y + rectangle.height);
+
+        // Calculate the distance between the circle's center and this closest point
+        var distanceX = circle.x - closestX;
+        var distanceY = circle.y - closestY;
+
+        // If the distance is less than the circle's radius, an intersection occurs
+        var distanceSquared = (distanceX * distanceX) + (distanceY * distanceY);
+        return distanceSquared < (circle.r * circle.r);
+    }
+
     // https://www.emanueleferonato.com/2007/04/28/create-a-flash-artillery-game-step-1/
     // https://www.safaribooksonline.com/library/view/html5-canvas/9781449308032/ch05s03.html
 

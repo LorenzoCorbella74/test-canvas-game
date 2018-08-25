@@ -314,8 +314,8 @@ export class Enemy {
                 bot.velX = Math.random()<0.5? bot.velX: -bot.velX; //(ty / dist) *Math.cos(bot.angleWithTarget);
                 bot.velY = Math.random()<0.5? bot.velY: -bot.velY ; // Math.sin(bot.angleWithTarget);
             }
-            bot.x += bot.velX * bot.speed;
-            bot.y += bot.velY * bot.speed;
+            bot.x += bot.velX * bot.speed * dt;
+            bot.y += bot.velY * bot.speed * dt;
             
             this.shot(bot, dist);
         } else{
@@ -397,7 +397,7 @@ export class Enemy {
     }
 
     collectPowerUps(bot: any, dt:number){
-        bot.angleWithTarget = Helper.calculateAngle(bot.x/*  - this.camera.x */, bot.y /* - this.camera.y */, bot.targetItem.x/*  - this.camera.x */, bot.targetItem.y /* - this.camera.y */);
+        bot.angleWithTarget = Helper.calculateAngle(bot.x, bot.y, bot.targetItem.x, bot.targetItem.y);
         if (bot.brain.first) {
             console.log(`Si calcola il path per: ${bot.index}`);
             // al 1° giro si calcola il percorso
@@ -405,7 +405,6 @@ export class Enemy {
         }else {
             // dal 2° in poi si 
             this.followPath(bot, dt);
-
         }
     }
 
@@ -447,12 +446,11 @@ export class Enemy {
             bot.velY = (ty / dist); 
             bot.old_x = bot.x;
             bot.old_y = bot.y;
-            bot.x +=  bot.velX * bot.speed;
-            bot.y +=  bot.velY * bot.speed;
+            bot.x +=  bot.velX * bot.speed * dt;
+            bot.y +=  bot.velY * bot.speed * dt;
         }
-
         // if finished move to the next path element
-        if (dist<2) {
+        if (dist<3) {
             bot.path = bot.path.slice(1);
             if (bot.path.length === 0) {
                 this.findPath(bot);

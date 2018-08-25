@@ -183,7 +183,7 @@ export class Player {
 		}
 	}
 
-	isLavaOrToxic(x: number, y: number): boolean {
+	isLavaOrToxic(x: number, y: number): void {
 		if (this.map.map[Math.floor(y / this.c.TILE_SIZE)][Math.floor(x / this.c.TILE_SIZE)] == 3
 			|| this.map.map[Math.floor(y / this.c.TILE_SIZE)][Math.ceil(x / this.c.TILE_SIZE)] == 3
 			|| this.map.map[Math.ceil(y / this.c.TILE_SIZE)][Math.floor(x / this.c.TILE_SIZE)] == 3

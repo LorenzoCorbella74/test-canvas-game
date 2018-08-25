@@ -26,7 +26,7 @@ export class Config {
     PLAYER_COLOUR_OUTSIDE: string = '#4b58a0';
 
     // ENEMIES
-    ENEMY_SPEED:           number = 3.5;
+    ENEMY_SPEED:           number = 3.5/16;
     ENEMY_RADIUS:          number = 12.5;
     ENEMY_HP:              number = 100;
     ENEMY_AP:              number = 100;

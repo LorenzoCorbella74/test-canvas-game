@@ -219,7 +219,7 @@ export class Player {
 		if (this.control.w) { // W 
 			// collisione con nemici
 			this.enemy.list.forEach((enemy:any) => {
-				if(Helper.circleCollision(enemy, this)){
+				if(enemy.alive && Helper.circleCollision(enemy, this)){
 					this.y += 4*spostamento;
 				}
 			});
@@ -233,7 +233,7 @@ export class Player {
 		if (this.control.s) {	// S
 			// collisione con nemici
 			this.enemy.list.forEach((enemy:any) => {
-				if(Helper.circleCollision(enemy, this)){
+				if(enemy.alive && Helper.circleCollision(enemy, this)){
 					this.y -= 4*spostamento;
 				}
 			});
@@ -248,7 +248,7 @@ export class Player {
 		if (this.control.a) {	// a
 			// collisione con nemici
 			this.enemy.list.forEach((enemy:any) => {
-				if(Helper.circleCollision(enemy, this)){
+				if(enemy.alive && Helper.circleCollision(enemy, this)){
 					this.x += 4*spostamento;
 				}
 			});
@@ -262,7 +262,7 @@ export class Player {
 		if (this.control.d) {	// d
 			// collisione con nemici
 			this.enemy.list.forEach((enemy:any) => {
-				if(Helper.circleCollision(enemy, this)){
+				if(enemy.alive && Helper.circleCollision(enemy, this)){
 					this.y -= 4* spostamento;
 				}
 			});

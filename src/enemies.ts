@@ -299,21 +299,21 @@ export class Enemy {
                 bot.old_y = bot.y;
 
             // da 350 a 225 ci si avvicina al target
-            if (dist > 225 /* && bot.aggression>0.55 || dist > 225 && bot.hp>40 */) {
+            if (dist > 250 /* && bot.aggression>0.55 || dist > 225 && bot.hp>40 */) {
                 bot.velX = (tx / dist);
                 bot.velY = (ty / dist);
             }
-            if (dist > 100 && dist < 225) { // comportamento random
-                bot.velX = Math.random()<0.95? bot.velX: this.getRandomDirection(bot); //(ty / dist) *Math.cos(bot.angleWithTarget);
-                bot.velY = Math.random()<0.95? bot.velY:this.getRandomDirection(bot); // Math.sin(bot.angleWithTarget);
+            if (dist > 100 && dist < 250) { // comportamento random
+                bot.velX = Math.random()<0.95? bot.velX: this.getRandomDirection(bot); 
+                bot.velY = Math.random()<0.95? bot.velY:this.getRandomDirection(bot); 
             }
-            if (dist < 100 && bot.aggression<0.90) { // retreat
+            if (dist < 100 && bot.aggression<0.95) { // retreat
                 bot.velX = -(tx / dist);
                 bot.velY = -(ty / dist);
-            }else{
-                bot.velX = Math.random()<0.5? bot.velX: -bot.velX; //(ty / dist) *Math.cos(bot.angleWithTarget);
-                bot.velY = Math.random()<0.5? bot.velY: -bot.velY ; // Math.sin(bot.angleWithTarget);
-            }
+            }/* else{
+                bot.velX =  -(ty / dist) * Math.cos(bot.angleWithTarget); 
+                bot.velY = -(tx / dist) * Math.sin(bot.angleWithTarget); 
+            } */
             bot.x += bot.velX * bot.speed * dt;
             bot.y += bot.velY * bot.speed * dt;
             

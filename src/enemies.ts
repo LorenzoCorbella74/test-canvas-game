@@ -328,11 +328,12 @@ export class Enemy {
     spawn(bot: any, dt: number) {
         bot.status ='spawn';
         let opponentData = this.getNearestVisibleEnemy(bot, this.main.actors);
+        bot.targetItem = this.getNearestPowerup(bot, this.main.powerup.list) || this.getNearestWaypoint(bot, this.main.waypoints.list); // il targetItem sono sia i powerUp che i waypoints
         bot.target = opponentData.elem;
         bot.distanceWIthTarget = opponentData.dist;
         if (bot.target && bot.target.alive /* && bot.distanceWIthTarget < 350 */) {
             bot.brain.pushState(this.chaseTarget.bind(this));
-        } else {
+        } else if( bot.targetItem /* && bot.targetItem[bot.index].visible */) {
             bot.brain.pushState(this.wander.bind(this));
         }
     }
@@ -380,21 +381,27 @@ export class Enemy {
     wander(bot: any, dt: number) {
 
         bot.status = 'wander';
-        let opponentData = this.getNearestVisibleEnemy(bot, this.main.actors);
-        bot.target = opponentData.elem;
-        bot.distanceWIthTarget = opponentData.dist;
+         let opponentData = this.getNearestVisibleEnemy(bot, this.main.actors);
+         bot.target = opponentData.elem;
+         bot.distanceWIthTarget = opponentData.dist;
 
-        if (bot.target && bot.target.alive /* && bot.distanceWIthTarget < 350 */) {
-            bot.brain.pushState(this.chaseTarget.bind(this));
-        } else {
+         if (bot.target && bot.target.alive /* && bot.distanceWIthTarget < 350 */) {
+             bot.brain.pushState(this.chaseTarget.bind(this));
+         } else {
+
+            const power_best = this.getNearestPowerup(bot, this.main.powerup.list);
+            const waypoint_best = this.getNearestWaypoint(bot, this.main.waypoints.list);
+
+            bot.targetItem =  power_best /* || waypoint_best */;
+
             bot.attackCounter = 0;
             bot.angleWithTarget = 0;
 
             // se non si ha un target si va alla ricerca dei powerup
-            bot.targetItem = this.getNearestPowerup(bot, this.main.powerup.list) || this.getNearestWaypoint(bot, this.main.waypoints.list); // il targetItem sono sia i powerUp che i waypoints
+
 
             // EASYSTAR*.js
-            if (bot.alive && bot.targetItem) {
+            if (bot.alive && bot.targetItem /* && bot.targetItem[bot.index].visible */) {
 
                 // Create a path finding thing
                 const easystar = new EasyStar.js();
@@ -402,11 +409,13 @@ export class Enemy {
 
                 // Get the walkable tile indexes
                 easystar.setAcceptableTiles([0, 2, 10, 11, 12, 13, 14, 15, 16, 40]);
-                easystar.enableDiagonals();
+                // easystar.enableDiagonals();
                 // easystar.enableCornerCutting();
                 bot.pathAStar = easystar;
                 this.collectPowerUps(bot, dt);
-            }
+            } /* else{
+                bot.brain.pushState(this.spawn.bind(this)); 
+            } */
         }
     }
 
@@ -419,7 +428,7 @@ export class Enemy {
         // .filter((e:any)=>this.checkIfIsSeen2(origin, e))   // se non sono visibili si va con i waypoint...
         .forEach((e: any) => {
             let distanza = Helper.calculateDistance(origin, e);
-            if (output.dist > distanza && distanza < 400) {
+            if (output.dist > distanza && distanza < 600) {
                 output = { dist: distanza, elem: e };
             }
         })
@@ -430,7 +439,7 @@ export class Enemy {
         let output: any = { dist: 10000 }; // elemento + vicino ad bot
         data
         .filter((elem:any)=> elem[bot.index].visible==true) // solo quelli non ancora attraversati dallo specifico bot
-        .filter((e:any)=>this.checkIfIsSeen2(bot, e))
+        .filter((e:any)=>this.checkIfIsSeen2(bot, e))       // può essere anche più vicino ma se è dall'altra parte del muro ?!?!
         .forEach((e: any) => {
             let distanza = Helper.calculateDistance(bot, e);
             if (output.dist > distanza && distanza < 500) {

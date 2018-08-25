@@ -1,5 +1,5 @@
 import {Helper} from'./helper';
-import Game from './game';
+/* import Game from './game'; */
 
 export class ControlHandler {
 
@@ -16,6 +16,8 @@ export class ControlHandler {
     canvas: any;
     camera: any;
     player: any;
+
+    back2Player:boolean = true;
 
     constructor(main: any){
         this.main   = main;
@@ -59,7 +61,8 @@ export class ControlHandler {
         } else if (e.keyCode == 65) {
             this.a = false
         } else if (e.keyCode == 66) {
-            this.followBot();
+            this.back2Player =!this.back2Player;
+            this.followBot(this.back2Player);
         }else if (e.keyCode == 68) {
             this.d = false
         } else if (e.keyCode == 71) {   // g
@@ -79,10 +82,9 @@ export class ControlHandler {
         }
     }
 
-    followBot(){
-        let currentActorInCamera = this.main.enemy.list[
-            Helper.randomElementInArray([0]); // TODO:
-        ];
+    followBot(back:boolean){
+        const botIndex = Helper.getBotsName(this.main.enemy.list.map(e=>e.index));  // FIXME: è usato sia per i nomi che per l'index
+        let currentActorInCamera = back?this.player: this.main.enemy.list[botIndex];
 		this.main.camera.setCurrentPlayer(currentActorInCamera);
 		this.main.camera.adjustCamera(currentActorInCamera);
     }

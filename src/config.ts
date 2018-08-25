@@ -4,6 +4,9 @@ export class Config {
     CANVAS_WIDTH:           number = 800;
     CANVAS_HEIGHT:          number = 600;
 
+    // MAP
+    TILE_SIZE:              number = 25;
+
     // GAME
     GAME_KILLS_TO_WIN:      number = 15;
     GAME_MATCH_DURATION:    number = 300000; // in ms 
@@ -11,10 +14,7 @@ export class Config {
     GAME_RESPAWN_TIME:      number = 5000;   // in ms
 
     //
-    MOTION_TRAILS_LENGTH:   number = 7;
-    
-    // MAP
-    TILE_SIZE:              number = 25;
+    MOTION_TRAILS_LENGTH:   number = 10;
     
     // PLAYER
     PLAYER_SPEED:           number = 3.5/16;
@@ -48,6 +48,8 @@ export class Config {
     BLOOD_COLOUR:string[] = ['#ff0000','#eb0001','#d60002','#c40002','#b10002','#9d0002','#8b0000']; // from red to darkred
     BLOOD_RADIUS:number = 4;
 
+    FIRE_IN_LAVA:string[]=['#ffffe0','#fff1c4','#ffe2a5','#ffd587','#ffc667','#ffb541','#ffa500']; // lightyellow, orange, #FFA500
+
     // POWERUP
     POWERUP_RADIUS:number = 6;
     POWERUP_SPAWN_TIME:number = 30*1000;
@@ -56,6 +58,7 @@ export class Config {
     FONT_FAMILY :string = '"Segoe UI",Arial,sans-serif';
     HUD_BACKGROUND:string ="rgba(102, 136, 204, 0.5)",
 
+    // WAYPOINT
     WAYPOINTS_TIMING:number= 8000;
 }
 

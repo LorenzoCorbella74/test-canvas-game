@@ -1,7 +1,4 @@
-import { Camera } from './camera';
 import { Helper } from './helper';
-import { conf as c } from './config';
-
 export class Player {
 
 	// PLAYER
@@ -195,7 +192,7 @@ export class Player {
 		) {
 			this.hp -= 0.5;
 			for (var j = 0; j < 24; j++) {
-				this.main.particelle.create(this.x + Helper.randBetween(-this.r, this.r), this.y + Helper.randBetween(-this.r, this.r), Math.random() * 2 - 2, Math.random() * 2 - 2, 2, '#FFA500')
+				this.main.particelle.create(this.x + Helper.randBetween(-this.r, this.r), this.y + Helper.randBetween(-this.r, this.r), Math.random() * 2 - 2, Math.random() * 2 - 2, 2, Helper.randomElementInArray(this.c.FIRE_IN_LAVA))
 			}
 			if (this.hp <= 0) {
 				this.alive = false;
@@ -279,19 +276,20 @@ export class Player {
 	}
 
 	shoot(dt: number) {
-		// console.log(`X: ${this.control.mouseX} Y: ${this.control.mouseY}`);
-		let now = Date.now();
-		if (now - this.attackCounter < this.shootRate) return;
-		this.attackCounter = now;
-		let vX = (this.control.mouseX - (this.x - this.camera.x));
-		let vY = (this.control.mouseY - (this.y - this.camera.y));
-		let dist = Math.sqrt(vX * vX + vY * vY);	// si calcola la distanza
-		vX /= dist;									// si normalizza
-		vY /= dist;
-		//if (this.attackCounter > 150) {				// 150 è la frequenza di sparo = 6 colpi al sec
-		this.bullet.create(this.x, this.y, vX * 8, vY * 8, 'player', 100, this.damage);  // 8 è la velocità del proiettile
-		//this.attackCounter = 0;
-		//}
+		if (this.alive) {
+			let now = Date.now();
+			if (now - this.attackCounter < this.shootRate) return;
+			this.attackCounter = now;
+			let vX = (this.control.mouseX - (this.x - this.camera.x));
+			let vY = (this.control.mouseY - (this.y - this.camera.y));
+			let dist = Math.sqrt(vX * vX + vY * vY);	// si calcola la distanza
+			vX /= dist;									// si normalizza
+			vY /= dist;
+			//if (this.attackCounter > 150) {				// 150 è la frequenza di sparo = 6 colpi al sec
+			this.bullet.create(this.x, this.y, vX * 8, vY * 8, 'player', 100, this.damage);  // 8 è la velocità del proiettile
+			//this.attackCounter = 0;
+			//}
+		}
 	}
 
 	update(dt: number) {

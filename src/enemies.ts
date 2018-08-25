@@ -97,7 +97,6 @@ export class Enemy {
         bot.trails                  = [];
         bot.path                    = [];
         bot.attackCounter = 0;
-        bot.status='spawn';
         bot.currentWeapon = this.c.PLAYER_STARTING_WEAPON;		// arma corrente
         bot.brain.pushState(this.spawn.bind(this));
     }
@@ -179,7 +178,7 @@ export class Enemy {
 		) {
             bot.hp -=0.5;
             for (var j = 0; j < 24; j++) {
-				this.main.particelle.create(bot.x + Helper.randBetween(-bot.r,bot.r), bot.y + Helper.randBetween(-bot.r,bot.r), Math.random() * 2 - 2, Math.random() * 2 - 2, 2 , '#FFA500')
+				this.main.particelle.create(bot.x + Helper.randBetween(-bot.r,bot.r), bot.y + Helper.randBetween(-bot.r,bot.r), Math.random() * 2 - 2, Math.random() * 2 - 2, 2 , Helper.randomElementInArray(this.c.FIRE_IN_LAVA))
             }
             if (bot.hp <= 0) {
 				bot.alive = false;
@@ -274,12 +273,11 @@ export class Enemy {
 
     spawn(bot: any, dt: number) {
         bot.status ='spawn';
-        let opponentData = this.getNearestVisibleEnemy(bot, this.main.actors);
-        const power_best = this.getNearestPowerup(bot, this.main.powerup.list);
-        const waypoint_best = this.getNearestWaypoint(bot, this.main.waypoints.list);
-        bot.targetItem =  power_best || waypoint_best;
-        bot.target = opponentData.elem;
-        bot.distanceWIthTarget = opponentData.dist;
+        let opponentData       = this.getNearestVisibleEnemy(bot, this.main.actors);
+        const power_best       = this.getNearestPowerup(bot, this.main.powerup.list);
+        const waypoint_best    = this.getNearestWaypoint(bot, this.main.waypoints.list);
+        bot.targetItem         = power_best || waypoint_best;
+        bot.target             = opponentData.elem;
         if (bot.target && bot.target.alive) {
             bot.brain.pushState(this.chaseTarget.bind(this));
         } else if( bot.targetItem) {
@@ -330,22 +328,18 @@ export class Enemy {
         bot.status = 'wander';
          let opponentData = this.getNearestVisibleEnemy(bot, this.main.actors);
          bot.target = opponentData.elem;
-         bot.distanceWIthTarget = opponentData.dist;
 
-         if (bot.target && bot.target.alive /* && bot.distanceWIthTarget < 350 */) {
+         if (bot.target && bot.target.alive) {
              bot.brain.pushState(this.chaseTarget.bind(this));
         // se non si ha un target si va alla ricerca dei powerup
          } else {
-
-            const power_best = this.getNearestPowerup(bot, this.main.powerup.list);
-            const waypoint_best = this.getNearestWaypoint(bot, this.main.waypoints.list);
-            bot.targetItem =  power_best || waypoint_best;
-
-            bot.attackCounter = 0;
+            bot.attackCounter   = 0;
             bot.angleWithTarget = 0;
+            const power_best     = this.getNearestPowerup(bot, this.main.powerup.list);
+            const waypoint_best  = this.getNearestWaypoint(bot, this.main.waypoints.list);
+            bot.targetItem       = power_best || waypoint_best;
 
-            // EASYSTAR*.js
-            if (bot.alive && bot.targetItem /* && bot.targetItem[bot.index].visible */) {
+            if (bot.alive && bot.targetItem) {
                 this.collectPowerUps(bot, dt);
             } else{
                 bot.brain.pushState(this.spawn.bind(this)); 
@@ -354,10 +348,9 @@ export class Enemy {
     }
 
     // trova quello con la distanza minore
-    // TODO: si deve filtrare su quelli VICINI e VISIBILI non su tutti !!!!
     getNearestPowerup(origin: any, data: any) {
         let output: any = { dist: 10000 }; // elemento + vicino ad origin
-        data = data.filter((elem:any)=> elem.visible==true);           // si esclude quelli non visibili
+        data = data.filter((elem:any)=> elem.visible==true);           //  si esclude quelli non visibili (quelli già presi!)
         // data = data.filter((e:any)=>this.checkIfIsSeen2(origin, e))   // se non sono visibili si va con i waypoint...
         data = data.forEach((e: any) => {
             let distanza = Helper.calculateDistance(origin, e);
@@ -386,7 +379,7 @@ export class Enemy {
         let output: any = { dist: 10000 }; // elemento + vicino ad origin
         actors
         .filter((elem:any)=> elem.index!==origin.index && elem.alive)   // si esclude se stessi e quelli morti...
-        .filter((e:any)=>this.checkIfIsSeen2(origin, e))                // si esclude quelli non visibili
+        .filter((e:any)=>this.checkIfIsSeen2(origin, e))                // si escludono quelli non visibili
         .forEach((e: any) => {
             let distanza = Helper.calculateDistance(origin, e);
             if (output.dist > distanza && distanza < 350) {

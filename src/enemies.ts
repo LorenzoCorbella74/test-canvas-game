@@ -1,7 +1,5 @@
 import { BrainFSM } from './brain';
 import { Helper } from './helper'
-
-import * as EasyStar from 'easystarjs'
 import { WeaponsInventory } from './weapons';
 
 
@@ -9,15 +7,15 @@ export class Enemy {
 
     // entities
     canvas: any;
-    ctx: any;
+    ctx:    any;
     camera: any;
-    main: any;
-    c: any;
+    main:   any;
+    c:      any;
     player: any;
-    map: any
+    map:    any
     bullet: any;
 
-    list: any;
+    list:   any;
 
     constructor() { }
 
@@ -50,7 +48,7 @@ export class Enemy {
         bot.angleWithTarget = 0;
         bot.hp = this.c.ENEMY_HP;
         bot.ap = this.c.ENEMY_AP;
-        //bot.shootRate       = 200;
+
         bot.damage = 1;		// è per il moltiplicatore del danno (quad = 4)
         bot.kills = 0;
         bot.numberOfDeaths = 0;
@@ -64,23 +62,14 @@ export class Enemy {
         bot.weaponsInventory = new WeaponsInventory();
         bot.currentWeapon = bot.weaponsInventory.selectedWeapon;		// arma corrente
         bot.attackCounter = 0;
-        // shootRate:     number = 200;	// frequenza di sparo
 
-        // Create a path finding thing
         bot.path = [];
-        bot.easystar = new EasyStar.js();
-        bot.easystar.setGrid(this.main.currentMap.map);
-        // Get the walkable tile indexes
-        bot.easystar.setAcceptableTiles([0, 2, 10, 11, 12, 13, 14, 15, 16, 23, 24, 25, 27, 29, 34, 35, 37, 39, 40]);
-        bot.easystar.enableDiagonals();
-        bot.easystar.enableCornerCutting();
-        bot.pathAStar = bot.easystar;
         return bot;
     };
 
     respawn(bot: any) {
         const spawn = Helper.getSpawnPoint(this.main.data.spawn);
-        console.log(`BOT ${bot.index} is swawning at ${spawn.x - this.camera.x} - ${spawn.y - this.camera.y}`);
+        console.log(`BOT ${bot.index} is swawning at ${spawn.x} - ${spawn.y}`);
         bot.x = spawn.x;
         bot.y = spawn.y;
         bot.old_x = spawn.x;
@@ -100,17 +89,19 @@ export class Enemy {
         bot.targetItem = {};
         bot.trails = [];
 
+        //  WEAPONS
         bot.attackCounter = 0;
         bot.weaponsInventory.resetWeapons();                    	// munizioni e disponibilità default
         bot.weaponsInventory.setWeapon(0);							// arma default
         bot.currentWeapon = bot.weaponsInventory.selectedWeapon;	// arma corrente
 
-        bot.path = [];
-        bot.brain.pushState(this.spawn.bind(this));
+        bot.path = [];                                               // PATHFINDING
+
+        bot.brain.pushState(this.spawn.bind(this));                  // AI
     }
 
     private getBotColour(bot: any) {
-        if (bot.speed > 5) {
+        if (bot.speed > 5/16) {
             return 'yellow';
         }
         if (bot.damage > 1) {
@@ -370,7 +361,7 @@ export class Enemy {
         // data = data.filter((e:any)=>this.checkIfIsSeen2(origin, e))   // se non sono visibili si va con i waypoint...
         data = data.forEach((e: any) => {
             let distanza = Helper.calculateDistance(origin, e);
-            if (output.dist > distanza && distanza < 600) {
+            if (output.dist > distanza && distanza < 400) {
                 output = { dist: distanza, elem: e };
             }
         })
@@ -384,7 +375,7 @@ export class Enemy {
             //.filter((e:any)=>this.checkIfIsSeen2(bot, e))       // può essere anche più vicino ma se è dall'altra parte del muro ?!?!
             .forEach((e: any) => {
                 let distanza = Helper.calculateDistance(bot, e);
-                if (output.dist > distanza && distanza < 500) {
+                if (output.dist > distanza && distanza < 400) {
                     output = { dist: distanza, elem: e };
                 }
             })
@@ -408,7 +399,7 @@ export class Enemy {
     collectPowerUps(bot: any, dt: number) {
         bot.angleWithTarget = Helper.calculateAngle(bot.x, bot.y, bot.targetItem.x, bot.targetItem.y);
         if (bot.brain.first) {
-            console.log(`Si calcola il path per: ${bot.index}`);
+            // console.log(`Si calcola il path per: ${bot.index}`);
             // al 1° giro si calcola il percorso
             this.findPath(bot);
         } else {
@@ -423,19 +414,18 @@ export class Enemy {
         const s = map.pixelToMapPos(bot);
         const d = map.pixelToMapPos(bot.targetItem);
         const start = performance.now();
-        //  const s2 = Date.now();
-        bot.pathAStar.findPath(s.x, s.y, d.x, d.y, (path: any) => {
+        this.main.easystar.findPath(s.x, s.y, d.x, d.y, (path: any) => {
             if (path === null) {
-                console.log("Path was not found.");
+                // console.log("Path was not found.");
             } else {
-                console.log(`Path of bot ${bot.index} was found. First Point is ${path[0].x} ${path[0].y} `);
+                //console.log(`Path of bot ${bot.index} was found. First Point is ${path[0].x} ${path[0].y} `);
                 bot.path = path || [];
                 const end = performance.now();
-                console.log(`Pathfinding took ${end - start} ms for bot ${bot.index}`);
+                //console.log(`Pathfinding took ${end - start} ms for bot ${bot.index}`);
                 this.followPath(bot, 16)
             }
         });
-        bot.pathAStar.calculate();
+        this.main.easystar.calculate();
     }
 
     followPath(bot: any, dt: number) {

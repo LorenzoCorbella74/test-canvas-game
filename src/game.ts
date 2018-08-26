@@ -5,12 +5,12 @@ import { Player } from './player';
 import { Config } from './config';
 import { Camera } from './camera';
 import { Map } from './maps';
-/* import {Helper} from'./helper'; */
-
 import {BulletHandler} from './bullet';
 import { Particelle } from './particelle';
 import { Blood } from './blood';
 import { Waypoints } from './waypoints';
+
+import * as EasyStar from 'easystarjs'
 
 window.onload = function () {
     let app = new Game();
@@ -54,6 +54,9 @@ export default class Game {
 
     actors:any[];
 
+    // A* PATHFINDING
+    easystar:any;
+
     // UI
     fontFamily:        string;
     paused:boolean = false;
@@ -96,6 +99,7 @@ export default class Game {
         this.canvas.style.cursor = 'crosshair';
         this.fontFamily          = this.c.FONT_FAMILY;
         this.actors              = [];
+        this.easystar            = {};
         
         
         // bots names
@@ -144,11 +148,14 @@ export default class Game {
             this.actors.push(bot);
         });
 
-
-
         this.waypoints.linkToActors();
 
-        
+        this.easystar = new EasyStar.js();
+        this.easystar.setGrid(this.currentMap.map);
+        // Get the walkable tile indexes
+        this.easystar.setAcceptableTiles([0, 2, 10, 11, 12, 13, 14, 15, 16, 23, 24, 25, 27, 29, 34, 35, 37, 39, 40]);
+        this.easystar.enableDiagonals();
+        this.easystar.enableCornerCutting();
 
         requestAnimationFrame(this.gameLoop.bind(this));
     }

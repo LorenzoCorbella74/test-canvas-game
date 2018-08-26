@@ -5,21 +5,23 @@
 Esempio di shooter 2D realizzato per studiare il canvas e lo sviluppo di giochi con tecnologie web. Il gioco ricrea le meccaniche di arena shooter quali Quake 3 Arena, Unreal tournament, etc.
 
 ## Features
-- [x] map built with tiles 
+- [x] scrolling map built with tiles 
+- [x] movimenti in funzione del tempo: [source](https://www.viget.com/articles/time-based-animation/)
 - [x] different types of tiles (lava, toxic water)
 - [x] camera following different entities (player, bots) 
 - [x] collision system for all entities
-- [x] particles (debris, blood, explosion)
+- [x] particles (debris, blood)
+    - [] explosion
 - [x] powerups system with different respawn time + counter
 - [x] different weapons
-- [x] movimenti in funzione del tempo: [source](https://www.viget.com/articles/time-based-animation/)
+    - [] for each weapon add different effect
 - [x] bots AI
     - [x] navigazione con A* in base a waypoints e collezionabili (powerups, ammo, weapons)
     - [x] brain con Finite state machine
     - [x] percezione visiva (line of sight) 
     - [x] mira con stima della posizione del target
     - [ ] utilizzo di armi in base a probabilità pesata
-    - [ ] utilizzo di ultima posizione del target dopo esser uscito dalla line of sight
+- [ ] portals and jump pads
 - [ ] different game modes (deathmatch, team deathmach, capture the flag, skirmish)
 - [ ] multiple maps
 - [ ] music and effects

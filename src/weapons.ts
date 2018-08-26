@@ -127,7 +127,7 @@ export class WeaponsInventory {
         for (let i = this.weapons.length - 1; i >= 0; i--) {
             let item = this.weapons[i];
             if (item.name == name) {
-                item.shotNumber = numOfBullet;
+                item.shotNumber += numOfBullet;
                 item.available = true;
             }
         }
@@ -137,7 +137,7 @@ export class WeaponsInventory {
         for (let i = this.weapons.length - 1; i >= 0; i--) {
             let item = this.weapons[i];
             if (item.name == name) {
-                item.shotNumber = numOfBullet;
+                item.shotNumber += numOfBullet;
             }
         }
     }

@@ -24,10 +24,10 @@ export const types = [
     { id: 15, colour: '#ddd5d5', solid: 0, desc: 'speed' },          // a tempo
     { id: 15, colour: '#ddd5d5', solid: 0, desc: 'regeneration' },   // a tempo   
     // WEAPONS AMMO
-    { id: 23, colour: '#ddd5d5', solid: 0, desc: 'ammo for Machine Gun' },
+    { id: 23, colour: '#ddd5d5', solid: 0, desc: 'ammo for Machine Gun/Rifle' },
     { id: 24, colour: '#ddd5d5', solid: 0, desc: 'ammo for Shotgun' },     
     { id: 25, colour: '#ddd5d5', solid: 0, desc: 'ammo for Plasma Gun' },     
-    { id: 26, colour: '#ddd5d5', solid: 0, desc: 'ammo for Grenade Launcher' },     
+    { id: 26, colour: '#ddd5d5', solid: 0, desc: 'ammo for ' },     
     { id: 27, colour: '#ddd5d5', solid: 0, desc: 'ammo for Rocket Launcher' },     
     { id: 28, colour: '#ddd5d5', solid: 0, desc: 'ammo for Lightning Gun' },     
     { id: 29, colour: '#ddd5d5', solid: 0, desc: 'ammo for Railgun' },     
@@ -86,9 +86,10 @@ export class Map {
             for (let l = onXTile - 17; l < onXTile + 17; l++) { // sono 32 colonne
                 if (j >= 0 && l >= 0 && j < this.map.length && l < this.map[j].length) {
 
-                    //if (this.map[j][l] !== 1) {
-                    //    this.drawBorder(l * this.tileSize - this.camera.x, j * this.tileSize - this.camera.y, this.tileSize, this.tileSize);
-                    //}
+                    // if (this.map[j][l] !== 1 || this.map[j][l] !== 3 || this.map[j][l] !== 4) {
+                    //     this.drawBorder(l * this.tileSize - this.camera.x, j * this.tileSize - this.camera.y, this.tileSize, this.tileSize);
+                    // }
+
                     // si renderizza relativamente alla camera !!!
                     this.ctx.fillStyle = this.getColor(this.map[j][l]);
                     this.ctx.fillRect(l * this.tileSize - this.camera.x, j * this.tileSize - this.camera.y, this.tileSize, this.tileSize);
@@ -99,19 +100,18 @@ export class Map {
                         this.ctx.fillText(j.toString(), l * this.tileSize - this.camera.x + 2, j * this.tileSize - this.camera.y + 10);
                         this.ctx.fillText(l.toString(), l * this.tileSize - this.camera.x + 2, j * this.tileSize - this.camera.y + 20);
                     }
-
                 }
             }
         }
     }
 
-    getColor(tile:   any){
+    getColor(tile: any){
         let color;
         switch (tile) {
             case 0:  color = 'LightSteelBlue';break;    // empty
-            case 1:  color = 'SlateGray';break;    // solid
-            case 3:  color = 'red';break;        // lava
-            case 4:  color = 'green';break;      // toxic water
+            case 1:  color = 'SlateGray';break;         // solid
+            case 3:  color = 'red';break;               // lava
+            case 4:  color = 'green';break;             // toxic water
             default: color = 'LightSteelBlue';break; 
         }
         return color;
@@ -191,6 +191,93 @@ export class Map {
                             type: 'speed'
                         });
                     }
+
+                    /* --------------------- WEAPONS --------------------- */
+                    if (this.map[j][l] == 34) {
+                        output.powerup.push({
+                            x: l * this.tileSize - this.camera.x + 12.5,
+                            y: j * this.tileSize - this.camera.y + 12.5,
+                            type: 'weaponShotgun',
+                            for:'Shotgun',
+                            amount:25
+                        });
+                    }
+                    if (this.map[j][l] == 35) {
+                        output.powerup.push({
+                            x: l * this.tileSize - this.camera.x + 12.5,
+                            y: j * this.tileSize - this.camera.y + 12.5,
+                            type: 'weaponPlasma',
+                            for:'Plasma',
+                            amount:25
+                        });
+                    }
+                    if (this.map[j][l] == 37) {
+                        output.powerup.push({
+                            x: l * this.tileSize - this.camera.x + 12.5,
+                            y: j * this.tileSize - this.camera.y + 12.5,
+                            type: 'weaponRocket',
+                            for:'Rocket',
+                            amount:10
+                        });
+                    }
+                    if (this.map[j][l] == 39) {
+                        output.powerup.push({
+                            x: l * this.tileSize - this.camera.x + 12.5,
+                            y: j * this.tileSize - this.camera.y + 12.5,
+                            type: 'weaponRailgun',
+                            for:'Railgun',
+                            amount:5
+                        });
+                    }
+
+
+                    /* --------------------- AMMO --------------------- */
+                    if (this.map[j][l] == 23) {
+                        output.powerup.push({
+                            x: l * this.tileSize - this.camera.x + 12.5,
+                            y: j * this.tileSize - this.camera.y + 12.5,
+                            type: 'ammoRifle',
+                            for:'Rifle'
+                        });
+                    }
+                    if (this.map[j][l] == 24) {
+                        output.powerup.push({
+                            x: l * this.tileSize - this.camera.x + 12.5,
+                            y: j * this.tileSize - this.camera.y + 12.5,
+                            type: 'ammoShotgun',
+                            for:'Shotgun',
+                            amount:25
+                        });
+                    }
+                    if (this.map[j][l] == 25) {
+                        output.powerup.push({
+                            x: l * this.tileSize - this.camera.x + 12.5,
+                            y: j * this.tileSize - this.camera.y + 12.5,
+                            type: 'ammoPlasma',
+                            for:'Plasma',
+                            amount:25
+                        });
+                    }
+                    if (this.map[j][l] == 27) {
+                        output.powerup.push({
+                            x: l * this.tileSize - this.camera.x + 12.5,
+                            y: j * this.tileSize - this.camera.y + 12.5,
+                            type: 'ammoRocket',
+                            for:'Rocket',
+                            amount:10
+                        });
+                    }
+                    if (this.map[j][l] == 29) {
+                        output.powerup.push({
+                            x: l * this.tileSize - this.camera.x + 12.5,
+                            y: j * this.tileSize - this.camera.y + 12.5,
+                            type: 'ammoRailgun',
+                            for:'Railgun',
+                            amount:5
+                        });
+                    }
+
+                    // WAYPOINTS
                     if (this.map[j][l] == 40) {
                         output.waypoints.push({
                             x: l * this.tileSize - this.camera.x + 12.5,

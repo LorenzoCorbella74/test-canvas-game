@@ -71,7 +71,7 @@ export class Enemy {
         bot.easystar = new EasyStar.js();
         bot.easystar.setGrid(this.main.currentMap.map);
         // Get the walkable tile indexes
-        bot.easystar.setAcceptableTiles([0, 2, 10, 11, 12, 13, 14, 15, 16, 40]);
+        bot.easystar.setAcceptableTiles([0, 2, 10, 11, 12, 13, 14, 15, 16, 23, 24, 25, 27, 29, 34, 35, 37, 39, 40]);
         bot.easystar.enableDiagonals();
         bot.easystar.enableCornerCutting();
         bot.pathAStar = bot.easystar;

@@ -15,8 +15,8 @@ export class WeaponsInventory {
             spread: 0.1,
             damage: 5,
             // destroy: false,
-            available: false,
-            shotNumber: 100      // numero di colpi
+            available: true,
+            shotNumber: 100      // numero di colpi iniziale
         }, {
             name: 'Shotgun',
             frequency: 800,     // // 200 è la frequenza di sparo = 5 colpi al sec
@@ -43,7 +43,7 @@ export class WeaponsInventory {
             spread: 1.5,
             damage: 1,
             //destroy: false,
-            available: false,
+            available: true,
             shotNumber: Infinity
         }, {
             name: 'Plasma',
@@ -129,6 +129,15 @@ export class WeaponsInventory {
             if (item.name == name) {
                 item.shotNumber = numOfBullet;
                 item.available = true;
+            }
+        }
+    }
+
+    setNumOfBullets(name: string, numOfBullet: number) {
+        for (let i = this.weapons.length - 1; i >= 0; i--) {
+            let item = this.weapons[i];
+            if (item.name == name) {
+                item.shotNumber = numOfBullet;
             }
         }
     }

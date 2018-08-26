@@ -96,8 +96,11 @@ export class Player {
 		}
 		if (keyCode - 49 in this.weaponsInventory.weapons) {
 			this.weaponsInventory.weapon = keyCode - 49;
-			this.weaponsInventory.selectedWeapon = this.weaponsInventory.weapons[this.weaponsInventory.weapon];
-			this.currentWeapon = this.weaponsInventory.selectedWeapon;		// arma corrente
+			// se disponibile si sceglie
+			if(this.weaponsInventory.weapons[this.weaponsInventory.weapon].available){
+				this.weaponsInventory.selectedWeapon = this.weaponsInventory.weapons[this.weaponsInventory.weapon];
+				this.currentWeapon = this.weaponsInventory.selectedWeapon;		// arma corrente
+			}
 		}
 	}
 
@@ -115,8 +118,11 @@ export class Player {
 				this.weaponsInventory.weapon++;
 			}
 		}
-		this.weaponsInventory.selectedWeapon = this.weaponsInventory.weapons[this.weaponsInventory.weapon];
-		this.currentWeapon = this.weaponsInventory.selectedWeapon;		// arma corrente
+		// se disponibile si sceglie
+		if(this.weaponsInventory.weapons[this.weaponsInventory.weapon].available){
+			this.weaponsInventory.selectedWeapon = this.weaponsInventory.weapons[this.weaponsInventory.weapon];
+			this.currentWeapon = this.weaponsInventory.selectedWeapon;		// arma corrente
+		}
 
 	}
 

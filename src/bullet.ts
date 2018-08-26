@@ -74,9 +74,6 @@ export class BulletHandler {
                 let chiSparaTarget = chiSpara.target || {};
                 if (shot.index == chiSpara.index && chiSparaTarget.alive && chiSparaTarget.index!=100 && Helper.circleCollision(shot, chiSparaTarget)) {
                     chiSparaTarget.hp -= shot.damage;
-                    // chiSparaTarget.vX = shot.vX * 0.03;
-                    // chiSparaTarget.vY = shot.vY * 0.03;
-                    //shot.hp = -99;
                     this.blood.create(shot.x, shot.y, Math.random() * 4 - 4, Math.random() * 4 - 4, this.c.BLOOD_RADIUS) // crea il sangue
                     this.pool.push(shot);
                     this.list.splice(i, 1);
@@ -104,9 +101,6 @@ export class BulletHandler {
                 if(!this.player.godMode){
                     this.player.hp -= shot.damage;
                 }
-                // this.player.vX = shot.vX * 0.03;
-                // this.player.vY = shot.vY * 0.03;
-                // shot.hp = -99;
                 this.blood.create(shot.x, shot.y, Math.random() * 2 - 2, Math.random() * 2 - 2, this.c.BLOOD_RADIUS) // crea il sangue
                 this.pool.push(shot);
                 this.list.splice(i, 1);
@@ -133,9 +127,6 @@ export class BulletHandler {
                 const bot = this.enemy.list[i];
                 if (shot.firedBy == 'player' && bot.alive && Helper.circleCollision(shot, bot)) {
                     bot.hp -= shot.damage;
-                    //bot.vX = shot.vX * 0.03;
-                    //bot.vY = shot.vY * 0.03;
-                    //shot.hp = -99;
                     this.blood.create(shot.x, shot.y, Math.random() * 2 - 2, Math.random() * 2 - 2, this.c.BLOOD_RADIUS) // crea il sangue
                     if (bot.hp <= 0) {
                         bot.alive = false;

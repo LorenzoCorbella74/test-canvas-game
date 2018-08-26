@@ -1,4 +1,5 @@
 import { Helper } from './helper';
+import { WeaponsInventory } from './weapons';
 export class Player {
 
 	// PLAYER
@@ -19,16 +20,17 @@ export class Player {
 
 	trails: any[] = [];
 
-	currentWeapon: string;		// arma corrente
 	damage: number;				// 1 capacità di far danno 1 normale 4 quaddamage
-	attackCounter: number = 0;	// frequenza di sparo
-	shootRate: number = 200;	// frequenza di sparo
 	alive: boolean;				// se il player è vivo o morto ()
 	index: number;				// è l'id del giocatore
 	respawnTime: number = 0;
-
+	
 	godMode: boolean = false;
-
+	
+	weaponsInventory: WeaponsInventory;
+	currentWeapon: any;			// arma corrente
+	attackCounter: number = 0;		// frequenza di sparo
+	// shootRate:     number = 200;	// frequenza di sparo
 
 	canvas:  any;
 	ctx:     any;
@@ -61,9 +63,9 @@ export class Player {
 		this.index = 100;
 		this.alive = true;				// 
 		// const spawn = Helper.getSpawnPoint(this.main.data.spawn);
-		this.x = 400;
+		this.x     = 400;
 		this.old_x = 400;
-		this.y = 300;
+		this.y     = 300;
 		this.old_y = 300;
 		//this.camera.adjustCamera(this);
 		this.r = this.c.PLAYER_RADIUS
@@ -74,7 +76,9 @@ export class Player {
 		this.ap = this.c.PLAYER_AP;		// punti armatura
 		this.kills = 0;					// uccisioni
 		this.numberOfDeaths = 0;	    // numero di volte in cui è stato ucciso
-		this.currentWeapon = this.c.PLAYER_STARTING_WEAPON;		// arma corrente
+
+		this.weaponsInventory = new WeaponsInventory();
+		this.currentWeapon = this.weaponsInventory.selectedWeapon;		// arma corrente
 	}
 
 	storePosForTrail(x: number, y: number) {
@@ -86,13 +90,35 @@ export class Player {
 		}
 	}
 
+	hotKey(keyCode:number) {
+		if (keyCode == 48) {
+			keyCode = 58
+		}
+		if (keyCode - 49 in this.weaponsInventory.weapons) {
+			this.weaponsInventory.weapon = keyCode - 49;
+			this.weaponsInventory.selectedWeapon = this.weaponsInventory.weapons[this.weaponsInventory.weapon];
+			this.currentWeapon = this.weaponsInventory.selectedWeapon;		// arma corrente
+		}
+	}
+
 	wheel(delta: number) {
 		if (delta > 0) {
-			console.log(delta);
+			if (this.weaponsInventory.weapon <= 0) {
+				this.weaponsInventory.weapon = this.weaponsInventory.weapons.length - 1
+			} else {
+				this.weaponsInventory.weapon--;
+			}
 		} else {
-			console.log(delta);
+			if (this.weaponsInventory.weapon >= this.weaponsInventory.weapons.length - 1) {
+				this.weaponsInventory.weapon = 0
+			} else {
+				this.weaponsInventory.weapon++;
+			}
 		}
-	};
+		this.weaponsInventory.selectedWeapon = this.weaponsInventory.weapons[this.weaponsInventory.weapon];
+		this.currentWeapon = this.weaponsInventory.selectedWeapon;		// arma corrente
+
+	}
 
 	private getPlayerColour() {
 		if (this.speed > 4 / 16) {
@@ -164,6 +190,7 @@ export class Player {
 		this.alive = true;					// il player è nuovamente presente in gioco
 		// this.kills = 0;					// si mantengono...
 		// this.numberOfDeaths = 0;	    	// si mantengono...
+
 		this.currentWeapon = this.c.PLAYER_STARTING_WEAPON;		// arma corrente
 	}
 
@@ -278,17 +305,16 @@ export class Player {
 	shoot(dt: number) {
 		if (this.alive) {
 			let now = Date.now();
-			if (now - this.attackCounter < this.shootRate) return;
+			if (now - this.attackCounter < this.currentWeapon.frequency) return;
 			this.attackCounter = now;
 			let vX = (this.control.mouseX - (this.x - this.camera.x));
 			let vY = (this.control.mouseY - (this.y - this.camera.y));
 			let dist = Math.sqrt(vX * vX + vY * vY);	// si calcola la distanza
-			vX /= dist;									// si normalizza
-			vY /= dist;
-			//if (this.attackCounter > 150) {				// 150 è la frequenza di sparo = 6 colpi al sec
-			this.bullet.create(this.x, this.y, vX * 8, vY * 8, 'player', 100, this.damage);  // 8 è la velocità del proiettile
-			//this.attackCounter = 0;
-			//}
+			vX = vX / dist;								// si normalizza
+			vY = vY / dist;
+			for (let i = this.currentWeapon.count; i >= 0; i--) {
+				this.bullet.create(this.x, this.y, vX, vY, 'player', this.index, this.damage, this.currentWeapon);  // 8 è la velocità del proiettile
+			}
 		}
 	}
 

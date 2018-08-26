@@ -242,7 +242,7 @@ export default class Game {
         this.ctx.fillText('HP ', 5, this.c.TILE_SIZE / 2);
         this.ctx.fillText('AP ', 85, this.c.TILE_SIZE / 2);
         this.ctx.fillText('Kills ', 165, this.c.TILE_SIZE / 2);
-        this.ctx.fillText(this.player.currentWeapon, 245, this.c.TILE_SIZE / 2);
+        this.ctx.fillText(this.player.currentWeapon.name, 245, this.c.TILE_SIZE / 2);
         this.ctx.fillText('TIME ', 600, this.c.TILE_SIZE / 2);
         this.ctx.fillText('FPS ', 710, this.c.TILE_SIZE / 2);
         if (this.player.godMode) {

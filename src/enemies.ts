@@ -462,7 +462,7 @@ export class Enemy {
             let dist = Math.sqrt(vX * vX + vY * vY);	// si calcola la distanza
             vX /= dist;									// si normalizza e si calcola la direzione
             vY /= dist;
-            this.bullet.create(bot.x, bot.y, vX * 8, vY * 8, 'enemy', bot.index, bot.damage);  // 8 è la velocità del proiettile
+            // this.bullet.create(bot.x, bot.y, vX * 8, vY * 8, 'enemy', bot.index, bot.damage);  // 8 è la velocità del proiettile
         }
         else {
             bot.brain.pushState(this.wander.bind(this));

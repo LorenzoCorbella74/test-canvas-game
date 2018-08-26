@@ -56,7 +56,7 @@ export class Config {
     
     // HUD
     FONT_FAMILY :string = '"Segoe UI",Arial,sans-serif';
-    HUD_BACKGROUND:string ="rgba(102, 136, 204, 0.5)",
+    HUD_BACKGROUND:string ="rgba(102, 136, 204, 0.5)";
 
     // WAYPOINT
     WAYPOINTS_TIMING:number= 8000;

@@ -60,6 +60,9 @@ export class BulletHandler {
             if (this.myCheckCollision(shot, this.map.map)) {
                 // TODO: la velocità deve invertire su un solo asse quella del bullet...
                 this.main.particelle.create(shot.x, shot.y, Math.random() * shot.vX / 3.5, Math.random() * shot.vY / 3.5, this.c.DEBRIS_RADIUS)
+                if(shot.explode){
+                    console.log('Fabolous explosion!!!');
+                }
                 this.pool.push(shot);
                 this.list.splice(i, 1);
                 continue
@@ -164,30 +167,42 @@ export class BulletHandler {
 
     render(dt: number) {
         for (let j = this.list.length - 1; j >= 0; j--) {
-            const obj = this.list[j];
-            let x = obj.x - this.main.camera.x;
-            let y = obj.y - this.main.camera.y;
+            const shot = this.list[j];
+            let x = shot.x - this.main.camera.x;
+            let y = shot.y - this.main.camera.y;
             this.main.ctx.beginPath();
-            this.main.ctx.arc(x, y, obj.r, 0, 6.2832);
-            this.main.ctx.fillStyle = 'rgba(0,0,0,0.66)';
+            this.main.ctx.arc(x, y, shot.r, 0, 6.2832);
+            if(shot.type.name=='Flamer'){
+                this.main.ctx.fillStyle = Helper.randomElementInArray(this.c.FIRE_IN_LAVA); // 'rgba(0,0,0,0.66)';
+            }else{
+                this.main.ctx.fillStyle = shot.color; // 'rgba(0,0,0,0.66)';
+            }
             this.main.ctx.fill();
             this.main.ctx.closePath()
         }
     }
 
-    create(x: number, y: number, vX: number, vY: number, firedBy: string, index: number, damage?: number) {
+    create(x: number, y: number, vX: number, vY: number, firedBy: string, index: number, damage:number, type?: any) {
         let shot = /* this.pool.length > 0 ? this.pool.pop() : */ {};
-        shot.old_x = x;
-        shot.x     = x;
-        shot.old_y = y;
-        shot.y     = y;
-        shot.vX    = vX;
-        shot.vY    = vY;
-        shot.index = index;   // è l'id del 
+        shot.old_x   = x;
+        shot.x       = x;
+        shot.old_y   = y;
+        shot.y       = y;
+        shot.index   = index;   // è l'id del 
         shot.firedBy = firedBy; // indica da chi è sparato il colpo ( player, enemy )
-        shot.r = this.c.BULLET_RADIUS;
-        shot.ttl = this.c.BULLET_TTL;
-        shot.damage = damage ? damage * this.c.BULLET_DAMAGE : this.c.BULLET_DAMAGE;
+        shot.type    = type;
+        //if(shot.type.name="Railgun"){
+        //    shot.vX  = vX * Math.cos(shot.vX/shot.vY);
+        //    shot.vY  = vY * Math.sin(shot.vX/shot.vY);
+        //}else{
+            shot.vX  = vX * type.speed + Math.random() * type.spread * 2 - type.spread;
+            shot.vY  = vY  * type.speed + Math.random() * type.spread * 2 - type.spread;
+        //}
+        shot.r       = type.r;
+        shot.ttl     = type.ttl;
+        shot.color   = type.color;
+        shot.damage  = damage ? damage * type.damage: type.damage;
+        shot.explode = type.explode;
         this.list.push(shot);
     }
 

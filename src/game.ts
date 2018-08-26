@@ -294,7 +294,7 @@ export default class Game {
         this.textONCanvas(main.ctx, 'Arena Shooter 2D', hW, hH - 100, 'normal 32px/1 ' + main.fontFamily, light, );
         this.textONCanvas(main.ctx, 'Use "WASD" to move and "Left Click" to shoot.', hW, hH - 30, 'normal 15px/1 ' + main.fontFamily, medium);
         this.textONCanvas(main.ctx, 'Use mouse wheel to change weapons.', hW, hH - 10, 'normal 15px/1 ' + main.fontFamily, medium);
-        this.textONCanvas(main.ctx, 'P or ESC for pause screen (i for debug).', hW, hH + 10, 'normal 15px/1 ' + main.fontFamily, medium);
+        this.textONCanvas(main.ctx, 'P or ESC for pause screen (i for debug, g for godmode, b to cycle camera).', hW, hH + 10, 'normal 15px/1 ' + main.fontFamily, medium);
         this.textONCanvas(main.ctx, 'Click to Start', hW, hH + 80, 'normal 18px/1 ' + main.fontFamily, dark);
 
         this.textONCanvas(main.ctx, 'L.Corbella © 2018', 9, main.canvas.height - 14, 'normal 12px/1 ' + main.fontFamily, light, 'left')

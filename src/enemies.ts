@@ -48,6 +48,7 @@ export class Enemy {
         bot.angleWithTarget = 0;
         bot.hp = this.c.ENEMY_HP;
         bot.ap = this.c.ENEMY_AP;
+        // bot.preferences= Helper.getBotsPreferences();
 
         bot.damage = 1;		// è per il moltiplicatore del danno (quad = 4)
         bot.kills = 0;
@@ -166,14 +167,19 @@ export class Enemy {
     }
 
     isLavaOrToxic(bot: any, x: number, y: number): void {
-        if (this.map.map[Math.floor(y / this.c.TILE_SIZE)][Math.floor(x / this.c.TILE_SIZE)] == 3
-            || this.map.map[Math.floor(y / this.c.TILE_SIZE)][Math.ceil(x / this.c.TILE_SIZE)] == 3
-            || this.map.map[Math.ceil(y / this.c.TILE_SIZE)][Math.floor(x / this.c.TILE_SIZE)] == 3
-            || this.map.map[Math.ceil(y / this.c.TILE_SIZE)][Math.ceil(x / this.c.TILE_SIZE)] == 3
-            || this.map.map[Math.floor(y / this.c.TILE_SIZE)][Math.floor(x / this.c.TILE_SIZE)] == 4
-            || this.map.map[Math.floor(y / this.c.TILE_SIZE)][Math.ceil(x / this.c.TILE_SIZE)] == 4
-            || this.map.map[Math.ceil(y / this.c.TILE_SIZE)][Math.floor(x / this.c.TILE_SIZE)] == 4
-            || this.map.map[Math.ceil(y / this.c.TILE_SIZE)][Math.ceil(x / this.c.TILE_SIZE)] == 4
+        let fy = Math.floor(y / this.c.TILE_SIZE);
+        let fx = Math.floor(x / this.c.TILE_SIZE);
+        let cy = Math.ceil(y / this.c.TILE_SIZE);
+        let cx = Math.ceil(x / this.c.TILE_SIZE);
+        if (/* fx || fy|| cy|| cx */
+             this.map.map[fy][fx] == 3
+            || this.map.map[fy][cx] == 3
+            || this.map.map[cy][fx] == 3
+            || this.map.map[cy][cx] == 3
+            || this.map.map[fy][fx] == 4
+            || this.map.map[fy][cx] == 4
+            || this.map.map[cy][fx] == 4
+            || this.map.map[cy][cx] == 4
         ) {
             bot.hp -= 0.5;
             for (var j = 0; j < 24; j++) {
@@ -226,7 +232,7 @@ export class Enemy {
 
 
     // SOURCE: https://www.redblobgames.com/grids/line-drawing.html (walk_grid ) 
-    checkIfIsSeen2(p0: any, p1: any) {
+    checkIfIsSeen3(p0: any, p1: any) {
         var dx = p1.x - p0.x, dy = p1.y - p0.y;
         var nx = Math.abs(dx),
             ny = Math.abs(dy);
@@ -247,7 +253,20 @@ export class Enemy {
         }
         //console.log(points);
         let output = true;
-        for (let i = 0; i < points.length; i += 2) {  // STEP DI 2 PER RIDURRE I CICLI...
+        for (let i = 0; i < points.length; i += 3) {  // STEP DI 2 PER RIDURRE I CICLI...
+            const ele = points[i];
+            if (this.map.map[Math.floor(ele.y / this.c.TILE_SIZE)][Math.floor(ele.x / this.c.TILE_SIZE)] == 1) {
+                output = false;
+                break;
+            }
+        }
+        return output;
+    }
+
+    checkIfIsSeen2(p0: any, p1: any) {
+        let points = Helper.line(p0,p1);
+        let output = true;
+        for (let i = 0; i < points.length; i += 3) {  // STEP DI 2 PER RIDURRE I CICLI...
             const ele = points[i];
             if (this.map.map[Math.floor(ele.y / this.c.TILE_SIZE)][Math.floor(ele.x / this.c.TILE_SIZE)] == 1) {
                 output = false;

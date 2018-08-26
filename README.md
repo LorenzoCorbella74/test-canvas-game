@@ -11,13 +11,19 @@ Esempio di shooter 2D realizzato per studiare il canvas e lo sviluppo di giochi 
 - [x] collision system for all entities
 - [x] particles (debris, blood, explosion)
 - [x] powerups system with different respawn time + counter
-- [ ] different weapons
-- [ ] different game modes (deathmatch, team deathmach, capture the flag, skirmish)
+- [x] different weapons
+- [x] movimenti in funzione del tempo: [source](https://www.viget.com/articles/time-based-animation/)
 - [x] bots AI
+    - [x] navigazione con A* in base a waypoints e collezionabili (powerups, ammo, weapons)
+    - [x] brain con Finite state machine
+    - [x] percezione visiva (line of sight) 
+    - [x] mira con stima della posizione del target
+    - [ ] utilizzo di armi in base a probabilità pesata
+    - [ ] utilizzo di ultima posizione del target dopo esser uscito dalla line of sight
+- [ ] different game modes (deathmatch, team deathmach, capture the flag, skirmish)
 - [ ] multiple maps
 - [ ] music and effects
 - [ ] multiplayer
-- [ ] movimenti in funzione del tempo: [source](https://www.viget.com/articles/time-based-animation/)
 
 
 ### Installation

@@ -102,4 +102,57 @@ export class Helper {
     // https://www.emanueleferonato.com/2007/04/28/create-a-flash-artillery-game-step-1/
     // https://www.safaribooksonline.com/library/view/html5-canvas/9781449308032/ch05s03.html
 
-}
+    static getBotsPreferences(): string {
+        let preferences = [/* 'Rifle',  */'Shotgun', 'Plasma', 'Rocket', 'Railgun'];
+        let weights = [0.22, 0.24, 0.27, 0.26];
+        function generateWeighedList(list:string[], weights:number[]) {
+            let weighed_list = [];
+            // Loop over weights
+            for (let i = 0; i < weights.length; i++) {
+                let multiples = weights[i] * 100;
+                // Loop over the list of items
+                for (let j = 0; j < multiples; j++) {
+                    weighed_list.push(list[i]);
+                }
+            }
+            return weighed_list;
+        };
+        let weighed_list = generateWeighedList(preferences, weights);
+        let random_num = Helper.rand(0, weighed_list.length-1);
+        return weighed_list[random_num];
+    }
+
+    // NEW Line drawing on a grid
+
+    static dot(x1:number, y1:number, x2:number, y2:number) {
+        return x1 * x2 + y1 * y2;
+    }
+
+    static lerp(start, end, t) {
+        return start + t * (end-start);
+    }
+
+    static lerp_point(p0, p1, t) {
+        return { x: Helper.lerp(p0.x, p1.x, t), y: Helper.lerp(p0.y, p1.y, t) };
+    }
+
+    static diagonal_distance(p0, p1) {
+        var dx = p1.x - p0.x, dy = p1.y - p0.y;
+        return Math.max(Math.abs(dx), Math.abs(dy));
+    }
+    
+    static round_point(p) {
+        return {x: Math.round(p.x), y: Math.round(p.y)};
+    }
+    
+    static line(p0, p1) {
+        var points = [];
+        var N = Helper.diagonal_distance(p0, p1);
+        for (var step = 0; step <= N; step++) {
+            var t = N == 0? 0.0 : step / N;
+            points.push(Helper.round_point(Helper.lerp_point(p0, p1, t)));
+        }
+        return points;
+    }
+
+}   

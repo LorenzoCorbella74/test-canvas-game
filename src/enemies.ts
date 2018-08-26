@@ -315,7 +315,7 @@ export class Enemy {
             bot.x += bot.velX * bot.speed * dt;
             bot.y += bot.velY * bot.speed * dt;
             
-            this.shot(bot, dist);
+            this.shot(bot, dist, dt);
         } else{
             bot.brain.pushState(this.spawn.bind(this));
         }
@@ -452,16 +452,21 @@ export class Enemy {
         }
     }
 
-    shot(bot:any, dist:number){
+    shot(bot:any, dist:number, dt:number){
         if (dist < 350 && this.checkIfIsSeen2(bot.target, bot)) {	// SE non troppo lontano e visibile SPARA!
             let now = Date.now();
             if (now - bot.attackCounter < bot.shootRate) return;
             bot.attackCounter = now;
+            
+            // bullet prediction ->how well bots are aiming!!
+            let predvX = (bot.target.x-bot.target.old_x)/(bot.target.speed*dt)/(bot.speed*dt);
+            let predvY = (bot.target.y-bot.target.old_y)/(bot.target.speed*dt)/(bot.speed*dt);
+
             let vX = (bot.target.x - bot.x);
             let vY = (bot.target.y - bot.y);
             let dist = Math.sqrt(vX * vX + vY * vY);	// si calcola la distanza
-            vX /= dist;									// si normalizza e si calcola la direzione
-            vY /= dist;
+            vX = vX/dist + predvX;						// si normalizza e si calcola la direzione
+            vY = vY/dist + predvY;
             this.bullet.create(bot.x, bot.y, vX * 8, vY * 8, 'enemy', bot.index, bot.damage);  // 8 è la velocità del proiettile
         }
         else {

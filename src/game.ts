@@ -253,8 +253,11 @@ export default class Game {
         this.ctx.fillText(this.player.hp.toString(), 30, this.c.TILE_SIZE / 2);
         this.ctx.fillText(this.player.ap.toString(), 110, this.c.TILE_SIZE / 2);
         this.ctx.fillText(this.player.kills.toString(), 200, this.c.TILE_SIZE / 2);
+        this.ctx.fillText(this.player.currentWeapon.shotNumber.toString(), 280, this.c.TILE_SIZE / 2);
         this.ctx.fillText(this.countDown(), 640, this.c.TILE_SIZE / 2);
         this.ctx.fillText(this.fps.toString(), 750, this.c.TILE_SIZE / 2);
+        
+        // RESPAWN MESSAGE
         if (!this.player.alive) {
             this.ctx.fillStyle = '#565454';
             this.ctx.font = 'bold 28px/1 Arial';

@@ -70,12 +70,12 @@ export class Player {
 		//this.camera.adjustCamera(this);
 		this.r = this.c.PLAYER_RADIUS
 		this.speed = this.c.PLAYER_SPEED;	// è uguale in tutte le direzioni
-		this.damage = 1;	// è uguale in tutte le direzioni
-		this.angle = 0;					// angolo tra asse x e puntatore del mouse
-		this.hp = this.c.PLAYER_HP;		// punti vita
-		this.ap = this.c.PLAYER_AP;		// punti armatura
-		this.kills = 0;					// uccisioni
-		this.numberOfDeaths = 0;	    // numero di volte in cui è stato ucciso
+		this.damage = 1;					// danno da moltiplicare per 4 con quad damage
+		this.angle = 0;						// angolo tra asse x e puntatore del mouse
+		this.hp = this.c.PLAYER_HP;			// punti vita
+		this.ap = this.c.PLAYER_AP;			// punti armatura
+		this.kills = 0;						// uccisioni
+		this.numberOfDeaths = 0;	    	// numero di volte in cui è stato ucciso
 
 		this.weaponsInventory = new WeaponsInventory();
 		this.currentWeapon = this.weaponsInventory.selectedWeapon;		// arma corrente
@@ -185,13 +185,15 @@ export class Player {
 		this.speed = this.c.PLAYER_SPEED;	// è uguale in tutte le direzioni
 		this.damage = 1;					// è il moltiplicatore del danno (quad = 4)
 		this.angle = 0;						// angolo tra asse x e puntatore del mouse
-		this.hp = this.c.PLAYER_HP;		// punti vita
-		this.ap = this.c.PLAYER_AP;		// punti armatura
+		this.hp = this.c.PLAYER_HP;			// punti vita
+		this.ap = this.c.PLAYER_AP;			 // punti armatura
 		this.alive = true;					// il player è nuovamente presente in gioco
 		// this.kills = 0;					// si mantengono...
 		// this.numberOfDeaths = 0;	    	// si mantengono...
 
-		this.currentWeapon = this.c.PLAYER_STARTING_WEAPON;		// arma corrente
+		this.weaponsInventory.resetWeapons();                    	// munizioni e disponibilità default
+		this.weaponsInventory.setWeapon(0);							// arma default
+		this.currentWeapon = this.weaponsInventory.selectedWeapon;	// arma corrente
 	}
 
 	// collisione tra elementi della stessa dimensione (tile e player)
@@ -303,7 +305,7 @@ export class Player {
 	}
 
 	shoot(dt: number) {
-		if (this.alive) {
+		if (this.alive && this.currentWeapon.shotNumber>0) {
 			let now = Date.now();
 			if (now - this.attackCounter < this.currentWeapon.frequency) return;
 			this.attackCounter = now;
@@ -314,7 +316,12 @@ export class Player {
 			vY = vY / dist;
 			for (let i = this.currentWeapon.count; i >= 0; i--) {
 				this.bullet.create(this.x, this.y, vX, vY, 'player', this.index, this.damage, this.currentWeapon);  // 8 è la velocità del proiettile
+				this.currentWeapon.shotNumber--;
 			}
+		}else{
+			// da valutare se prevederlo in automatico
+			this.weaponsInventory.getBest();
+            this.currentWeapon = this.weaponsInventory.selectedWeapon;	// arma corrente
 		}
 	}
 

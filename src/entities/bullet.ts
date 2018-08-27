@@ -159,6 +159,9 @@ export class BulletHandler {
             for (let i = this.enemy.list.length - 1; i >= 0; i--) {
                 const bot = this.enemy.list[i];
                 if (shot.firedBy == 'player' && bot.alive && Helper.circleCollision(shot, bot)) {
+                    if(shot.explode){
+                        this.doExplosion(shot);
+                    }
                     //bot.hp -= shot.damage;
                     this.calculateHealth(bot,shot.damage);
                     this.blood.create(shot.x, shot.y, Math.random() * 2 - 2, Math.random() * 2 - 2, this.c.BLOOD_RADIUS) // crea il sangue
@@ -184,13 +187,13 @@ export class BulletHandler {
             if(shot.type.name=='Plasma'){
                 shot.r =1 + Math.abs(Math.sin(shot.angleForDinamicRadius))*5;
             }
-            if(shot.type.name=='Railgun'){
-                let time = timestamp; // in ms
-                let period = 250;// in ms
-                let amplitude = 30; // in px
-                shot.vX  *= amplitude * Math.sin(time + 2 * Math.PI / period);
-                shot.vY  *= amplitude * Math.sin(time + 2 * Math.PI / period);
-            }
+            // if(shot.type.name=='Railgun'){
+            //     let time = timestamp; // in ms
+            //     let period = 250;// in ms
+            //     let amplitude = 30; // in px
+            //     shot.vX  *= amplitude * Math.sin(time + 2 * Math.PI / period);
+            //     shot.vY  *= amplitude * Math.sin(time + 2 * Math.PI / period);
+            // }
             // decremento del proiettile
             shot.ttl -= dt;
             if (shot.ttl <= 0) {

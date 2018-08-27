@@ -58,6 +58,18 @@ export class BulletHandler {
         }
     }
 
+    calculateHealth(actor:any, damage:number){
+        if(actor.ap>0){
+            actor.ap -= damage;
+            let what = actor.ap;
+            if(what<0){
+                actor.hp += what;
+            }
+        }else{
+            actor.hp -= damage;
+        }
+    }
+
     update(dt: number,timestamp:number) {
         let shot, i;
         for (i = this.list.length - 1; i >= 0; i--) {
@@ -89,7 +101,8 @@ export class BulletHandler {
                     if(shot.explode){
                         this.doExplosion(shot);
                     }
-                    chiSparaTarget.hp -= shot.damage;
+                    //chiSparaTarget.hp -= shot.damage;
+                    this.calculateHealth(chiSparaTarget,shot.damage);
                     this.blood.create(shot.x, shot.y, Math.random() * 4 - 4, Math.random() * 4 - 4, this.c.BLOOD_RADIUS) // crea il sangue
                     this.pool.push(shot);
                     this.list.splice(i, 1);
@@ -118,7 +131,8 @@ export class BulletHandler {
                     this.doExplosion(shot);
                 }
                 if(!this.player.godMode){
-                    this.player.hp -= shot.damage;
+                    //this.player.hp -= shot.damage;
+                    this.calculateHealth(this.player,shot.damage);
                 }
                 this.blood.create(shot.x, shot.y, Math.random() * 2 - 2, Math.random() * 2 - 2, this.c.BLOOD_RADIUS) // crea il sangue
                 this.pool.push(shot);
@@ -145,7 +159,8 @@ export class BulletHandler {
             for (let i = this.enemy.list.length - 1; i >= 0; i--) {
                 const bot = this.enemy.list[i];
                 if (shot.firedBy == 'player' && bot.alive && Helper.circleCollision(shot, bot)) {
-                    bot.hp -= shot.damage;
+                    //bot.hp -= shot.damage;
+                    this.calculateHealth(bot,shot.damage);
                     this.blood.create(shot.x, shot.y, Math.random() * 2 - 2, Math.random() * 2 - 2, this.c.BLOOD_RADIUS) // crea il sangue
                     if (bot.hp <= 0) {
                         bot.alive = false;

@@ -1,25 +1,26 @@
 export class Config {
     
     // CANVAS
-    CANVAS_WIDTH:           number = 800;
-    CANVAS_HEIGHT:          number = 600;
+    CANVAS_WIDTH:         number = 800;
+    CANVAS_HEIGHT:        number = 600;
     // MAP
-    TILE_SIZE:              number = 25;
+    TILE_SIZE:            number = 25;
     // GAME
-    GAME_KILLS_TO_WIN:      number = 15;
-    GAME_MATCH_DURATION:    number = 300000; // in ms 
-    GAME_BOTS_PER_MATCH:    number = 5;
-    GAME_RESPAWN_TIME:      number = 5000;   // in ms
-    WAYPOINTS_TIMING:number= 8000;
+    GAME_KILLS_TO_WIN:    number = 15;
+    GAME_MATCH_DURATION:  number = 300000; // in ms 
+    GAME_BOTS_PER_MATCH:  number = 5;
+    GAME_RESPAWN_TIME:    number = 5000;   // in ms
+    GAME_MATCH_TYPE:      string = 'team'; // 'deathmatch'  // o team, ctf
+    WAYPOINTS_TIMING:     number = 8000;
     // HUD
-    FONT_FAMILY :string = '"Segoe UI",Arial,sans-serif';
-    HUD_BACKGROUND:string ="rgba(102, 136, 204, 0.5)";
+    FONT_FAMILY:          string = '"Segoe UI",Arial,sans-serif';
+    HUD_BACKGROUND:       string = "rgba(102, 136, 204, 0.5)";
     // PLAYER
-    PLAYER_SPEED:          number = 3.5/16;
-    PLAYER_RADIUS:         number = 12.5;
-    PLAYER_HP:             number = 100;
-    PLAYER_AP:             number = 100;
-    PLAYER_COLOUR_INSIDE:  string = '#6688cc';
+    PLAYER_SPEED:         number = 3.5/16;
+    PLAYER_RADIUS:        number = 12.5;
+    PLAYER_HP:            number = 100;
+    PLAYER_AP:            number = 100;
+    PLAYER_COLOUR_INSIDE: string = '#6688cc';
     PLAYER_COLOUR_OUTSIDE: string = '#4b58a0';
     // ENEMIES
     ENEMY_SPEED:           number = 3.5/16;

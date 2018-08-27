@@ -95,7 +95,7 @@ export default class Game {
         this.killsToWin          = this.c.GAME_KILLS_TO_WIN;
         this.matchDuration       = this.c.GAME_MATCH_DURATION;
         this.numberOfBots        = this.c.GAME_BOTS_PER_MATCH;
-        this.gameType            = 'Deathmatch'
+        this.gameType            = this.c.GAME_MATCH_TYPE;
         this.canvas.style.cursor = 'crosshair';
         this.fontFamily          = this.c.FONT_FAMILY;
         this.actors              = [];
@@ -144,7 +144,7 @@ export default class Game {
         // si crea i bots
         botsArray.forEach((elem:any, index:number) => {
             let e = this.data.spawn[index];
-            let bot = this.enemy.create(e.x,e.y, index); // si crea un nemico
+            let bot = this.enemy.create(e.x,e.y, index, this.defineTeams(index)); // si crea un nemico
             this.actors.push(bot);
         });
 
@@ -158,6 +158,18 @@ export default class Game {
         this.easystar.enableCornerCutting();
 
         requestAnimationFrame(this.gameLoop.bind(this));
+    }
+
+    defineTeams(index:number){
+        if(this.gameType== 'deathmatch'){   // tutti i bot hanno un team diverso...
+            return  `team${index+2}`;
+        } else {    // per teamDeathMatch e CTF
+            if(index<Math.floor(this.c.GAME_BOTS_PER_MATCH/2)+1){
+                return  `team2`;
+            }else{
+                return  `team1`;
+            }
+        }
     }
 
     private gameLoop(timestamp:number): void {

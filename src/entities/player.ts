@@ -26,6 +26,8 @@ export class Player {
 	respawnTime: number = 0;
 	
 	godMode: boolean = false;
+
+	team:string;
 	
 	weaponsInventory: WeaponsInventory;
 	currentWeapon: any;			// arma corrente
@@ -67,6 +69,7 @@ export class Player {
 		this.old_x = 400;
 		this.y     = 300;
 		this.old_y = 300;
+		this.team = 'team1';
 		//this.camera.adjustCamera(this);
 		this.r = this.c.PLAYER_RADIUS
 		this.speed = this.c.PLAYER_SPEED;	// è uguale in tutte le direzioni

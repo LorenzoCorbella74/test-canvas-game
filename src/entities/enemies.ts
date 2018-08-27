@@ -31,7 +31,7 @@ export class Enemy {
         this.ctx = main.ctx;
     }
 
-    create(x: number, y: number, num: number) {
+    create(x: number, y: number, num: number, team:string) {
         let bot: any = new Object();
         bot.brain = new BrainFSM();
         bot.index = num;
@@ -48,6 +48,7 @@ export class Enemy {
         bot.angleWithTarget = 0;
         bot.hp = this.c.ENEMY_HP;
         bot.ap = this.c.ENEMY_AP;
+        bot.team = team;
         // bot.preferences= Helper.getBotsPreferences();
 
         bot.damage = 1;		// è per il moltiplicatore del danno (quad = 4)
@@ -108,7 +109,7 @@ export class Enemy {
         if (bot.damage > 1) {
             return 'violet';
         }
-        return this.c.ENEMY_COLOUR_INSIDE;
+        return bot.team !='team1'? this.c.ENEMY_COLOUR_INSIDE:this.c.PLAYER_COLOUR_INSIDE;
     }
 
     render() {
@@ -127,16 +128,16 @@ export class Enemy {
                 // draw the colored region
                 this.ctx.beginPath();
                 this.ctx.arc(bot.x - this.camera.x, bot.y - this.camera.y, bot.r, 0, 2 * Math.PI, true);
-                this.ctx.fillStyle = this.getBotColour(bot);;
+                this.ctx.fillStyle = this.getBotColour(bot);
                 this.ctx.fill();
 
                 // draw the stroke
                 this.ctx.lineWidth = 2;
-                this.ctx.strokeStyle = this.c.ENEMY_COLOUR_OUTSIDE;
+                this.ctx.strokeStyle = bot.team !='team1'? this.c.ENEMY_COLOUR_OUTSIDE:this.c.PLAYER_COLOUR_OUTSIDE;
                 this.ctx.stroke();
 
                 // beccuccio arma
-                this.ctx.strokeStyle = this.c.ENEMY_COLOUR_OUTSIDE;
+                this.ctx.strokeStyle = bot.team !='team1'? this.c.ENEMY_COLOUR_OUTSIDE: this.c.PLAYER_COLOUR_OUTSIDE;
                 this.ctx.beginPath();
                 this.ctx.moveTo(bot.x - this.camera.x, bot.y - this.camera.y);
                 var pointerLength = this.c.ENEMY_RADIUS;
@@ -373,7 +374,7 @@ export class Enemy {
     getNearestVisibleEnemy(origin: any, actors: any) {
         let output: any = { dist: 10000 }; // elemento + vicino ad origin
         actors
-            .filter((elem: any) => elem.index !== origin.index && elem.alive)   // si esclude se stessi e quelli morti...
+            .filter((elem: any) => elem.index !== origin.index && elem.alive && elem.team!=origin.team)   // si esclude se stessi, quelli morti e quelli dell'altro team
             .filter((e: any) => this.checkIfIsSeen2(origin, e))                // si escludono quelli non visibili
             .forEach((e: any) => {
                 let distanza = Helper.calculateDistance(origin, e);

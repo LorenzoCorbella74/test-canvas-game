@@ -48,12 +48,13 @@ export class BulletHandler {
     }
 
     doExplosion(shot:any){
-        let magnitude = 2;
+        let magnitude = 3;
         // let type =Object.assign(shot.type,{r:this.c.TILE_SIZE*1.5})
         // si crea uno shot che verrà analizzato nel prossimo update() avente il raggio dell'esplosione
         // this.create( shot.x, shot.y, 0, 0, shot.firedBy, shot.index, 50, type)
         for (let b = 0; b < 50; b++) {
-            this.main.particelle.create(shot.x, shot.y, Math.random() * magnitude - magnitude, Math.random() * magnitude - magnitude, Helper.randf(this.c.DEBRIS_RADIUS, 20), Helper.randomElementInArray(this.c.FIRE_EXPLOSION))
+            //this.main.particelle.create(shot.x, shot.y, Math.random() * magnitude - magnitude, Math.random() * magnitude - magnitude, Helper.randf(this.c.DEBRIS_RADIUS, 20), Helper.randomElementInArray(this.c.FIRE_EXPLOSION))
+            this.main.particelle.create(shot.x, shot.y, Math.random() * magnitude - 1, Math.random() * magnitude - 1, Helper.randf(this.c.DEBRIS_RADIUS, 20), Helper.randomElementInArray(this.c.FIRE_EXPLOSION));
         }
     }
 
@@ -79,7 +80,7 @@ export class BulletHandler {
                 this.list.splice(i, 1);
                 continue
             }
-
+            
             // bullet sparati da bot a bot (non il player... chiSparaTarget.index!=100 )
             let chiSpara = this.enemy.list[shot.index];
             if (chiSpara) {
@@ -96,7 +97,7 @@ export class BulletHandler {
                         chiSparaTarget.alive = false;
                         chiSparaTarget.numberOfDeaths++;
                         for (let b = 0; b < 36; b++) {
-                            this.blood.create(shot.x, shot.y, Math.random() * 4 - 4 * i, Math.random() * 4 - 4 * i, this.c.BLOOD_RADIUS) // crea il sangue
+                            this.blood.create(shot.x, shot.y, Math.random() * 4 - 2, Math.random() * 4 - 2, this.c.BLOOD_RADIUS) // crea il sangue
                         }
                         this.enemy.list[shot.index].kills++;    // si aumenta lo score del bot che ha sparato il proiettile
                         console.log(`BOT ${chiSpara.index} killed BOT ${chiSparaTarget.index}`);
@@ -126,7 +127,7 @@ export class BulletHandler {
                     this.player.alive = false;
                     this.player.numberOfDeaths++;
                     for (let b = 0; b < 36; b++) {
-                        this.blood.create(shot.x, shot.y, Math.random() * 2 - 2 * i, Math.random() * 2 - 2 * i, this.c.BLOOD_RADIUS) // crea il sangue
+                        this.blood.create(shot.x, shot.y, Math.random() * 4 - 2, Math.random() * 4 - 2, this.c.BLOOD_RADIUS) // crea il sangue
                     }
                     this.enemy.list[shot.index].kills++;    // si aumenta lo score del bot che ha sparato il proiettile
                     let currentActorInCamera = this.enemy.list[shot.index];
@@ -151,7 +152,7 @@ export class BulletHandler {
                         this.player.kills++;
                         bot.numberOfDeaths++;
                         for (let b = 0; b < 36; b++) {
-                            this.blood.create(shot.x, shot.y, Math.random() * 2 - 2 * i, Math.random() * 2 - 2 * i, this.c.BLOOD_RADIUS) // crea il sangue
+                            this.blood.create(shot.x, shot.y, Math.random() * 4 - 2, Math.random() * 4 - 2, this.c.BLOOD_RADIUS) // crea il sangue
                         }
                         console.log(`PLayer killed BOT ${bot.index}.`);
                         setTimeout(() => {
@@ -168,13 +169,13 @@ export class BulletHandler {
             if(shot.type.name=='Plasma'){
                 shot.r =1 + Math.abs(Math.sin(shot.angleForDinamicRadius))*5;
             }
-            /* if(shot.type.name=='Railgun'){
-                let time = new Date().getTime()+dt;// in ms
+            if(shot.type.name=='Railgun'){
+                let time = timestamp; // in ms
                 let period = 250;// in ms
                 let amplitude = 30; // in px
-                shot.vX  += amplitude * Math.sin(time + 2 * Math.PI / period);
-                shot.vY  += amplitude * Math.cos(time + 2 * Math.PI / period);
-            } */
+                shot.vX  *= amplitude * Math.sin(time + 2 * Math.PI / period);
+                shot.vY  *= amplitude * Math.sin(time + 2 * Math.PI / period);
+            }
             // decremento del proiettile
             shot.ttl -= dt;
             if (shot.ttl <= 0) {

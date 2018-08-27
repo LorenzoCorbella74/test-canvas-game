@@ -125,6 +125,12 @@ export class Enemy {
                     this.ctx.fill();
                 }
 
+                // draw the WEAPON !!
+                this.ctx.beginPath();
+                this.ctx.arc(bot.x - this.camera.x -bot.r-3, bot.y - this.camera.y-bot.r-3, 4, 0, 2 * Math.PI, true);
+                this.ctx.fillStyle = bot.currentWeapon.color;
+                this.ctx.fill();
+
                 // draw the colored region
                 this.ctx.beginPath();
                 this.ctx.arc(bot.x - this.camera.x, bot.y - this.camera.y, bot.r, 0, 2 * Math.PI, true);

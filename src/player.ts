@@ -320,7 +320,7 @@ export class Player {
 			let dist = Math.sqrt(vX * vX + vY * vY);	// si calcola la distanza
 			vX = vX / dist;								// si normalizza
 			vY = vY / dist;
-			for (let i = this.currentWeapon.count; i >= 0; i--) {
+			for (let i = this.currentWeapon.count-1; i >= 0; i--) {
 				this.bullet.create(this.x, this.y, vX, vY, 'player', this.index, this.damage, this.currentWeapon);  // 8 è la velocità del proiettile
 				this.currentWeapon.shotNumber--;
 			}

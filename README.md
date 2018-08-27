@@ -6,10 +6,13 @@ Esempio di shooter 2D realizzato per studiare il canvas e lo sviluppo di giochi 
 
 ## Features
 - [x] scrolling map built with tiles 
-- [x] movimenti in funzione del tempo: [source](https://www.viget.com/articles/time-based-animation/)
 - [x] different types of tiles (lava, toxic water)
+- [x] movements time based for all entities: [source](https://www.viget.com/articles/time-based-animation/)
 - [x] camera following different entities (player, bots) 
 - [x] collision system for all entities
+- [x] debug mode (+ god mode, camera cycle for bots)
+- [x] spawn mechanism
+    - [] spawn animation
 - [x] particles (debris, blood)
     - [] explosion
 - [x] powerups system with different respawn time + counter
@@ -21,11 +24,20 @@ Esempio di shooter 2D realizzato per studiare il canvas e lo sviluppo di giochi 
     - [x] percezione visiva (line of sight) 
     - [x] mira con stima della posizione del target
     - [ ] utilizzo di armi in base a probabilità pesata
-- [ ] portals and jump pads
+    - [ ] BOT AI level
+- [ ] portals and jump pads (with animation)
+- [ ] UI MESSAGES
+    - [ ] warmup, 1 minute warning, etc
+    - [ ] multiple, assist, etc
 - [ ] different game modes (deathmatch, team deathmach, capture the flag, skirmish)
+    - [ ] page to choose game type, map, num of bots, etc
 - [ ] multiple maps
 - [ ] music and effects
 - [ ] multiplayer
+- [ ] start screen
+- [x] stat screen
+- [x] stat screen
+- [x] pause screen
 
 
 ### Installation

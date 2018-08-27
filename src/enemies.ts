@@ -231,38 +231,7 @@ export class Enemy {
     }
 
 
-    // SOURCE: https://www.redblobgames.com/grids/line-drawing.html (walk_grid ) 
-    checkIfIsSeen3(p0: any, p1: any) {
-        var dx = p1.x - p0.x, dy = p1.y - p0.y;
-        var nx = Math.abs(dx),
-            ny = Math.abs(dy);
-        var sign_x = dx > 0 ? 1 : -1, sign_y = dy > 0 ? 1 : -1;
-        var p = { x: p0.x, y: p0.y };
-        var points = [{ x: p.x, y: p.y }];
-        for (var ix = 0, iy = 0; ix < nx || iy < ny;) {
-            if ((0.5 + ix) / nx < (0.5 + iy) / ny) {
-                // next step is horizontal
-                p.x += sign_x;
-                ix++;
-            } else {
-                // next step is vertical
-                p.y += sign_y;
-                iy++;
-            }
-            points.push({ x: p.x, y: p.y });
-        }
-        //console.log(points);
-        let output = true;
-        for (let i = 0; i < points.length; i += 3) {  // STEP DI 2 PER RIDURRE I CICLI...
-            const ele = points[i];
-            if (this.map.map[Math.floor(ele.y / this.c.TILE_SIZE)][Math.floor(ele.x / this.c.TILE_SIZE)] == 1) {
-                output = false;
-                break;
-            }
-        }
-        return output;
-    }
-
+    // SOURCE: https://www.redblobgames.com/grids/line-drawing.html
     checkIfIsSeen2(p0: any, p1: any) {
         let points = Helper.line(p0,p1);
         let output = true;

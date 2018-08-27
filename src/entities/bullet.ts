@@ -176,6 +176,7 @@ export class BulletHandler {
                         setTimeout(() => {
                             this.enemy.respawn(bot);
                         }, this.c.GAME_RESPAWN_TIME);
+                        this.main.fragMessage = `You fragged ${bot.name} ${this.calculateRanking()} place with ${this.player.kills}`;
                     }
                     this.pool.push(shot);
                     this.list.splice(i, 1);
@@ -202,6 +203,31 @@ export class BulletHandler {
                 continue
             }
         }
+    }
+
+    calculateRanking(){
+        let index;
+        this.main.actors = this.main.actors.sort((obj1:any, obj2:any) =>obj2.kills - obj1.kills);
+        for (let i = 0; i < this.main.actors.length; i++) {
+            const element = this.main.actors[i];
+            if(element.index==100){
+                index=i;
+                break;
+            }
+        }
+        let output;
+        switch (index) {
+            case 0: output ='1st'break;
+            case 1: output ='2nd'break;
+            case 2: output ='3rd'break;
+            case 3: output ='4th'break;
+            case 4: output ='5th'break;
+            case 5: output ='6th'break;
+            case 6: output ='7th'break;
+            case 7: output ='0th'break;
+            default:break;
+        }
+        return output;
     }
 
     render() {

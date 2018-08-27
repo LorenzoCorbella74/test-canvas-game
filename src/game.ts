@@ -52,10 +52,13 @@ export default class Game {
     gameType:      string;           // TODO: sarà in seguito anche Team Deathmatch, Capture the flag, Skirmish
     data:          any;
 
-    actors:any[];
+    actors:        any[];
+
+    fragMessage:   string;
+    durationfragMessage:   number;
 
     // A* PATHFINDING
-    easystar:any;
+    easystar:      any;
 
     // UI
     fontFamily:        string;
@@ -100,6 +103,9 @@ export default class Game {
         this.fontFamily          = this.c.FONT_FAMILY;
         this.actors              = [];
         this.easystar            = {};
+
+        this.fragMessage         ='';
+        this.durationfragMessage =0;
         
         
         // bots names
@@ -139,13 +145,13 @@ export default class Game {
 
         // si inizializza il player
         this.player.createPlayer();      
-        this.actors.push(this.player);
+        this.actors[0]= this.player;
         
         // si crea i bots
         botsArray.forEach((elem:any, index:number) => {
             let e = this.data.spawn[index];
             let bot = this.enemy.create(e.x,e.y, index, this.defineTeams(index)); // si crea un nemico
-            this.actors.push(bot);
+            this.actors[this.actors.length]=bot;
         });
 
         this.waypoints.linkToActors();
@@ -191,6 +197,15 @@ export default class Game {
 
         if (this.state != 'game') {
             return
+        }
+
+        if(this.fragMessage){
+            this.durationfragMessage+= dt;
+        }
+
+        if(this.durationfragMessage> 1500){
+            this.fragMessage= '';
+            this.durationfragMessage = 0;
         }
 
         for (let i = 0; i < this.enemy.list.length; i++) {
@@ -283,6 +298,14 @@ export default class Game {
             this.ctx.textAlign = 'center';
             this.ctx.fillText(`Respawn in ${Math.ceil((this.c.GAME_RESPAWN_TIME - this.player.respawnTime) / 1000).toString()}`, 400, 120);
         }
+
+        // FRAG MESSAGE
+        if (this.fragMessage) {
+            this.ctx.fillStyle = '#565454';
+            this.ctx.font = 'bold 20px/1 Arial';
+            this.ctx.textAlign = 'center';
+            this.ctx.fillText(this.fragMessage, 400, 120);
+        }
     }
 
     textONCanvas(context, text, x, y, font, style, align?, baseline?) {
@@ -355,10 +378,15 @@ export default class Game {
         var light = 'rgba(0,0,0)';
         this.textONCanvas(main.ctx, 'Corbe Shooter 2D',hW, hH - 150, 'normal 42px/1 ' + main.fontFamily, light);
         this.textONCanvas(main.ctx, 'Partita completata!', hW, hH - 70, 'normal 22px/1 ' + main.fontFamily, dark);
-        this.textONCanvas(main.ctx, `${main.player.name} - ${main.player.kills} - ${main.player.numberOfDeaths}`, hW, hH - 30, 'normal 16px/1 ' + main.fontFamily, medium);
-        for (let i = 0; i < this.enemy.list.length; i++) {
-            const bot = this.enemy.list[i];
-            this.textONCanvas(main.ctx, `${bot.name} - ${bot.kills} - ${bot.numberOfDeaths}`, hW, hH - 30 +(20*(i+1)), 'normal 16px/1 ' + main.fontFamily, medium);
+        // this.textONCanvas(main.ctx, `${main.player.name} - ${main.player.kills} - ${main.player.numberOfDeaths}`, hW, hH - 30, 'normal 16px/1 ' + main.fontFamily, medium);
+        // for (let i = 0; i < this.enemy.list.length; i++) {
+        //     const bot = this.enemy.list[i];
+        //     this.textONCanvas(main.ctx, `${bot.name} - ${bot.kills} - ${bot.numberOfDeaths}`, hW, hH - 30 +(20*(i+1)), 'normal 16px/1 ' + main.fontFamily, medium);
+        // }
+        this.actors = this.actors.sort((obj1, obj2) =>obj2.kills - obj1.kills);
+        for (let i = 0; i < this.actors.length; i++) {
+            const actor = this.actors[i];
+            this.textONCanvas(main.ctx, `${actor.name} - ${actor.kills} - ${actor.numberOfDeaths}`, hW, hH - 30 +(20*(i+1)), 'normal 16px/1 ' + main.fontFamily, medium);
         }
         this.textONCanvas(main.ctx, 'Click to Restart', hW, main.canvas.height - 120, 'normal 18px/1 ' + main.fontFamily, dark);
         this.textONCanvas(main.ctx, 'L.Corbella © 2018', 9, main.canvas.height - 14, 'normal 12px/1 ' + main.fontFamily, light, 'left')
@@ -377,10 +405,15 @@ export default class Game {
         var medium = 'rgba(0,0,0,0.5)';
         var light = 'rgba(0,0,0,0.3)';
         this.textONCanvas(main.ctx, 'Paused', hW, hH - 60, 'normal 22px/1 ' + main.fontFamily, dark);
-        this.textONCanvas(main.ctx, `${main.player.name} - ${main.player.kills} - ${main.player.numberOfDeaths}`, hW, hH - 30, 'normal 16px/1 ' + main.fontFamily, medium);
-        for (let i = 0; i < this.enemy.list.length; i++) {
-            const bot = this.enemy.list[i];
-            this.textONCanvas(main.ctx, `${bot.name} - ${bot.kills} - ${bot.numberOfDeaths}`, hW, hH - 30 +(20*(i+1)), 'normal 16px/1 ' + main.fontFamily, medium);
+        // this.textONCanvas(main.ctx, `${main.player.name} - ${main.player.kills} - ${main.player.numberOfDeaths}`, hW, hH - 30, 'normal 16px/1 ' + main.fontFamily, medium);
+        // for (let i = 0; i < this.enemy.list.length; i++) {
+        //     const bot = this.enemy.list[i];
+        //     this.textONCanvas(main.ctx, `${bot.name} - ${bot.kills} - ${bot.numberOfDeaths}`, hW, hH - 30 +(20*(i+1)), 'normal 16px/1 ' + main.fontFamily, medium);
+        // }
+        this.actors = this.actors.sort((obj1, obj2) =>obj2.kills - obj1.kills);
+        for (let i = 0; i < this.actors.length; i++) {
+            const actor = this.actors[i];
+            this.textONCanvas(main.ctx, `${actor.name} - ${actor.kills} - ${actor.numberOfDeaths}`, hW, hH - 30 +(20*(i+1)), 'normal 16px/1 ' + main.fontFamily, medium);
         }
         this.textONCanvas(main.ctx, 'Click to Continue', hW, hH + 150   , 'normal 17px/1 ' + main.fontFamily, dark)
     }

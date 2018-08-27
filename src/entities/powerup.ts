@@ -1,4 +1,4 @@
-import { Helper } from './helper';
+import { Helper } from '../helper';
 
 export const tipiPowerUp = {
     'health':      { name: 'health', hp:5, color:'DodgerBlue', r: 5, spawnTime:  30000 },

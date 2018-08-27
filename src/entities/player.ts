@@ -1,4 +1,4 @@
-import { Helper } from './helper';
+import { Helper } from '../helper';
 import { WeaponsInventory } from './weapons';
 export class Player {
 

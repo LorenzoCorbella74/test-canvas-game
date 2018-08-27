@@ -1,14 +1,14 @@
-import { Enemy } from './enemies';
-import { PowerUp } from './powerup';
+import { Enemy } from './entities/enemies';
+import { PowerUp } from './entities/powerup';
 import { ControlHandler } from './controller';
-import { Player } from './player';
+import { Player } from './entities/player';
 import { Config } from './config';
 import { Camera } from './camera';
 import { Map } from './maps';
-import {BulletHandler} from './bullet';
-import { Particelle } from './particelle';
-import { Blood } from './blood';
-import { Waypoints } from './waypoints';
+import {BulletHandler} from './entities/bullet';
+import { Particelle } from './entities/particelle';
+import { Blood } from './entities/blood';
+import { Waypoints } from './entities/waypoints';
 
 import * as EasyStar from 'easystarjs'
 

@@ -1,5 +1,5 @@
-import { BrainFSM } from './brain';
-import { Helper } from './helper'
+import { BrainFSM } from '../brain';
+import { Helper } from '../helper'
 import { WeaponsInventory } from './weapons';
 
 

@@ -1,4 +1,4 @@
-import { Helper } from './helper';
+import { Helper } from '../helper';
 
 export class BulletHandler {
 
@@ -195,7 +195,7 @@ export class BulletHandler {
             if(shot.type.name=='Flamer'){
                 this.main.ctx.fillStyle = Helper.randomElementInArray(this.c.FIRE_IN_LAVA); // 'rgba(0,0,0,0.66)';
             } else if(shot.type.name=='Plasma'){
-                this.main.ctx.fillStroke = shot.color;
+                this.main.ctx.fillStyle = shot.color; // TODO: 
             } else{
                 this.main.ctx.fillStyle = shot.color; // 'rgba(0,0,0,0.66)';
             }

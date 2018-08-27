@@ -81,7 +81,7 @@ export default class Game {
     }
     
     // fa partire il gameloop
-    startGame() {
+    startGame(gametype:string='deathmatch') {
         this.c                   = new Config();
         this.canvas.height       = this.c.CANVAS_HEIGHT; // window.innerHeight
         this.canvas.width        = this.c.CANVAS_WIDTH; // window.innerWidth
@@ -95,7 +95,7 @@ export default class Game {
         this.killsToWin          = this.c.GAME_KILLS_TO_WIN;
         this.matchDuration       = this.c.GAME_MATCH_DURATION;
         this.numberOfBots        = this.c.GAME_BOTS_PER_MATCH;
-        this.gameType            = this.c.GAME_MATCH_TYPE;
+        this.gameType            = gametype;
         this.canvas.style.cursor = 'crosshair';
         this.fontFamily          = this.c.FONT_FAMILY;
         this.actors              = [];
@@ -294,6 +294,25 @@ export default class Game {
     }
 
     loadMenuScreen(main: any) {
+        
+        let gameType:string;
+
+        main.canvas.addEventListener('click', (e:any) => {
+            const pos = {
+              x: e.clientX,
+              y: e.clientY
+            };
+            if(deathBtn.contains(pos.x,pos.y)){
+                gameType='deathmatch'
+            }
+            if(teamBtn.contains(pos.x,pos.y)){
+                gameType= 'team';
+            }
+            if(playBtn.contains(pos.x,pos.y)){
+                this.startGame(gameType);
+            }
+        })
+
         main.canvas.style.cursor='pointer';
         main.state = 'menuScreen';
         main.control.mouseLeft = false;
@@ -303,13 +322,25 @@ export default class Game {
         var dark = 'rgba(0,0,0)';
         var medium = 'rgba(0,0,0)';
         var light = 'rgba(0,0,0)';
-        this.textONCanvas(main.ctx, 'Arena Shooter 2D', hW, hH - 100, 'normal 32px/1 ' + main.fontFamily, light, );
+        this.textONCanvas(main.ctx, 'Arena Shooter 2D', hW, hH - 100, 'normal 36px/1 ' + main.fontFamily, light, );
         this.textONCanvas(main.ctx, 'Use "WASD" to move and "Left Click" to shoot.', hW, hH - 30, 'normal 15px/1 ' + main.fontFamily, medium);
         this.textONCanvas(main.ctx, 'Use mouse wheel to change weapons.', hW, hH - 10, 'normal 15px/1 ' + main.fontFamily, medium);
         this.textONCanvas(main.ctx, 'P or ESC for pause screen (i for debug, g for godmode, b to cycle camera).', hW, hH + 10, 'normal 15px/1 ' + main.fontFamily, medium);
-        this.textONCanvas(main.ctx, 'Click to Start', hW, hH + 80, 'normal 18px/1 ' + main.fontFamily, dark);
-
-        this.textONCanvas(main.ctx, 'L.Corbella © 2018', 9, main.canvas.height - 14, 'normal 12px/1 ' + main.fontFamily, light, 'left')
+        // this.textONCanvas(main.ctx, 'Click to Start', hW, hH + 80, 'normal 18px/1 ' + main.fontFamily, dark);
+        
+        this.textONCanvas(main.ctx, 'L.Corbella © 2018', 9, main.canvas.height - 14, 'normal 12px/1 ' + main.fontFamily, light, 'left');
+        
+        let deathBtn = new MyBTN(150,350,200,100);
+        deathBtn.draw(main.ctx);
+        this.textONCanvas(main.ctx, 'DeathMatch', 250, 375, 'normal 15px/1 ' + main.fontFamily, medium);
+        
+        let teamBtn = new MyBTN(450,350,200,100);
+        teamBtn.draw(main.ctx);
+        this.textONCanvas(main.ctx, 'Team DeathMatch', 550, 375, 'normal 15px/1 ' + main.fontFamily, medium);
+        let playBtn = new MyBTN(300,475,200,100);
+        playBtn.draw(main.ctx);
+     
+        this.textONCanvas(main.ctx, 'Click to start', 400, 525, 'normal 15px/1 ' + main.fontFamily, medium);
     }
 
     loadStatsScreen(main: any) {
@@ -352,5 +383,31 @@ export default class Game {
             this.textONCanvas(main.ctx, `${bot.name} - ${bot.kills} - ${bot.numberOfDeaths}`, hW, hH - 30 +(20*(i+1)), 'normal 16px/1 ' + main.fontFamily, medium);
         }
         this.textONCanvas(main.ctx, 'Click to Continue', hW, hH + 150   , 'normal 17px/1 ' + main.fontFamily, dark)
+    }
+}
+
+export class MyBTN  {
+
+    x:      number;
+    y:      number;
+    width:  number;
+    height: number;
+
+
+    constructor(x:number, y:number, w:number, h:number){
+        this.x = x;
+        this.y = y;
+        this.width = w;
+        this.height = h;
+    }
+
+    contains(x:number, y:number) {
+        return this.x <= x && x <= this.x + this.width &&
+               this.y <= y && y <= this.y + this.height;
+    }
+
+    draw(ctx:any) {
+        ctx.rect(this.x, this.y, this.width, this.height);
+        ctx.stroke();
     }
 }

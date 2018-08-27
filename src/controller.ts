@@ -82,6 +82,7 @@ export class ControlHandler {
         }
     }
 
+    // permette di ciclare tra i bot
     followBot(back:boolean){
         const botIndex = Helper.getBotsName(this.main.enemy.list.map(e=>e.index));  // FIXME: è usato sia per i nomi che per l'index
         let currentActorInCamera = back?this.player: this.main.enemy.list[botIndex];
@@ -100,7 +101,9 @@ export class ControlHandler {
     mouseUpEvent(e:any) {
         if (this.mouseLeft) {
             if (this.main.state == 'menuScreen') {
-                this.main.startGame();
+                // this.main.startGame();
+                console.log(e);
+
             }
             if (this.main.paused) {
                 this.main.paused= false;

@@ -357,6 +357,29 @@ export class Enemy {
         return output.elem;
     }
 
+    // DA PROVARE CON UN NUOVO STATO!
+    /* getNearestWaypoint(bot: any, data: any) {
+        let  dist:number = 10000 ; // elemento + vicino ad bot
+        let result:any =[];
+        data
+            .filter((elem: any) => elem[bot.index].visible == true) // solo quelli non ancora attraversati dallo specifico bot
+            //.filter((e:any)=>this.checkIfIsSeen2(bot, e))       // può essere anche più vicino ma se è dall'altra parte del muro ?!?!
+            .forEach((e: any) => {
+                let distanza = Helper.calculateDistance(bot, e);
+                if (dist > distanza && distanza < 400) {
+                    dist = distanza;
+                    result.push({ dist: distanza, elem: e });
+                }
+            });
+        if(result.length==0){
+            return null;
+        } else if(result.length==1){
+            return result[0].elem;
+        }else{
+            return Math.random()<0.95? result[result.length-1].elem:result[result.length-2].elem;
+        }
+    } */
+
     getNearestWaypoint(bot: any, data: any) {
         let output: any = { dist: 10000 }; // elemento + vicino ad bot
         data

@@ -168,20 +168,13 @@ export class BulletHandler {
             if(shot.type.name=='Plasma'){
                 shot.r =1 + Math.abs(Math.sin(shot.angleForDinamicRadius))*5;
             }
-            if(shot.type.name=='Railgun'){
+            /* if(shot.type.name=='Railgun'){
                 let time = new Date().getTime()+dt;// in ms
-                let period = 100;// in ms
-                let amplitude = 25; // in px
-                shot.vX +=amplitude * Math.sin(time * 2 * Math.PI / period);
-                // shot.y +=amplitude * Math.sin(dt * 2 * Math.PI / period);
- 
-                
-
-        // in ms
-        
-                // clear
-                //shot.vY =shot.vY +0.1 + Math.sin(shot.angleForDinamicRadius)*shot.vY;
-            }
+                let period = 250;// in ms
+                let amplitude = 30; // in px
+                shot.vX  += amplitude * Math.sin(time + 2 * Math.PI / period);
+                shot.vY  += amplitude * Math.cos(time + 2 * Math.PI / period);
+            } */
             // decremento del proiettile
             shot.ttl -= dt;
             if (shot.ttl <= 0) {

@@ -10,7 +10,7 @@ export class Config {
     // GAME
     GAME_KILLS_TO_WIN:      number = 15;
     GAME_MATCH_DURATION:    number = 300000; // in ms 
-    GAME_BOTS_PER_MATCH:    number = 5;
+    GAME_BOTS_PER_MATCH:    number = 0;
     GAME_RESPAWN_TIME:      number = 5000;   // in ms
 
     //
@@ -49,6 +49,7 @@ export class Config {
     BLOOD_RADIUS:number = 4;
 
     FIRE_IN_LAVA:string[]=['#ffffe0','#fff1c4','#ffe2a5','#ffd587','#ffc667','#ffb541','#ffa500']; // lightyellow, orange, #FFA500
+    FIRE_EXPLOSION:string[]=['#808080','#ff6000','#ff8811','#ffab2b','#ffcb4b','#ffe878','#ffffe0']; // Crimson, red, yellow, lightyellow
 
     // POWERUP
     POWERUP_RADIUS:number = 6;

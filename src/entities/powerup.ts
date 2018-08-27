@@ -162,10 +162,13 @@ export class PowerUp {
                     if(powerup.ref){
                         if(powerup.ref.startsWith('weapon')){
                             bot.weaponsInventory.setAvailabilityAndNumOfBullets(powerup.for, powerup.amount);
+                            bot.weaponsInventory.getBest();
+                            bot.currentWeapon = bot.weaponsInventory.selectedWeapon;	// arma corrente
                         } else{
                             bot.weaponsInventory.setNumOfBullets(powerup.for, powerup.amount);
                         }
                     }
+
                 }
             }
 

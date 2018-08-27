@@ -331,7 +331,7 @@ export class Player {
 		}
 	}
 
-	update(dt: number) {
+	update(dt: number, timestamp:number) {
 
 		if (this.alive) {
 			// this.attackCounter += dt;	// contatore frdequenza di sparo

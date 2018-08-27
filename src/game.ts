@@ -190,7 +190,7 @@ export default class Game {
         }
 
         if(!this.paused){
-            this.updateAll(dt);
+            this.updateAll(dt, timestamp);
             this.renderAll();
         }
         
@@ -204,15 +204,15 @@ export default class Game {
         }
     }
 
-    updateAll(dt:number) {
-        this.player.update(dt);
-        this.enemy.update(dt);
-        this.camera.update(dt);
-        this.bullet.update(dt); 
-        this.powerup.update(dt);
-        this.waypoints.update(dt);    // waypoints
-        this.particelle.update(dt);
-        this.blood.update(dt);
+    updateAll(dt:number, timestamp:number) {
+        this.player.update(dt, timestamp);
+        this.enemy.update(dt, timestamp);
+        this.camera.update(dt, timestamp);
+        this.bullet.update(dt, timestamp); 
+        this.powerup.update(dt, timestamp);
+        this.waypoints.update(dt, timestamp);    // waypoints
+        this.particelle.update(dt, timestamp);
+        this.blood.update(dt, timestamp);
         // particles:esplosioni
     }
 

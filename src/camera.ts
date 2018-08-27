@@ -28,7 +28,7 @@ export class Camera {
         this.currentPlayer = player;
     }
 
-    update(dt:number) {
+    update(dt:number, timestamp:number) {
         // si evita di aggiornare la camera quando si arriva al bordo della mappa
         if (this.currentPlayer.x > (this.w / 2) && this.currentPlayer.x < this.map.mapSize.w - (this.w / 2)) {
             this.x = this.currentPlayer.x - (this.w / 2);

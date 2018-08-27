@@ -57,7 +57,7 @@ export class BulletHandler {
         }
     }
 
-    update(dt: number) {
+    update(dt: number,timestamp:number) {
         let shot, i;
         for (i = this.list.length - 1; i >= 0; i--) {
             shot = this.list[i];

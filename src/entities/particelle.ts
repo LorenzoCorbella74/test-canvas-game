@@ -38,7 +38,7 @@ export class Particelle {
         this.list.push(obj)
     };
 
-    update (dt:number) {
+    update (dt:number, timestamp:number) {
         if (this.list.length > 0) {
             var obj;
             for (var i = this.list.length - 1; i >= 0; i--) {

@@ -46,7 +46,7 @@ export class Waypoints {
     };
 
 
-    update(dt:number) {
+    update(dt:number, timestamp:number) {
         for (var i = this.list.length - 1; i >= 0; i--) {
             var waypoint = this.list[i];
             

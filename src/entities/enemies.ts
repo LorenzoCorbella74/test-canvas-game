@@ -247,7 +247,7 @@ export class Enemy {
 
     /* -------------------------------------------------------------------------------------- */
 
-    update(dt: number) {
+    update(dt: number, timestamp:number) {
         for (let i = this.list.length - 1; i >= 0; i--) {
             const bot = this.list[i];
             if (bot.alive) {

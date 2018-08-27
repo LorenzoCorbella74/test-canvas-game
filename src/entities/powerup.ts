@@ -106,7 +106,7 @@ export class PowerUp {
         }
     }
 
-    update(dt:number) {
+    update(dt:number, timestamp:number) {
         for (var i = this.list.length - 1; i >= 0; i--) {
             var powerup = this.list[i];
 

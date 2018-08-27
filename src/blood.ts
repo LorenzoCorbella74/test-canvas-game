@@ -54,7 +54,7 @@ export class Blood {
         this.list.push(obj)
     };
 
-    render(dt:number){
+    render(){
         for (var i = this.list.length - 1; i >= 0; i--) {
             var sangue = this.list[i];
             let x = sangue.x - this.main.camera.x;

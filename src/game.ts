@@ -191,7 +191,7 @@ export default class Game {
 
         if(!this.paused){
             this.updateAll(dt);
-            this.renderAll(dt);
+            this.renderAll();
         }
         
         this.lastRender = timestamp;
@@ -216,19 +216,19 @@ export default class Game {
         // particles:esplosioni
     }
 
-    renderAll(dt:number): void {
+    renderAll(): void {
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);  // svuota il canvas
-        this.currentMap.render(dt);
-        this.player.render(dt);
-        this.enemy.render(dt);
-        this.bullet.render(dt); 
-        this.powerup.render(dt);
-        this.waypoints.render(dt);    // waypoints
-        this.particelle.render(dt);
-        this.blood.render(dt);
+        this.currentMap.render();
+        this.player.render();
+        this.enemy.render();
+        this.bullet.render(); 
+        this.powerup.render();
+        this.waypoints.render();    // waypoints
+        this.particelle.render();
+        this.blood.render();
         // particles:esplosioni
 
-        this.renderHUD(dt);   // HUD
+        this.renderHUD();   // HUD
     }
 
     countDown(){
@@ -240,7 +240,7 @@ export default class Game {
         return  `${minutes}:${seconds}`;
     }
 
-    private renderHUD(dt: number) {
+    private renderHUD() {
         this.ctx.fillStyle = this.c.HUD_BACKGROUND;
         this.ctx.fillRect(0, 0, this.c.CANVAS_WIDTH, this.c.TILE_SIZE);
         this.ctx.textAlign = 'LEFT';

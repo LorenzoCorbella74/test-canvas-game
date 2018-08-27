@@ -136,7 +136,7 @@ export class Player {
 		return this.c.PLAYER_COLOUR_INSIDE;
 	}
 
-	render(dt: number) {
+	render() {
 		if (this.alive) {	// solo se il player è vivo!
 
 			// trails

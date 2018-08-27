@@ -185,7 +185,7 @@ export class BulletHandler {
         }
     }
 
-    render(dt: number) {
+    render() {
         for (let j = this.list.length - 1; j >= 0; j--) {
             const shot = this.list[j];
             let x = shot.x - this.main.camera.x;

@@ -184,7 +184,7 @@ export class PowerUp {
         }
     }
 
-    render(dt:number) {
+    render() {
         for (let i = this.list.length - 1; i >= 0; i--) {
             let powerup = this.list[i];
             // tutti i powerup tranne ammo e weapons

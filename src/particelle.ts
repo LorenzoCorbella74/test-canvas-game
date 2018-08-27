@@ -57,7 +57,7 @@ export class Particelle {
         }
     }
 
-    render(dt:number){
+    render(){
         for (var i = this.list.length - 1; i >= 0; i--) {
             var detrito = this.list[i];
             let x = detrito.x - this.main.camera.x;

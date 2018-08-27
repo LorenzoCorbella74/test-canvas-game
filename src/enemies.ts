@@ -111,7 +111,7 @@ export class Enemy {
         return this.c.ENEMY_COLOUR_INSIDE;
     }
 
-    render(dt: number) {
+    render() {
         for (let i = this.list.length - 1; i >= 0; i--) {
             const bot = this.list[i];
             if (bot.alive) {

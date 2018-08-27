@@ -77,7 +77,7 @@ export class Waypoints {
         }
     }
 
-    render(dt: number) {
+    render() {
         if (this.main.debug) {
             for (let i = this.list.length - 1; i >= 0; i--) {
                 let waypoint = this.list[i];

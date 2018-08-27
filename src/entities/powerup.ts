@@ -2,7 +2,7 @@ import { Helper } from '../helper';
 
 export const tipiPowerUp = {
     'health':      { name: 'health', hp:5, color:'DodgerBlue', r: 5, spawnTime:  30000 },
-    'megaHealth':  { name: 'megaHealth', hp:50, color:'blue', r:10, spawnTime: 30000 },
+    'megaHealth':  { name: 'megaHealth', hp:50, color:'DodgerBlue', r:10, spawnTime: 30000 },
     'armour':      { name: 'armour', ap:5, color:'green', r:5, spawnTime:  30000 },
     'megaArmour':  { name: 'megaArmour', ap:50, color:'green', r:10, spawnTime: 30000 },
     'quad':        { name: 'quad', multiplier:4, color:'violet', r:10, spawnTime: 30000, enterAfter: 60000, duration: 10000 },

@@ -188,13 +188,28 @@ export class BulletHandler {
             if(shot.type.name=='Plasma'){
                 shot.r =1 + Math.abs(Math.sin(shot.angleForDinamicRadius))*5;
             }
-            // if(shot.type.name=='Railgun'){
-            //     let time = timestamp; // in ms
-            //     let period = 250;// in ms
-            //     let amplitude = 30; // in px
-            //     shot.vX  *= amplitude * Math.sin(time + 2 * Math.PI / period);
-            //     shot.vY  *= amplitude * Math.sin(time + 2 * Math.PI / period);
-            // }
+            if(shot.type.name=='Railgun'){
+                let amplitude = 8; // in px
+                let beta = timestamp + Math.PI / 2;
+                let p1:any ={};
+                let p2:any ={};
+                p1.x = shot.x + Math.cos(beta) * amplitude;
+                p1.y = shot.y + Math.sin(beta) * amplitude;
+                p2.x = shot.x + Math.cos(beta) * amplitude;
+                p2.y = shot.y + Math.sin(beta) * amplitude;
+                this.main.particelle.create(p1.x, p1.y, 0, 0, 3, shot.color);
+                this.main.particelle.create(p2.x, p2.y, 0, 0, 3, shot.color);
+            }
+            if (shot.type.name == 'Rocket') {
+                let amplitude = 2; // in px
+                let beta = timestamp + Math.PI / 2;
+                for (let i = 0; i < 2; i++) {
+                    let scia: any = {};
+                    scia.x = shot.x + Math.cos(beta) * amplitude;
+                    scia.y = shot.y + Math.sin(beta) * amplitude;
+                    this.main.particelle.create(scia.x, scia.y, 0, 0, 3, Helper.randomElementInArray(this.c.FIRE_EXPLOSION));
+                }
+            }
             // decremento del proiettile
             shot.ttl -= dt;
             if (shot.ttl <= 0) {
@@ -217,14 +232,14 @@ export class BulletHandler {
         }
         let output;
         switch (index) {
-            case 0: output ='1st'break;
-            case 1: output ='2nd'break;
-            case 2: output ='3rd'break;
-            case 3: output ='4th'break;
-            case 4: output ='5th'break;
-            case 5: output ='6th'break;
-            case 6: output ='7th'break;
-            case 7: output ='0th'break;
+            case 0: output ='1st'; break;
+            case 1: output ='2nd'; break;
+            case 2: output ='3rd'; break;
+            case 3: output ='4th'; break;
+            case 4: output ='5th'; break;
+            case 5: output ='6th'; break;
+            case 6: output ='7th'; break;
+            case 7: output ='0th'; break;
             default:break;
         }
         return output;
@@ -238,9 +253,7 @@ export class BulletHandler {
             this.main.ctx.beginPath();
             this.main.ctx.arc(x, y, shot.r, 0, 6.2832);
             if(shot.type.name=='Flamer'){
-                this.main.ctx.fillStyle = Helper.randomElementInArray(this.c.FIRE_IN_LAVA); // 'rgba(0,0,0,0.66)';
-            } else if(shot.type.name=='Plasma'){
-                this.main.ctx.fillStyle = shot.color; // TODO: 
+                this.main.ctx.fillStyle = Helper.randomElementInArray(this.c.FIRE_EXPLOSION); 
             } else{
                 this.main.ctx.fillStyle = shot.color; // 'rgba(0,0,0,0.66)';
             }
@@ -258,7 +271,7 @@ export class BulletHandler {
         shot.index   = index;   // è l'id del 
         shot.firedBy = firedBy; // indica da chi è sparato il colpo ( player, enemy )
         shot.type    = type;
-        if(shot.type.name=='Plasma' || shot.type.name=='Railgun'){
+        if(shot.type.name=='Plasma'){
             shot.angleForDinamicRadius = 0;
         }
         shot.vX  = vX * type.speed + Math.random() * type.spread * 2 - type.spread;

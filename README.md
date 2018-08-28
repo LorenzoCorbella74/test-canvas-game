@@ -2,7 +2,7 @@
 
 ![arena](screen/arena.png)
 
-Esempio di shooter 2D realizzato per studiare il canvas e lo sviluppo di giochi con tecnologie web. Il gioco ricrea le meccaniche di arena shooter quali Quake 3 Arena, Unreal tournament, etc.
+Esempio di top down shooter, prototipo realizzato per studiare il canvas e lo sviluppo di giochi con tecnologie web. Il gioco ricrea le meccaniche di arena shooter quali Quake 3 Arena, Unreal tournament, etc.
 
 ## Features
 - [x] scrolling map built with tiles 

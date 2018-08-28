@@ -116,6 +116,10 @@ export class Enemy {
         for (let i = this.list.length - 1; i >= 0; i--) {
             const bot = this.list[i];
             if (bot.alive) {
+
+                var pointerLength = this.c.ENEMY_RADIUS;
+                let intersX =bot.x - this.camera.x + pointerLength * Math.cos(bot.angleWithTarget);
+                let intersY =bot.y - this.camera.y + pointerLength * Math.sin(bot.angleWithTarget);
                 // trails
                 for (let i = 0; i < bot.trails.length; i++) {
                     let ratio = (i + 1) / bot.trails.length;
@@ -127,7 +131,7 @@ export class Enemy {
 
                 // draw the WEAPON !!
                 this.ctx.beginPath();
-                this.ctx.arc(bot.x - this.camera.x -bot.r-3, bot.y - this.camera.y-bot.r-3, 4, 0, 2 * Math.PI, true);
+                this.ctx.arc(intersX, intersY, 4, 0, 2 * Math.PI, true);
                 this.ctx.fillStyle = bot.currentWeapon.color;
                 this.ctx.fill();
 
@@ -146,11 +150,7 @@ export class Enemy {
                 this.ctx.strokeStyle = bot.team !='team1'? this.c.ENEMY_COLOUR_OUTSIDE: this.c.PLAYER_COLOUR_OUTSIDE;
                 this.ctx.beginPath();
                 this.ctx.moveTo(bot.x - this.camera.x, bot.y - this.camera.y);
-                var pointerLength = this.c.ENEMY_RADIUS;
-                this.ctx.lineTo(
-                    bot.x - this.camera.x + pointerLength * Math.cos(bot.angleWithTarget),
-                    bot.y - this.camera.y + pointerLength * Math.sin(bot.angleWithTarget)
-                );
+                this.ctx.lineTo(intersX,intersY);
                 this.ctx.stroke();
 
                 if (this.main.debug) {

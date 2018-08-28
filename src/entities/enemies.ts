@@ -99,7 +99,7 @@ export class Enemy {
                 let respawnParticles: any = {};
                 respawnParticles.x = bot.x  + Math.cos(beta) * Helper.randBetween(0,amplitude);
                 respawnParticles.y = bot.y  + Math.sin(beta) * Helper.randBetween(0,amplitude);
-                this.main.particelle.create(respawnParticles.x, respawnParticles.y , 0.5,0.5, 6, Helper.randomElementInArray(bot.team !='team1'? this.c.ENEMY_RESPAWN:this.c.PLAYER_RESPAWN));
+                this.main.particelle.create(respawnParticles.x, respawnParticles.y , 0.5,0.5, 6, Helper.randomElementInArray(bot.team !='team1'? this.c.ENEMY_RESPAWN   :this.c.PLAYER_RESPAWN));
             }		
     }, 150);
 

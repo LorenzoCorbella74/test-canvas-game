@@ -66,6 +66,7 @@ export class BulletHandler {
                 actor.hp += what;
             }
         }else{
+            actor.ap = 0;
             actor.hp -= damage;
         }
     }

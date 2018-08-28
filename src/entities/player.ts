@@ -182,7 +182,7 @@ export class Player {
 		}
 	}
 
-	respawn() {
+	respawn(timestamp:number) {
 		const spawn = Helper.getSpawnPoint(this.main.data.spawn);
 		console.log(`Player is swawning at ${spawn.x} - ${spawn.y}`);
 		this.index = 100;
@@ -190,6 +190,19 @@ export class Player {
 		this.y = spawn.y;
 		this.camera.setCurrentPlayer(this);
 		this.camera.adjustCamera(this);
+
+		let amplitude = 100;
+		
+		setTimeout(() => {	
+				for (let i = 0; i < 100; i++) {
+					let beta = timestamp + i*20 + + Math.PI / 2;
+					let respawnParticles: any = {};
+					respawnParticles.x = this.x  + Math.cos(beta) * Helper.randBetween(0,amplitude);
+					respawnParticles.y = this.y  + Math.sin(beta) * Helper.randBetween(0,amplitude);
+					this.main.particelle.create(respawnParticles.x, respawnParticles.y , 0.5,0.5, 6, Helper.randomElementInArray(this.c.PLAYER_RESPAWN));
+				}		
+		}, 150);
+
 		this.r = this.c.PLAYER_RADIUS
 		this.speed = this.c.PLAYER_SPEED;	// è uguale in tutte le direzioni
 		this.damage = 1;					// è il moltiplicatore del danno (quad = 4)
@@ -199,10 +212,10 @@ export class Player {
 		this.alive = true;					// il player è nuovamente presente in gioco
 		// this.kills = 0;					// si mantengono...
 		// this.numberOfDeaths = 0;	    	// si mantengono...
-
 		this.weaponsInventory.resetWeapons();                    	// munizioni e disponibilità default
 		this.weaponsInventory.setWeapon(0);							// arma default
 		this.currentWeapon = this.weaponsInventory.selectedWeapon;	// arma corrente
+
 	}
 
 	// collisione tra elementi della stessa dimensione (tile e player)
@@ -337,12 +350,9 @@ export class Player {
 	update(dt: number, timestamp:number) {
 
 		if (this.alive) {
-			// this.attackCounter += dt;	// contatore frdequenza di sparo
-			
 
 			this.isLavaOrToxic(this.x, this.y);
 			this.collisionDetection(dt);
-
 
 			if (this.control.mouseLeft) {	// SE è PREMUTO IL btn del mouse
 				this.shoot(dt);
@@ -352,9 +362,8 @@ export class Player {
 		if (!this.alive) {
 			this.respawnTime += dt;
 			if (this.respawnTime > this.c.GAME_RESPAWN_TIME) {	// numero di cicli oltre il quale è nuovamente visibile
-				this.respawn();
+				this.respawn(timestamp);
 				this.respawnTime = 0;
-			}
 		}
 	}
 }

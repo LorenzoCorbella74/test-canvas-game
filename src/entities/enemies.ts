@@ -91,6 +91,18 @@ export class Enemy {
         bot.targetItem = {};
         bot.trails = [];
 
+        
+        let amplitude = 100;
+        setTimeout(() => {	
+            for (let i = 0; i < 100; i++) {
+                let beta = this.main.lastRender + i*20 + + Math.PI / 2;
+                let respawnParticles: any = {};
+                respawnParticles.x = bot.x  + Math.cos(beta) * Helper.randBetween(0,amplitude);
+                respawnParticles.y = bot.y  + Math.sin(beta) * Helper.randBetween(0,amplitude);
+                this.main.particelle.create(respawnParticles.x, respawnParticles.y , 0.5,0.5, 6, Helper.randomElementInArray(bot.team !='team1'? this.c.ENEMY_RESPAWN:this.c.PLAYER_RESPAWN));
+            }		
+    }, 150);
+
         //  WEAPONS
         bot.attackCounter = 0;
         bot.weaponsInventory.resetWeapons();                    	// munizioni e disponibilità default

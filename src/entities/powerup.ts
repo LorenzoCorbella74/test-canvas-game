@@ -208,11 +208,11 @@ export class PowerUp {
                 this.ctx.strokeStyle = powerup.color;
                 this.ctx.lineWidth = 2.0;
                 this.ctx.stroke();
-                //if (this.main.debug) {
+                if (this.main.debug) {
                     this.ctx.font = 'bold 8px/1 Arial';
                     this.ctx.fillStyle = 'black';
                     this.ctx.fillText(powerup.index.toString(), powerup.x - this.main.camera.x - 6, powerup.y - this.main.camera.y -12);
-                //}
+                }
 
             } 
             if(powerup.visible){

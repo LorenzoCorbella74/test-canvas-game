@@ -254,7 +254,7 @@ export class Enemy {
     checkIfIsSeen2(p0: any, p1: any) {
         let points = Helper.line(p0,p1);
         let output = true;
-        for (let i = 0; i < points.length; i += 3) {  // STEP DI 2 PER RIDURRE I CICLI...
+        for (let i = 0; i < points.length; i += 3) {  // STEP DI 3 PER RIDURRE I CICLI...
             const ele = points[i];
             if (this.map.map[Math.floor(ele.y / this.c.TILE_SIZE)][Math.floor(ele.x / this.c.TILE_SIZE)] == 1) {
                 output = false;
@@ -331,6 +331,38 @@ export class Enemy {
         }
     }
 
+    shot(bot: any, dist: number, dt: number) {
+        if (dist < 350 && this.checkIfIsSeen2(bot.target, bot)) {	// SE non troppo lontano e visibile SPARA!
+            if (bot.currentWeapon.shotNumber > 0) {                 // se l'arma ha proiettili
+                let now = Date.now();
+                if (now - bot.attackCounter < bot.currentWeapon.frequency) return;
+                bot.attackCounter = now;
+
+                // bullet prediction ->how well bots are aiming!!
+                let predvX = (bot.target.x - bot.target.old_x) / (bot.target.speed * dt) / (bot.speed * dt);
+                let predvY = (bot.target.y - bot.target.old_y) / (bot.target.speed * dt) / (bot.speed * dt);
+
+                let vX = (bot.target.x - bot.x);
+                let vY = (bot.target.y - bot.y);
+                let dist = Math.sqrt(vX * vX + vY * vY);	    // si calcola la distanza
+                vX = vX / dist /* + predvX */;					// si normalizza e si calcola la direzione
+                vY = vY / dist /* + predvY */;
+                for (let i = bot.currentWeapon.count; i >= 0; i--) {
+                    this.bullet.create(bot.x, bot.y, vX, vY, 'enemy', bot.index, bot.damage, bot.currentWeapon);
+                    bot.currentWeapon.shotNumber--;
+                }
+            } else {
+                bot.weaponsInventory.getBest();
+                bot.currentWeapon = bot.weaponsInventory.selectedWeapon;	// arma corrente
+            }
+        }
+        else {
+            bot.targetItem = bot.target;    // si va all'ultima posizione del nemico
+            // bot.brain.pushState(this.wander.bind(this));
+            bot.brain.pushState(this.findPath.bind(this));
+        }
+    }
+
     // TODO: https://stackoverflow.com/questions/24378155/random-moving-position-for-sprite-image
 
     wander(bot: any, dt: number) {
@@ -354,7 +386,8 @@ export class Enemy {
             bot.targetItem = power_best || waypoint_best;
 
             if (bot.alive && bot.targetItem) {
-                this.collectPowerUps(bot, dt);
+                // this.collectPowerUps(bot, dt);
+                bot.brain.pushState(this.findPath.bind(this));
             } else {
                 bot.brain.pushState(this.spawn.bind(this));
             }
@@ -426,17 +459,17 @@ export class Enemy {
         return output;
     }
 
-    collectPowerUps(bot: any, dt: number) {
-        bot.angleWithTarget = Helper.calculateAngle(bot.x, bot.y, bot.targetItem.x, bot.targetItem.y);
-        if (bot.brain.first) {
-            // console.log(`Si calcola il path per: ${bot.index}`);
-            // al 1° giro si calcola il percorso
-            this.findPath(bot);
-        } else {
-            // dal 2° in poi si 
-            this.followPath(bot, dt);
-        }
-    }
+    // collectPowerUps(bot: any, dt: number) {
+    //     bot.angleWithTarget = Helper.calculateAngle(bot.x, bot.y, bot.targetItem.x, bot.targetItem.y);
+    //     //if (bot.brain.first) {
+    //         // console.log(`Si calcola il path per: ${bot.index}`);
+    //         // al 1° giro si calcola il percorso
+    //         this.findPath(bot);
+    //     //} else {
+    //         // dal 2° in poi si 
+    //         //this.followPath(bot, dt);
+    //     //}
+    // }
 
     findPath(bot: any) {
         // Calculate the path-finding path
@@ -452,70 +485,56 @@ export class Enemy {
                 bot.path = path || [];
                 const end = performance.now();
                 //console.log(`Pathfinding took ${end - start} ms for bot ${bot.index}`);
-                this.followPath(bot, 16)
+                // this.followPath(bot, 16)
+                bot.brain.pushState(this.followPath.bind(this));
             }
         });
         this.main.easystar.calculate();
     }
 
     followPath(bot: any, dt: number) {
-        let map = this.main.currentMap;
-        // Move along the path
-        if (!bot.path.length) {
-            return;
-        }
-        // bot.path.slice(2)
-        const cell = bot.path[0];
-        // We need to get the distance
-        var tx = ((cell.x * map.tileSize) + map.tileSize / 2) - bot.x,
-            ty = ((cell.y * map.tileSize) + map.tileSize / 2) - bot.y,
-            dist = Math.sqrt(tx * tx + ty * ty);
-        if (dist != 0) {
-            bot.velX = (tx / dist);
-            bot.velY = (ty / dist);
-            bot.old_x = bot.x;
-            bot.old_y = bot.y;
-            bot.x += bot.velX * bot.speed * dt;
-            bot.y += bot.velY * bot.speed * dt;
-        }
-        // if finished move to the next path element
-        if (dist < 3) {
-            bot.path = bot.path.slice(1);
-            if (bot.path.length === 0) {
-                this.findPath(bot);
-                //bot.brain.pushState(this.wander.bind(this));
-            }
-        }
-    }
+        bot.angleWithTarget = Helper.calculateAngle(bot.x, bot.y, bot.targetItem.x, bot.targetItem.y);
+        bot.status = 'wander';
+        let opponentData = this.getNearestVisibleEnemy(bot, this.main.actors);
+        bot.target = opponentData.elem;
 
-    shot(bot: any, dist: number, dt: number) {
-        if (dist < 350 && this.checkIfIsSeen2(bot.target, bot)) {	// SE non troppo lontano e visibile SPARA!
-            if (bot.currentWeapon.shotNumber > 0) {                 // se l'arma ha proiettili
-                let now = Date.now();
-                if (now - bot.attackCounter < bot.currentWeapon.frequency) return;
-                bot.attackCounter = now;
-
-                // bullet prediction ->how well bots are aiming!!
-                let predvX = (bot.target.x - bot.target.old_x) / (bot.target.speed * dt) / (bot.speed * dt);
-                let predvY = (bot.target.y - bot.target.old_y) / (bot.target.speed * dt) / (bot.speed * dt);
-
-                let vX = (bot.target.x - bot.x);
-                let vY = (bot.target.y - bot.y);
-                let dist = Math.sqrt(vX * vX + vY * vY);	    // si calcola la distanza
-                vX = vX / dist + predvX;						// si normalizza e si calcola la direzione
-                vY = vY / dist + predvY;
-                for (let i = bot.currentWeapon.count; i >= 0; i--) {
-                    this.bullet.create(bot.x, bot.y, vX, vY, 'enemy', bot.index, bot.damage, bot.currentWeapon);
-                    bot.currentWeapon.shotNumber--;
-                }
-            } else {
+        if (bot.target && bot.target.alive) {
+            if (bot.currentWeapon.shotNumber < 1) {
                 bot.weaponsInventory.getBest();
                 bot.currentWeapon = bot.weaponsInventory.selectedWeapon;	// arma corrente
             }
-        }
-        else {
-            bot.brain.pushState(this.wander.bind(this));
+            bot.brain.pushState(this.chaseTarget.bind(this));
+            // se non si ha un target si va alla ricerca dei powerup
+        } else {
+            let map = this.main.currentMap;
+            // Move along the path
+            if (!bot.path.length) {
+                return;
+            }
+            const cell = bot.path[0];
+            // We need to get the distance
+            var tx = ((cell.x * map.tileSize) + map.tileSize / 2) - bot.x,
+                ty = ((cell.y * map.tileSize) + map.tileSize / 2) - bot.y,
+                dist = Math.sqrt(tx * tx + ty * ty);
+            if (dist != 0) {
+                bot.velX = (tx / dist);
+                bot.velY = (ty / dist);
+                bot.old_x = bot.x;
+                bot.old_y = bot.y;
+                bot.x += bot.velX * bot.speed * dt;
+                bot.y += bot.velY * bot.speed * dt;
+            }
+            // if finished move to the next path element
+            if (dist < 3) {
+                bot.path = bot.path.slice(1);
+                if (bot.path.length === 0) {
+                    // this.findPath(bot);
+                    bot.brain.pushState(this.wander.bind(this));
+                }
+            }
         }
     }
+
+
 
 }

@@ -129,8 +129,9 @@ export default class Game {
          this.data.powerup
          .map((e:any,i:number)=>{
              e.index=i;
-            return e;})  // si mette un indice
+            return e;})  // si mette un indice PER POTER DEBUGGARE il targetItem
          .forEach((e:any, index:number) => {
+             
             this.powerup.create(e.x, e.y, e.type, index); 
         });
 
@@ -158,8 +159,7 @@ export default class Game {
 
         this.easystar = new EasyStar.js();
         this.easystar.setGrid(this.currentMap.map);
-        // Get the walkable tile indexes
-        this.easystar.setAcceptableTiles([0, 2, 10, 11, 12, 13, 14, 15, 16, 23, 24, 25, 27, 29, 34, 35, 37, 39, 40]);
+        this.easystar.setAcceptableTiles([0, 2, 10, 11, 12, 13, 14, 15, 16, 23, 24, 25, 27, 29, 34, 35, 37, 39, 40, 41, 42]); // Get the walkable tile indexes
         this.easystar.enableDiagonals();
         this.easystar.enableCornerCutting();
 

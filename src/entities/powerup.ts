@@ -15,7 +15,9 @@ export const tipiPowerUp = {
     'weaponShotgun':{ for: 'Shotgun', color:'brown', r:16, spawnTime:30000,amount:24 },
     'weaponPlasma':{ for:  'Plasma', color: 'blue', r:16, spawnTime:30000,amount:25 },
     'weaponRocket':{ for:  'Rocket', color: 'red', r:16, spawnTime:30000,amount:5 },
-    'weaponRailgun':{ for: 'Railgun',color:'green', r:16, spawnTime:30000,amount:5 }
+    'weaponRailgun':{ for: 'Railgun',color:'green', r:16, spawnTime:30000,amount:5 },
+    'team1flag':{ name:  'team1flag', color: '#6688cc', r:16, spawnTime:0 },
+    'team2flag':{ name: 'team2flag',color:'#f90c00', r:16, spawnTime:0 },
 }
 
 
@@ -55,6 +57,12 @@ export class PowerUp {
             powerup.ref = type;                     // permette di distinguere tra bullet e weapons
             powerup.amount = powerup.type.amount;   // quanti bullet
             powerup.for = powerup.type.for;         // per quale arma
+        }
+        if(type.startsWith('team')){                // per bandiera nel CTF
+            powerup.ref = type;                     // permette di distinguere se è del team1 o 2
+            powerup.taken = false;                  // se è presa o no
+            powerup.startx = x;                     // coordinate iniziali quando recuperata da elemento dello stesso team
+            powerup.starty = y;
         }
         powerup.reloadRate = 0;
         powerup.spawnTime  = powerup.type.spawnTime;   // tempo impiegato per respawn
@@ -215,7 +223,21 @@ export class PowerUp {
                 }
 
             } 
-            if(powerup.visible){
+        
+            if(powerup.ref && powerup.ref.startsWith('team')){ // per bandiera nel CTF
+                // CTF FLAGS
+                let x = powerup.x - this.main.camera.x;
+                let y = powerup.y - this.main.camera.y;
+                this.ctx.beginPath();
+                this.ctx.moveTo(x, y);
+                this.ctx.lineTo(x, y-40);
+                this.ctx.rect(x, y-40, 40, 20);
+                this.ctx.fillStyle=powerup.color;
+                this.ctx.strokeStyle = 'black';
+                this.ctx.fill();
+                this.ctx.stroke();
+                this.ctx.closePath();     
+            } else if(powerup.visible && powerup.ref ){
                 // AMMO e WEAPONS
                 let x = powerup.x - this.main.camera.x;
                 let y = powerup.y - this.main.camera.y;

@@ -39,8 +39,11 @@ export const types = [
     { id: 37, colour: '#ddd5d5', solid: 0, desc: 'Rocket Launcher' },     
     { id: 38, colour: '#ddd5d5', solid: 0, desc: 'Lightning Gun' },     
     { id: 39, colour: '#ddd5d5', solid: 0, desc: 'Railgun' }
-    
-    */
+// GLOBAL OBJECTIVE
+    { id: 41, colour: '#ddd5d5', solid: 0, desc: 'Blu flag' },     
+    { id: 42, colour: '#ddd5d5', solid: 0, desc: 'Red Flag' }
+
+    */    
 ];
 
 export class Map {
@@ -138,16 +141,17 @@ export class Map {
         output.spawn =[]; 
         output.powerup =[];
         output.waypoints =[];
+        output.globals =[];
         for (let j = 0; j < this.map.length; j++) {
             for (let l = 0; l < this.map[j].length; l++) {
                 if (j >= 0 && l >= 0 && j < this.map.length && l < this.map[j].length) {
+                    // SPAWN POINTS
                     if (this.map[j][l] == 2) {
                         output.spawn.push({
                             x: l * this.tileSize - this.camera.x + 12.5,
                             y: j * this.tileSize - this.camera.y + 12.5
                         });
                     }
-
                     // POWERUPS
                     if (this.map[j][l] == 10) {
                         output.powerup.push({
@@ -229,8 +233,6 @@ export class Map {
                             amount:5
                         });
                     }
-
-
                     /* --------------------- AMMO --------------------- */
                     if (this.map[j][l] == 23) {
                         output.powerup.push({
@@ -276,8 +278,22 @@ export class Map {
                             amount:5
                         });
                     }
-
-                    // WAYPOINTS
+                    /* --------------------- GLOBAL OBJECTIVES --------------------- */ 
+                    if (this.map[j][l] == 41) {
+                        output.powerup.push({
+                            x: l * this.tileSize - this.camera.x + 12.5,
+                            y: j * this.tileSize - this.camera.y + 12.5,
+                            type: 'team1flag'
+                        });
+                    }
+                    if (this.map[j][l] == 42) {
+                        output.powerup.push({
+                            x: l * this.tileSize - this.camera.x + 12.5,
+                            y: j * this.tileSize - this.camera.y + 12.5,
+                            type: 'team2flag'
+                        });
+                    }
+                    /* --------------------- WAYPOINTS --------------------- */ 
                     if (this.map[j][l] == 40) {
                         output.waypoints.push({
                             x: l * this.tileSize - this.camera.x + 12.5,

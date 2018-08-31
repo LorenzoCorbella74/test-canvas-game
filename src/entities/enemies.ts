@@ -365,6 +365,9 @@ export class Enemy {
             }
         } else {
             bot.targetItem = bot.target;    // si va all'ultima posizione del nemico
+            bot.callback = ()=>{
+                bot.brain.pushState(this.wander.bind(this));
+            };
             // bot.brain.pushState(this.wander.bind(this));
             bot.brain.pushState(this.findPath.bind(this));
         }
@@ -414,9 +417,8 @@ export class Enemy {
                     // this.collectPowerUps(bot, dt);
                     bot.brain.pushState(this.findPath.bind(this));
                 } else {
-                    // bot.brain.popState();
-                    // bot.brain.pushState(this.spawn.bind(this));
-                    // si continua la navigazione...
+                    //bot.brain.popState();
+                     bot.brain.pushState(this.spawn.bind(this)); // si continua la navigazione...
                 }
             }
         }
@@ -473,7 +475,8 @@ export class Enemy {
             bot.brain.pushState(this.chaseTarget.bind(this));
             // se non si ha un target si va alla ricerca della bandiera nemica
         } else {
-            bot.targetItem = bot.teamFlag; 
+            bot.targetItem.x = bot.teamFlag.startx; 
+            bot.targetItem.y = bot.teamFlag.starty; 
             // alla fine di tutto
             bot.callback = ()=>{
                 bot.oppositeTeamFlag.taken = false;
@@ -546,7 +549,7 @@ export class Enemy {
     }
 
     // DA PROVARE CON UN NUOVO STATO!
-    getNearestWaypoint(bot: any, data: any) {
+    /* getNearestWaypoint2(bot: any, data: any) {
         let  dist:number = 10000 ; // elemento + vicino ad bot
         let result:any =[];
         data
@@ -566,9 +569,9 @@ export class Enemy {
         }else{
             return Math.random()<0.65? result[result.length-1].elem:result[result.length-2].elem; // torna randomicamente i due migliori
         }
-    }
+    } */
 
-    /* getNearestWaypoint2(bot: any, data: any) {
+     getNearestWaypoint(bot: any, data: any) {
         let output: any = { dist: 10000 }; // elemento + vicino ad bot
         data
             .filter((elem: any) => elem[bot.index].visible == true) // solo quelli non ancora attraversati dallo specifico bot
@@ -580,7 +583,7 @@ export class Enemy {
                 }
             })
         return output.elem;
-    } */
+    } 
 
     getNearestVisibleEnemy(origin: any, actors: any) {
         let output: any = { dist: 10000 }; // elemento + vicino ad origin

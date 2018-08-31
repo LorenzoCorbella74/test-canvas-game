@@ -237,7 +237,12 @@ export class PowerUp {
                 this.ctx.strokeStyle = 'black';
                 this.ctx.fill();
                 this.ctx.stroke();
-                this.ctx.closePath();     
+                this.ctx.closePath();   
+                if (this.main.debug) {
+                    this.ctx.font = 'bold 8px/1 Arial';
+                    this.ctx.fillStyle = 'black';
+                    this.ctx.fillText(powerup.index.toString(), powerup.x - this.main.camera.x - 6, powerup.y - this.main.camera.y -12);
+                }  
             } else if(powerup.visible && powerup.ref ){
                 // AMMO e WEAPONS
                 let x = powerup.x - this.main.camera.x;
@@ -246,7 +251,12 @@ export class PowerUp {
                 this.ctx.arc(x, y, powerup.r, 0, 6.2832);
                 this.ctx.fillStyle = powerup.color;
                 this.ctx.fill();
-                this.ctx.closePath()
+                this.ctx.closePath();
+                if (this.main.debug) {
+                    this.ctx.font = 'bold 8px/1 Arial';
+                    this.ctx.fillStyle = 'black';
+                    this.ctx.fillText(powerup.index.toString(), powerup.x - this.main.camera.x - 6, powerup.y - this.main.camera.y -12);
+                }
             }
 
         }

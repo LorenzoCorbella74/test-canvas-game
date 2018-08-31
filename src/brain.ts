@@ -44,7 +44,7 @@ export class BrainFSM {
         return this._currentStateFunction === state;
     }
 
-    isIn(...states: any) {
+    isIn(...states: any[]) {
         return states.some(s => this.is(s));
     }
 }

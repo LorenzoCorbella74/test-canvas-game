@@ -49,8 +49,11 @@ export class Enemy {
         bot.hp = this.c.ENEMY_HP;
         bot.ap = this.c.ENEMY_AP;
         bot.team = team;    // TEAM DM
-        bot.taken = false; // CTF
         // bot.preferences= Helper.getBotsPreferences();
+        // CTF
+        // i bot devono sapere l'index della propria bandiera
+        // bot.teamFlagIndex
+        // bot.oppositeTeamFlagIndex
 
         bot.damage = 1;		// è per il moltiplicatore del danno (quad = 4)
         bot.kills = 0;
@@ -282,7 +285,6 @@ export class Enemy {
     spawn(bot: any, dt: number) {
         bot.status = 'spawn';
         let opponentData = this.getNearestVisibleEnemy(bot, this.main.actors);
-        
         // const power_best = this.getNearestPowerup(bot, this.main.powerup.list);
         // const waypoint_best = this.getNearestWaypoint(bot, this.main.waypoints.list);
         // bot.targetItem = power_best || waypoint_best;
@@ -384,17 +386,22 @@ export class Enemy {
         } else {
             bot.attackCounter = 0;
             bot.angleWithTarget = 0;
-            const globalObjective = this.getglobalObjective(bot, this.main.powerup.list, bot.taken )[0] || null;
-            const power_best = this.getNearestPowerup(bot, this.main.powerup.list);
-            const waypoint_best = this.getNearestWaypoint(bot, this.main.waypoints.list);
-            bot.targetItem = globalObjective || power_best || waypoint_best;
+            // const globalObjective = this.getglobalObjective(bot, this.main.powerup.list, this.main.powerup.list[44].taken )[0] || null;
+            const power_best      = this.getNearestPowerup(bot, this.main.powerup.list);
+            const waypoint_best   = this.getNearestWaypoint(bot, this.main.waypoints.list);
+            // random navigation amoung local and global objectives
+            // if(globalObjective && Math.random()<0.75){
+            //     bot.targetItem = globalObjective
+            // } else{
+                bot.targetItem = power_best || waypoint_best;
+            // }
 
             if (bot.alive && bot.targetItem) {
                 // this.collectPowerUps(bot, dt);
                 bot.brain.pushState(this.findPath.bind(this));
-            } else {
+            } /* else {
                 bot.brain.pushState(this.spawn.bind(this));
-            }
+            } */
         }
     }
 
@@ -416,11 +423,12 @@ export class Enemy {
         const teamNumber = origin.team.charAt(4);
         const oppositeTeamNumber = teamNumber=='1'?'2':'1';
         const globalObjectives = data.filter((elem: any) => elem.type.name == (taken? `team${teamNumber}flag`:`team${oppositeTeamNumber}flag`));  //  la bandiera avversaria
+        console.log(globalObjectives);
         return globalObjectives;
     }
 
     // DA PROVARE CON UN NUOVO STATO!
-    /* getNearestWaypoint(bot: any, data: any) {
+    getNearestWaypoint(bot: any, data: any) {
         let  dist:number = 10000 ; // elemento + vicino ad bot
         let result:any =[];
         data
@@ -438,11 +446,11 @@ export class Enemy {
         } else if(result.length==1){
             return result[0].elem;
         }else{
-            return Math.random()<0.95? result[result.length-1].elem:result[result.length-2].elem;
+            return Math.random()<0.65? result[result.length-1].elem:result[result.length-2].elem;
         }
-    } */
+    }
 
-    getNearestWaypoint(bot: any, data: any) {
+    getNearestWaypoint2(bot: any, data: any) {
         let output: any = { dist: 10000 }; // elemento + vicino ad bot
         data
             .filter((elem: any) => elem[bot.index].visible == true) // solo quelli non ancora attraversati dallo specifico bot
@@ -483,6 +491,7 @@ export class Enemy {
     // }
 
     findPath(bot: any) {
+        bot.status = 'findPath';
         // Calculate the path-finding path
         let map = this.main.currentMap;
         const s = map.pixelToMapPos(bot);
@@ -504,11 +513,11 @@ export class Enemy {
     }
 
     followPath(bot: any, dt: number) {
-        bot.angleWithTarget = Helper.calculateAngle(bot.x, bot.y, bot.targetItem.x, bot.targetItem.y);
-        bot.status = 'wander';
+        //bot.angleWithTarget = Helper.calculateAngle(bot.x, bot.y, bot.targetItem.x, bot.targetItem.y);
+        bot.status = 'followPath';
         let opponentData = this.getNearestVisibleEnemy(bot, this.main.actors);
         bot.target = opponentData.elem;
-
+        
         if (bot.target && bot.target.alive) {
             if (bot.currentWeapon.shotNumber < 1) {
                 bot.weaponsInventory.getBest();
@@ -523,6 +532,7 @@ export class Enemy {
                 return;
             }
             const cell = bot.path[0];
+            bot.angleWithTarget = Helper.calculateAngle(bot.x, bot.y, ((cell.x * map.tileSize) + map.tileSize / 2), ((cell.y * map.tileSize) + map.tileSize / 2));
             // We need to get the distance
             var tx = ((cell.x * map.tileSize) + map.tileSize / 2) - bot.x,
                 ty = ((cell.y * map.tileSize) + map.tileSize / 2) - bot.y,
@@ -540,20 +550,20 @@ export class Enemy {
                 bot.path = bot.path.slice(1);
                 if (bot.path.length === 0) {
                     // CTF only
-                    if(bot.targetItem.ref && bot.targetItem.ref.startsWith('team')){
-                        const who = bot.targetItem.index;
-                        // se è la bandiera avversaria
-                        if(bot.team.charAt(4)!=bot.targetItem.ref.charAt(4)){
-                            bot.taken=true
-                            this.main.powerup.list[who].x=bot.x;
-                            this.main.powerup.list[who].y=bot.y;
-                            // se è la bandiera del team di appartenenza
-                        } else {
-                            // team score ++
-                            // la bandiera avversaria ritorna alle sue coordinate iniziali
-                        }
-                        
-                    }
+                    // if(bot.targetItem.ref && bot.targetItem.ref.startsWith('team')){
+                    //     const who = 44; // indice della 
+                    //     // se è la bandiera avversaria
+                    //     if(bot.team.charAt(4)!=bot.targetItem.ref.charAt(4)){
+                    //         this.main.powerup.list[who].taken=true
+                    //         this.main.powerup.list[who].x=bot.x;
+                    //         this.main.powerup.list[who].y=bot.y;
+                    //         // se è la bandiera del team di appartenenza
+                    //     } else {
+                    //         // team score ++
+                    //         // la bandiera avversaria ritorna alle sue coordinate iniziali
+                    //     }
+                    //     
+                    // }
                     bot.brain.pushState(this.wander.bind(this));
                 }
             }

@@ -16,8 +16,8 @@ export const tipiPowerUp = {
     'weaponPlasma':{ for:  'Plasma', color: 'blue', r:16, spawnTime:30000,amount:25 },
     'weaponRocket':{ for:  'Rocket', color: 'red', r:16, spawnTime:30000,amount:5 },
     'weaponRailgun':{ for: 'Railgun',color:'green', r:16, spawnTime:30000,amount:5 },
-    'team1flag':{ name:  'team1flag', color: '#6688cc', r:16, spawnTime:0 },
-    'team2flag':{ name: 'team2flag',color:'#f90c00', r:16, spawnTime:0 },
+    'team1flag':{ name:  'team1flag', color: '#6688cc', r:1, spawnTime:0 },
+    'team2flag':{ name: 'team2flag',color:'#f90c00', r:1, spawnTime:0 },
 }
 
 
@@ -63,6 +63,7 @@ export class PowerUp {
             powerup.taken = false;                  // se è presa o no
             powerup.startx = x;                     // coordinate iniziali quando recuperata da elemento dello stesso team
             powerup.starty = y;
+            console.log(powerup);
         }
         powerup.reloadRate = 0;
         powerup.spawnTime  = powerup.type.spawnTime;   // tempo impiegato per respawn

@@ -439,14 +439,14 @@ export class Enemy {
             bot.targetItem = bot.oppositeTeamFlag;
             // se è nella posizione iniziale
             if (bot.targetItem.x == bot.targetItem.startx &&
-                bot.targetItem.y == bot.targetItem.starty && ) {
+                bot.targetItem.y == bot.targetItem.starty ) {
                 // alla fine di tutto
                 bot.callback = () => {
                     bot.targetItem.taken = true;
                     bot.brain.pushState(this.backToTeamFlag.bind(this));
                 };
                 bot.brain.pushState(this.findPath.bind(this));
-                // se è visiile dove è stata lasciata
+            // se è visiile dove è stata lasciata...
             } else if(this.checkIfIsSeen2(bot.targetItem, bot)){
                 bot.callback = () => {
                     bot.targetItem.taken = true;

@@ -8,7 +8,7 @@ export class Config {
     // GAME
     GAME_KILLS_TO_WIN:    number = 15;
     GAME_MATCH_DURATION:  number = 300000; // in ms 
-    GAME_BOTS_PER_MATCH:  number = 5;
+    GAME_BOTS_PER_MATCH:  number = 1;
     GAME_RESPAWN_TIME:    number = 5000;   // in ms
     GAME_MATCH_TYPE:      string = 'team'; // 'deathmatch'  // o team, ctf
     WAYPOINTS_TIMING:     number = 8000;

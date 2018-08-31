@@ -280,9 +280,9 @@ export class Enemy {
     spawn(bot: any, dt: number) {
         bot.status = 'spawn';
         let opponentData = this.getNearestVisibleEnemy(bot, this.main.actors);
-        const power_best = this.getNearestPowerup(bot, this.main.powerup.list);
-        const waypoint_best = this.getNearestWaypoint(bot, this.main.waypoints.list);
-        bot.targetItem = power_best || waypoint_best;
+        // const power_best = this.getNearestPowerup(bot, this.main.powerup.list);
+        // const waypoint_best = this.getNearestWaypoint(bot, this.main.waypoints.list);
+        // bot.targetItem = power_best || waypoint_best;
         bot.target = opponentData.elem;
         if (bot.target && bot.target.alive) {
             if (bot.currentWeapon.shotNumber < 1) {
@@ -299,7 +299,7 @@ export class Enemy {
         bot.status = 'chasing';
         bot.angleWithTarget = Helper.calculateAngle(bot.x, bot.y, bot.target.x, bot.target.y);
 
-        if (bot.target && bot.target.alive) {
+        if (bot.target && bot.target.alive && this.checkIfIsSeen2(bot.target, bot)) {
             var tx = bot.target.x - bot.x,
                 ty = bot.target.y - bot.y,
                 dist = Math.sqrt(tx * tx + ty * ty);
@@ -315,7 +315,7 @@ export class Enemy {
                 bot.velX = Math.random() < 0.95 ? bot.velX : this.getRandomDirection(bot);
                 bot.velY = Math.random() < 0.95 ? bot.velY : this.getRandomDirection(bot);
             }
-            if (dist < 100 && bot.aggression < 0.95) { // retreat
+            if (dist < 100 /* && bot.aggression < 0.95 */) { // retreat
                 bot.velX = -(tx / dist);
                 bot.velY = -(ty / dist);
             }/* else{
@@ -327,7 +327,39 @@ export class Enemy {
 
             this.shot(bot, dist, dt);
         } else {
+            // bot.brain.popState();
             bot.brain.pushState(this.spawn.bind(this));
+        }
+    }
+
+    shot(bot: any, dist: number, dt: number) {
+        if (dist < 350 && this.checkIfIsSeen2(bot.target, bot)) {	// SE non troppo lontano e visibile SPARA!
+            if (bot.currentWeapon.shotNumber > 0) {                 // se l'arma ha proiettili
+                let now = Date.now();
+                if (now - bot.attackCounter < bot.currentWeapon.frequency) return;
+                bot.attackCounter = now;
+
+                // bullet prediction ->how well bots are aiming!!
+                let predvX = (bot.target.x - bot.target.old_x) / (bot.target.speed * dt) / (bot.speed * dt);
+                let predvY = (bot.target.y - bot.target.old_y) / (bot.target.speed * dt) / (bot.speed * dt);
+
+                let vX = (bot.target.x - bot.x);
+                let vY = (bot.target.y - bot.y);
+                let dist = Math.sqrt(vX * vX + vY * vY);	    // si calcola la distanza
+                vX = vX / dist + predvX;						// si normalizza e si calcola la direzione
+                vY = vY / dist + predvY;
+                for (let i = bot.currentWeapon.count; i >= 0; i--) {
+                    this.bullet.create(bot.x, bot.y, vX, vY, 'enemy', bot.index, bot.damage, bot.currentWeapon);
+                    bot.currentWeapon.shotNumber--;
+                }
+            } else {
+                bot.weaponsInventory.getBest();
+                bot.currentWeapon = bot.weaponsInventory.selectedWeapon;	// arma corrente
+            }
+        }
+        else {
+            bot.targetItem = bot.target;    // ???
+            bot.brain.pushState(this.wander.bind(this));
         }
     }
 
@@ -351,7 +383,7 @@ export class Enemy {
             bot.angleWithTarget = 0;
             const power_best = this.getNearestPowerup(bot, this.main.powerup.list);
             const waypoint_best = this.getNearestWaypoint(bot, this.main.waypoints.list);
-            bot.targetItem = power_best || waypoint_best;
+            bot.targetItem = bot.targetItem.length>0? bot.targetItem : power_best || waypoint_best; // o l'ultima aposizione del target o il powerup + vicino o il waypoint
 
             if (bot.alive && bot.targetItem) {
                 this.collectPowerUps(bot, dt);
@@ -427,7 +459,7 @@ export class Enemy {
     }
 
     collectPowerUps(bot: any, dt: number) {
-        bot.angleWithTarget = Helper.calculateAngle(bot.x, bot.y, bot.targetItem.x, bot.targetItem.y);
+        
         if (bot.brain.first) {
             // console.log(`Si calcola il path per: ${bot.index}`);
             // al 1° giro si calcola il percorso
@@ -464,11 +496,13 @@ export class Enemy {
         if (!bot.path.length) {
             return;
         }
-        // bot.path.slice(2)
         const cell = bot.path[0];
+        const cellx = ((cell.x * map.tileSize) + map.tileSize / 2) ;
+        const celly = ((cell.y * map.tileSize) + map.tileSize / 2) ;
+        bot.angleWithTarget = Helper.calculateAngle(bot.x, bot.y, cellx, celly);
         // We need to get the distance
-        var tx = ((cell.x * map.tileSize) + map.tileSize / 2) - bot.x,
-            ty = ((cell.y * map.tileSize) + map.tileSize / 2) - bot.y,
+        var tx = cellx - bot.x,
+            ty = celly - bot.y,
             dist = Math.sqrt(tx * tx + ty * ty);
         if (dist != 0) {
             bot.velX = (tx / dist);
@@ -488,34 +522,6 @@ export class Enemy {
         }
     }
 
-    shot(bot: any, dist: number, dt: number) {
-        if (dist < 350 && this.checkIfIsSeen2(bot.target, bot)) {	// SE non troppo lontano e visibile SPARA!
-            if (bot.currentWeapon.shotNumber > 0) {                 // se l'arma ha proiettili
-                let now = Date.now();
-                if (now - bot.attackCounter < bot.currentWeapon.frequency) return;
-                bot.attackCounter = now;
 
-                // bullet prediction ->how well bots are aiming!!
-                let predvX = (bot.target.x - bot.target.old_x) / (bot.target.speed * dt) / (bot.speed * dt);
-                let predvY = (bot.target.y - bot.target.old_y) / (bot.target.speed * dt) / (bot.speed * dt);
-
-                let vX = (bot.target.x - bot.x);
-                let vY = (bot.target.y - bot.y);
-                let dist = Math.sqrt(vX * vX + vY * vY);	    // si calcola la distanza
-                vX = vX / dist + predvX;						// si normalizza e si calcola la direzione
-                vY = vY / dist + predvY;
-                for (let i = bot.currentWeapon.count; i >= 0; i--) {
-                    this.bullet.create(bot.x, bot.y, vX, vY, 'enemy', bot.index, bot.damage, bot.currentWeapon);
-                    bot.currentWeapon.shotNumber--;
-                }
-            } else {
-                bot.weaponsInventory.getBest();
-                bot.currentWeapon = bot.weaponsInventory.selectedWeapon;	// arma corrente
-            }
-        }
-        else {
-            bot.brain.pushState(this.wander.bind(this));
-        }
-    }
 
 }

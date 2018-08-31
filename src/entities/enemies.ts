@@ -511,7 +511,8 @@ export class Enemy {
                     bot.teamFlag.taken = false;
                     bot.teamFlag.x     = bot.teamFlag.startx;
                     bot.teamFlag.y     = bot.teamFlag.starty;
-                    bot.brain.pushState(this.wander.bind(this));
+                    //bot.brain.pushState(this.wander.bind(this));
+                    bot.brain.popState();
                 }
             }
         }

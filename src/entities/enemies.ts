@@ -399,7 +399,7 @@ export class Enemy {
             if(bot.teamFlag 
                 && Helper.calculateDistance(bot, bot.teamFlag)<200 
                 && this.checkIfIsSeen2(bot.teamFlag, bot)
-                && bot.startx.taken
+                && bot.teamFlag.taken
                 && bot.teamFlag.x!=bot.teamFlag.startx
                 && bot.teamFlag.y!=bot.teamFlag.starty){
                 bot.brain.pushState(this.recoverFlag.bind(this));    
@@ -443,6 +443,8 @@ export class Enemy {
                 // alla fine di tutto
                 bot.callback = () => {
                     bot.targetItem.taken = true;
+                    bot.targetItem.x = bot.x;
+                    bot.targetItem.y = bot.y;
                     bot.brain.pushState(this.backToTeamFlag.bind(this));
                 };
                 bot.brain.pushState(this.findPath.bind(this));

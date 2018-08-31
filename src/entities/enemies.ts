@@ -389,12 +389,26 @@ export class Enemy {
             // const globalObjective = this.getglobalObjective(bot, this.main.powerup.list, this.main.powerup.list[44].taken )[0] || null;
             const power_best      = this.getNearestPowerup(bot, this.main.powerup.list);
             const waypoint_best   = this.getNearestWaypoint(bot, this.main.waypoints.list);
+
+            /*
+                1) stato recoverFlag
+                Quando la propria bandiera è vicina (<200 e visibile) e non è nelle coordinate iniziali (quindi è in stato taken)
+                deve essere recuperata con un stato specifico (che eventualmente entra ed esce dallo stato chaseTarget) 
+                -> le coordinate della propria bandiera tornano a quelle iniziali.
+                2)  stato takeEnemyFlag
+                Prendere la bandiera avversaria - FindPAth e poi un followPath per poi andare al 
+                3) stato backToTeamFlag
+                ritornare alle coordinate iniziali della propria bandiera
+
+            */
+
             // random navigation amoung local and global objectives
             // if(globalObjective && Math.random()<0.75){
             //     bot.targetItem = globalObjective
             // } else{
                 bot.targetItem = power_best || waypoint_best;
             // }
+
 
             if (bot.alive && bot.targetItem) {
                 // this.collectPowerUps(bot, dt);

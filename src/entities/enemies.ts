@@ -20,15 +20,15 @@ export class Enemy {
     constructor() { }
 
     init(main: any) {
-        this.list = [];
-        this.main = main;
-        this.c = main.c;
+        this.list   = [];
+        this.main   = main;
+        this.c      = main.c;
         this.player = main.player;
         this.canvas = main.canvas;
         this.camera = main.camera;
-        this.map = main.currentMap;
+        this.map    = main.currentMap;
         this.bullet = main.bullet;
-        this.ctx = main.ctx;
+        this.ctx    = main.ctx;
     }
 
     create(x: number, y: number, num: number, team:string) {
@@ -36,8 +36,8 @@ export class Enemy {
         bot.brain = new BrainFSM();
         bot.index = num;
         bot.name = Helper.getBotsName(this.c.ENEMY_NAMES);
-        bot.x = x || 75;
-        bot.y = y || 50;
+        bot.x = x;
+        bot.y = y;
         bot.r = this.c.ENEMY_RADIUS;
         bot.old_x = x;
         bot.old_y = y;
@@ -98,8 +98,6 @@ export class Enemy {
 
         bot.callback = ()=> {};         // funzione callback vuota...
 
-    
-        
         let amplitude = 100;
         setTimeout(() => {	
             for (let i = 0; i < 100; i++) {
@@ -109,7 +107,7 @@ export class Enemy {
                 respawnParticles.y = bot.y  + Math.sin(beta) * Helper.randBetween(0,amplitude);
                 this.main.particelle.create(respawnParticles.x, respawnParticles.y , 0.5,0.5, 6, Helper.randomElementInArray(bot.team !='team1'? this.c.ENEMY_RESPAWN   :this.c.PLAYER_RESPAWN));
             }		
-    }, 150);
+        }, 150);
 
         //  WEAPONS
         bot.attackCounter = 0;
@@ -395,12 +393,9 @@ export class Enemy {
             const power_best      = this.getNearestPowerup(bot, this.main.powerup.list);
             const waypoint_best   = this.getNearestWaypoint(bot, this.main.waypoints.list);
 
-              /*
-                1) stato recoverFlag
-                Quando la propria bandiera è vicina (<200 e visibile) e non è nelle coordinate iniziali (quindi è in stato taken)
-                deve essere recuperata con un stato specifico (che eventualmente fa entrare uscire il chaseTarget) 
-                -> le coordinate della propria bandiera tornano a quelle iniziali.
-            */
+           /*
+            NOTE: Se non ci sono le bandiere va direttamente al findPath su powerups o waypoints...??
+           */
             if(bot.teamFlag 
                 && Helper.calculateDistance(bot, bot.teamFlag)<200 
                 && this.checkIfIsSeen2(bot.teamFlag, bot)
@@ -419,13 +414,17 @@ export class Enemy {
                     // this.collectPowerUps(bot, dt);
                     bot.brain.pushState(this.findPath.bind(this));
                 } else {
-                    bot.brain.popState();
+                    // bot.brain.popState();
                     // bot.brain.pushState(this.spawn.bind(this));
+                    // si continua la navigazione...
                 }
             }
         }
     }
 
+    /*  
+       FIXME: I bot all'inizio sanno dove è la bandiera ma se è stata presa e poi lasciata no!!
+    */
     takeEnemyFlag(bot: any, dt: number) {
         let opponentData = this.getNearestVisibleEnemy(bot, this.main.actors);
         bot.target = opponentData.elem;
@@ -438,12 +437,26 @@ export class Enemy {
             // se non si ha un target si va alla ricerca della bandiera nemica
         } else {
             bot.targetItem = bot.oppositeTeamFlag;
-            // alla fine di tutto
-            bot.callback = ()=>{
-                bot.targetItem.taken = true;
-                bot.brain.pushState(this.backToTeamFlag.bind(this));
-            };
-            bot.brain.pushState(this.findPath.bind(this));
+            // se è nella posizione iniziale
+            if (bot.targetItem.x == bot.targetItem.startx &&
+                bot.targetItem.y == bot.targetItem.starty && ) {
+                // alla fine di tutto
+                bot.callback = () => {
+                    bot.targetItem.taken = true;
+                    bot.brain.pushState(this.backToTeamFlag.bind(this));
+                };
+                bot.brain.pushState(this.findPath.bind(this));
+                // se è visiile dove è stata lasciata
+            } else if(this.checkIfIsSeen2(bot.targetItem, bot)){
+                bot.callback = () => {
+                    bot.targetItem.taken = true;
+                    bot.brain.pushState(this.backToTeamFlag.bind(this));
+                };
+                bot.brain.pushState(this.findPath.bind(this));
+            } else {
+                bot.brain.popState(); // altrimenti torna alla navigazione 
+            }
+           
         }
     }
 

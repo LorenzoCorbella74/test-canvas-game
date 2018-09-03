@@ -103,7 +103,7 @@ export class WeaponsInventory {
     getBest() {
         for (let i = this.weapons.length - 1; i >= 0; i--) {
             let item = this.weapons[i];
-            if (item && item.shotNumber > 0) {
+            if (item && item.available && item.shotNumber > 0) {
                 this.selectedWeapon = this.weapons[i];
                 break;
             }

@@ -358,7 +358,7 @@ export class Enemy {
             }
         }
         else {
-            bot.targetItem = bot.target;    // ???
+            // bot.targetItem = bot.target;    // ???
             bot.brain.pushState(this.wander.bind(this));
         }
     }
@@ -383,7 +383,7 @@ export class Enemy {
             bot.angleWithTarget = 0;
             const power_best = this.getNearestPowerup(bot, this.main.powerup.list);
             const waypoint_best = this.getNearestWaypoint(bot, this.main.waypoints.list);
-            bot.targetItem = bot.targetItem.length>0? bot.targetItem : power_best || waypoint_best; // o l'ultima aposizione del target o il powerup + vicino o il waypoint
+            bot.targetItem = /* bot.targetItem.length>0? bot.targetItem : */ power_best || waypoint_best; // o l'ultima aposizione del target o il powerup + vicino o il waypoint
 
             if (bot.alive && bot.targetItem) {
                 this.collectPowerUps(bot, dt);
@@ -516,8 +516,8 @@ export class Enemy {
         if (dist < 3) {
             bot.path = bot.path.slice(1);
             if (bot.path.length === 0) {
-                this.findPath(bot);
-                //bot.brain.pushState(this.wander.bind(this));
+                // this.findPath(bot);
+                bot.brain.pushState(this.wander.bind(this));
             }
         }
     }

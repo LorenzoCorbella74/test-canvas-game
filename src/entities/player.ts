@@ -347,13 +347,11 @@ export class Player {
 		}
 	}
 
-	update(dt: number, timestamp:number) {
+	update(dt: number, timestamp: number) {
 
 		if (this.alive) {
-
 			this.isLavaOrToxic(this.x, this.y);
 			this.collisionDetection(dt);
-
 			if (this.control.mouseLeft) {	// SE è PREMUTO IL btn del mouse
 				this.shoot(dt);
 			}
@@ -364,7 +362,9 @@ export class Player {
 			if (this.respawnTime > this.c.GAME_RESPAWN_TIME) {	// numero di cicli oltre il quale è nuovamente visibile
 				this.respawn(timestamp);
 				this.respawnTime = 0;
+			}
 		}
 	}
+
 }
 

@@ -4,13 +4,18 @@ import { ControlHandler } from './controller';
 import { Player } from './entities/player';
 import { Config } from './config';
 import { Camera } from './camera';
-import { Map } from './maps';
 import {BulletHandler} from './entities/bullet';
 import { Particelle } from './entities/particelle';
 import { Blood } from './entities/blood';
 import { Waypoints } from './entities/waypoints';
 
 import * as EasyStar from 'easystarjs'
+
+
+export const maps = [
+    'maps/dm0.json', 
+    'maps/dm1.json'
+];
 
 window.onload = function () {
     let app = new Game();
@@ -316,14 +321,51 @@ export default class Game {
         context.fillText(text, x, y)
     }
 
+    loadJson(file:string) {
+        return new Promise(function(resolve, reject) {
+          var request = new XMLHttpRequest();
+          request.open('GET', file);
+          request.responseType = 'json';
+          request.onload = function() {
+            if (request.status === 200) {
+              resolve(request.response);
+            } else {
+              reject(Error('Didn\'t load successfully; error code:' + request.statusText));
+            }
+          };
+          request.onerror = function() {
+              reject(Error('There was a network error.'));
+          };
+          request.send();
+        });
+    }
+
+    loadMaps(arr:any[]) {
+        let arrPromise:any[] = [];
+        arr.forEach(element => {
+            let promise = this.loadJson(element);
+            arrPromise.push(promise);
+        });
+        Promise.all(arrPromise)
+        .then( (responses) => {
+            this.packMaps(responses);
+        })
+        .catch( (error) => console.log(error));
+    }
+
+    packMaps(responses:any[]) {
+        console.log(responses)
+    }
+
     loadMenuScreen(main: any) {
         
         let gameType:string;
 
         main.canvas.addEventListener('click', (e:any) => {
+            let rect = main.canvas.getBoundingClientRect();
             const pos = {
-              x: e.clientX,
-              y: e.clientY
+              x: e.clientX- rect.left,
+              y: e.clientY - rect.top
             };
             if(deathBtn.contains(pos.x,pos.y)){
                 gameType='deathmatch'
@@ -332,7 +374,9 @@ export default class Game {
                 gameType= 'team';
             }
             if(playBtn.contains(pos.x,pos.y)){
-                this.startGame(gameType);
+                // carica le mappe
+                this.loadMaps(maps);
+                //this.startGame(gameType);
             }
         })
 

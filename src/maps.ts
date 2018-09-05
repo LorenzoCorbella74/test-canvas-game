@@ -1,7 +1,3 @@
-import { demoMap } from './maps/dm0';
-import { demoMap2 } from './maps/dm1';
-
-
 
 export const types = [
     { id: 0, colour: '#ddd5d5', solid: 0 },                                   // tile navigabile
@@ -66,7 +62,7 @@ export class Map {
         this.tileSize = this.c.TILE_SIZE;
         this.powerup  = main.powerup;
         this.ctx      = main.ctx;
-        this.map      = demoMap2;
+        this.map      = null;   // TODO:
         // dimensioni in pixels
         this.mapSize = {
             h:         (this.map.length * this.tileSize),

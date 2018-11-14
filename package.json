@@ -9,10 +9,11 @@
     "start": "parcel serve index.html",
     "build": "cross-env NODE_ENV=production parcel build index.html --public-url .",
     "watch": "parcel watch index.html",
-    "deploy": "npm run build"
+    "deploy": "gh-pages -d dist"
   },
   "devDependencies": {
     "cross-env": "^5.1.1",
+    "gh-pages": "^2.0.1",
     "parcel-bundler": "^1.1.0",
     "typescript": "^2.6.2"
   },

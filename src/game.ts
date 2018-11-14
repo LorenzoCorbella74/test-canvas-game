@@ -321,9 +321,10 @@ export default class Game {
         let gameType:string;
 
         main.canvas.addEventListener('click', (e:any) => {
+            const rect = this.canvas.getBoundingClientRect();
             const pos = {
-              x: e.clientX,
-              y: e.clientY
+              x: e.clientX - rect.left,
+              y: e.clientY - rect.top
             };
             if(deathBtn.contains(pos.x,pos.y)){
                 gameType='deathmatch'

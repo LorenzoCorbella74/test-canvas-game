@@ -2,7 +2,7 @@
 
 ![arena](screen/arena.png)
 
-Esempio di top down shooter, prototipo realizzato per studiare il canvas e lo sviluppo di giochi con tecnologie web. Il gioco ricrea le meccaniche di arena shooter quali Quake 3 Arena, Unreal tournament, etc.
+Esempio di top down shooter, prototipo realizzato per studiare il canvas e lo sviluppo di giochi con tecnologie web. Il gioco ricrea le meccaniche di arena shooter quali Quake 3 Arena, Unreal tournament, etc. Per giocare seguire il [link](https://lorenzocorbella74.github.io/test-canvas-game/)
 
 ## Features
 - [x] scrolling map built with tiles 
@@ -12,12 +12,12 @@ Esempio di top down shooter, prototipo realizzato per studiare il canvas e lo sv
 - [x] collision system for all entities
 - [x] debug mode (+ god mode, camera cycle for bots)
 - [x] spawn mechanism
-    - [] spawn animation
+    - [x] spawn animation
 - [x] particles (debris, blood)
-    - [] explosion
+    - [X] explosion
 - [x] powerups system with different respawn time + counter
 - [x] different weapons
-    - [] for each weapon add different effect
+    - [X] for each weapon add different effect
 - [x] bots AI
     - [x] navigazione con A* in base a waypoints e collezionabili (powerups, ammo, weapons)
     - [x] brain con Finite state machine
@@ -27,14 +27,14 @@ Esempio di top down shooter, prototipo realizzato per studiare il canvas e lo sv
     - [ ] BOT AI level
 - [ ] portals and jump pads (with animation)
 - [ ] UI MESSAGES
-    - [ ] warmup, 1 minute warning, etc
+    - [x] warmup, 1 minute warning, etc
     - [ ] multiple, assist, etc
-- [ ] different game modes (deathmatch, team deathmach, capture the flag, skirmish)
+- [x] different game modes (deathmatch, team deathmach)
     - [ ] page to choose game type, map, num of bots, etc
 - [ ] multiple maps
 - [ ] music and effects
 - [ ] multiplayer
-- [ ] start screen
+- [x] start screen
 - [x] stat screen
 - [x] stat screen
 - [x] pause screen

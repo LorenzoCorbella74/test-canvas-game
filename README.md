@@ -2,6 +2,10 @@
 
 ![arena](screen/arena.png)
 
+![](https://img.shields.io/badge/type-JS_Library-brightgreen.svg "Project type")
+![](https://img.shields.io/github/repo-size/LorenzoCorbella74/test-canvas-game "Repository size")
+![](https://img.shields.io/github/package-json/v/LorenzoCorbella74/test-canvas-game)
+
 Esempio di top down shooter, prototipo realizzato per studiare il canvas e lo sviluppo di giochi con tecnologie web. Il gioco ricrea le meccaniche di arena shooter quali Quake 3 Arena, Unreal tournament, etc. Per giocare seguire il [link](https://lorenzocorbella74.github.io/test-canvas-game/)
 
 ## Features

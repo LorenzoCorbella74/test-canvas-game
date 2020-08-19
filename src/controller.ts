@@ -122,8 +122,8 @@ export class ControlHandler {
 
     mouseMoveEvent(e:any) {
         var rect = this.canvas.getBoundingClientRect();
-        this.mouseX = e.clientX - rect.left;    // tra 0 e 800
-        this.mouseY = e.clientY - rect.top;     // tra 0 e 600
+        this.mouseX = (e.clientX - rect.left)/this.main.scale;    // tra 0 e 800
+        this.mouseY = (e.clientY - rect.top)/this.main.scale;     // tra 0 e 600
         // angolo tra il player e il mirino
         this.player.angle = Helper.calculateAngle(this.player.x - this.camera.x, this.player.y -this.camera.y, this.mouseX, this.mouseY);
     }
